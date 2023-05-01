@@ -1,71 +1,54 @@
+# %%
 import math
 import os
-
 from pathlib import Path
 
 import cv2
 import numpy as np
 import tensorflow as tf
-import torch
-from tqdm import tqdm
+from ultralytics import YOLO
 
 from moucut_tools import kmeans
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
 
-def moucut(movie_path, device_flag, image_flag):
+# %%
+def moucut(movie_path, decive_flag, image_flag, show_flag):
+    if movie_path == "webcam":
+        movie_path = 0
+
+    device_name = decive_flag
     print("runing_TF_version")
-    print(f"物体検出に{device_flag}を利用します。")
+    print(f"物体検出に{device_name}を利用します。")
     print(f"画像の保存形式は[{image_flag}]です。")
-    cluster_num = int(input("\033[32m抽出する枚数を入力してください\033[0m >"))
-    model_path = "moucut_models/yolo.pt"
-    cnn_model_path = "moucut_models/cnn.h5"
-    # source video path
-    movie_file = movie_path
-    movie_file_name = Path(movie_file).stem
-    # モデルの読み込み
-    cnn_model = tf.keras.models.load_model(cnn_model_path, compile=True)
-    print("\033[32mCNN_mobile_netv3モデル読み込み完了\033[0m")
-    # "cuda" "cpu" "mps" mps is mac m1 apple silicon gpu
-    device_type = torch.device(device_flag)  # pylint: disable=no-member
-    model = torch.hub.load(".", "custom", path=model_path, source="local")
-    model.to(device_type)
-    print("\033[32myolov5モデルの読み込み完了\033[0m")
-    # 保存先
-    save_path = f"croped_image/{movie_file_name}"
-    os.makedirs(save_path, exist_ok=True)
+
+    model = YOLO("moucut_models/b6.pt")
+    cnn_model = tf.keras.models.load_model("moucut_models/cnn.h5", compile=True)
+    cap = cv2.VideoCapture(movie_path)
 
     for_kmeans_array = []
 
-    print("\033[32m\033[1m検出開始\033[0m")
-    print("\033[32m動画から顔を検出中・・・\033[0m")
+    count = 0
 
-    cv2movie = cv2.VideoCapture(movie_file)
-    nframe = int(cv2movie.get(cv2.CAP_PROP_FRAME_COUNT))
-    frames = range(nframe)
+    # Loop through the video frames
+    while cap.isOpened():
+        # Read a frame from the video
+        success, frame = cap.read()
 
-    for frame in tqdm(frames):
-        ret, frame = cv2movie.read()
-        # img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        img = frame
+        if success:
+            # Run YOLOv8 inference on the frame
+            results = model(frame, device=device_name, verbose=False)
+            try:
+                result = results[0].cpu().numpy()
+                ori_img = result.orig_img
+                box = result.boxes.xywh
+                # name = result.names
+                xcenter = box[0][0]
+                ycenter = box[0][1]
+                width = box[0][2]
+                height = box[0][3]
 
-        model.conf = 0.8
-        # 物体検出
-        with torch.no_grad():
-            results = model(img)
-        # 予測結果の出力からキーワードを指定して条件分岐させる
-        res_str = str(results)
-        res_flag = "no detections" in res_str  # 未検出
-        if res_flag:
-            pass
-        else:
-            try:  # フレーム外に被る画像を無視する
-                coordinates = results.pandas().xywh[0]
-                xcenter = coordinates.xcenter[0]
-                ycenter = coordinates.ycenter[0]
-                width = coordinates.width[0]
-                height = coordinates.height[0]
                 if width > height:
                     height = width
                 elif height > width:
@@ -75,22 +58,103 @@ def moucut(movie_path, device_flag, image_flag):
                 right_btm_x = math.floor(xcenter + (width / 2))
                 right_btm_y = math.floor(ycenter + (height / 2))
 
-                croped = img[left_top_y:right_btm_y, left_top_x:right_btm_x]
+                croped = ori_img[left_top_y:right_btm_y, left_top_x:right_btm_x]
                 croped = cv2.resize(croped, (224, 224))
+
                 data = np.array(croped).astype(np.float32)
                 data = data[tf.newaxis]
                 x = tf.keras.applications.mobilenet_v3.preprocess_input(data)
                 cnn_result = cnn_model(x, training=False)
                 cnn_result = cnn_result.numpy()
                 cnn_result = cnn_result[0]
-                if cnn_result[1] > 0.8:
-                    for_kmeans_array.append(croped)
 
-            except cv2.error:
+                # print(cnn_result)
+
+            except:
+                # cnn_result = 0
                 pass
+
+            if cnn_result[1] > 0.8:
+                for_kmeans_array.append(croped)
+                # Visualize the results on the frame
+                annotated_frame = results[0].plot(line_width=(3))
+                annotated_frame = cv2.resize(annotated_frame, (1280, 720))
+                cv2.rectangle(
+                    annotated_frame, (0, 0), (50 + 800, 50 + 100), (80, 80, 80), -1
+                )
+                text_1 = f"CNN_score:OK[{cnn_result}]"
+                text_2 = f"Number of extractable images:{count}"
+                count += 1
+
+                cv2.putText(
+                    annotated_frame,
+                    text_1,
+                    (50, 50),
+                    fontFace=cv2.FONT_HERSHEY_TRIPLEX,
+                    fontScale=1,
+                    color=(250, 250, 250),
+                )
+                cv2.putText(
+                    annotated_frame,
+                    text_2,
+                    (50, 100),
+                    fontFace=cv2.FONT_HERSHEY_TRIPLEX,
+                    fontScale=1,
+                    color=(250, 250, 250),
+                )
+            else:
+                annotated_frame = results[0].plot(line_width=(1))
+                annotated_frame = cv2.resize(annotated_frame, (1280, 720))
+                cv2.rectangle(
+                    annotated_frame, (0, 0), (50 + 800, 50 + 100), (80, 80, 80), -1
+                )
+                text_1 = "CNN_score:NG"
+                text_2 = f"Number of extractable images:{count}"
+
+                cv2.putText(
+                    annotated_frame,
+                    text_1,
+                    (50, 50),
+                    fontFace=cv2.FONT_HERSHEY_TRIPLEX,
+                    fontScale=1,
+                    color=(250, 250, 250),
+                )
+                cv2.putText(
+                    annotated_frame,
+                    text_2,
+                    (50, 100),
+                    fontFace=cv2.FONT_HERSHEY_TRIPLEX,
+                    fontScale=1,
+                    color=(250, 250, 250),
+                )
+
+            # Display the annotated frame
+            if show_flag is True:
+                cv2.imshow("Inference", annotated_frame)
+                # Break the loop if 'q' is pressed
+                if cv2.waitKey(1) & 0xFF == ord("q"):
+                    break
+
+        else:
+            # Break the loop if the end of the video is reached
+            break
+
+    # Release the video capture object and close the display window
+    cap.release()
+    cv2.destroyAllWindows()
+    cv2.waitKey(1)
+    # cv2.destroyWindow("YOLOv8 Inference")
+
     print("\033[32m顔検出完了\033[0m")
+
+    print(f"検出数：[{count}]")
+
+    cluster_num = int(input("\033[32m抽出する枚数を入力してください\033[0m >"))
+    movie_file_name = Path(movie_path).stem
+    save_path = f"croped_image/{movie_file_name}"
+    os.makedirs(save_path, exist_ok=True)
+
     kmeans.kmeans_main(
         save_path, movie_file_name, for_kmeans_array, cluster_num, image_flag
     )
     print("\033[32mAll Done!\033[0m")
-    

@@ -1,65 +1,55 @@
+# %%
 import math
 import os
-import sys
 from pathlib import Path
 
-import av
 import cv2
-
-import torch
-from PIL import Image
-from tqdm import tqdm
-
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+from ultralytics import YOLO
 
 
-def main(movie_path, device_flag, image_flag):
-    print("runing_all_extract_version")
-    print(f"物体検出に{device_flag}を利用します。")
-    print(f"画像の保存形式は[{image_flag}]です。")
-    model_path = "moucut_models/yolo.pt"
+# %%
+def moucut(movie_path, decive_flag, image_flag, show_flag):
+    if movie_path == "webcam":
+        movie_path = 0
+        movie_file_name = "webcam"
+    else:
+        movie_path = movie_path
+        movie_file_name = Path(movie_path).stem
 
-    # source video path
-    movie_file = movie_path
-    movie_file_name = Path(movie_file).stem
-    # モデルの読み込み
-    # "cuda" "cpu" "mps" mps is mac m1 apple silicon gpu
-    device_type = torch.device(device_flag)  # pylint: disable=no-member
-    model = torch.hub.load(".", "custom", path=model_path, source="local")
-    model.to(device_type)
-    print("\033[32myolov5モデルの読み込み完了\033[0m")
-    # 保存先
     save_path = f"croped_image/all_extract_image/{movie_file_name}"
     os.makedirs(save_path, exist_ok=True)
 
-    print("\033[32m\033[1m検出開始\033[0m")
-    print("\033[32m動画から顔を検出中・・・\033[0m")
+    device_name = decive_flag
 
-    cv2movie = cv2.VideoCapture(movie_file)
-    nframe = int(cv2movie.get(cv2.CAP_PROP_FRAME_COUNT))
-    frames = range(nframe)
+    print("runing_CoreML_version")
+    print(f"物体検出に{device_name}を利用します。")
+    print(f"画像の保存形式は[{image_flag}]です。")
 
-    for frame,j in enumerate(tqdm(frames)):
-        ret, frame = cv2movie.read()
-        # img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        img = frame
+    model = YOLO("moucut_models/b6.pt")
 
-        model.conf = 0.8
-        # 物体検出
-        with torch.no_grad():
-            results = model(img)
-        # 予測結果の出力からキーワードを指定して条件分岐させる
-        res_str = str(results)
-        res_flag = "no detections" in res_str  # 未検出
-        if res_flag:
-            pass
-        else:
-            try:  # フレーム外に被る画像を無視する
-                coordinates = results.pandas().xywh[0]
-                xcenter = coordinates.xcenter[0]
-                ycenter = coordinates.ycenter[0]
-                width = coordinates.width[0]
-                height = coordinates.height[0]
+    os.makedirs(save_path, exist_ok=True)
+    cap = cv2.VideoCapture(movie_path)
+
+    count = 0
+
+    # Loop through the video frames
+    while cap.isOpened():
+        # Read a frame from the video
+        success, frame = cap.read()
+
+        if success:
+            # Run YOLOv8 inference on the frame
+            results = model(frame, device=device_name, verbose=False)
+            try:
+                result = results[0].cpu().numpy()
+                ori_img = result.orig_img
+                box = result.boxes.xywh
+                # name = result.names
+                xcenter = box[0][0]
+                ycenter = box[0][1]
+                width = box[0][2]
+                height = box[0][3]
+
                 if width > height:
                     height = width
                 elif height > width:
@@ -69,18 +59,64 @@ def main(movie_path, device_flag, image_flag):
                 right_btm_x = math.floor(xcenter + (width / 2))
                 right_btm_y = math.floor(ycenter + (height / 2))
 
-                croped = img[left_top_y:right_btm_y, left_top_x:right_btm_x]
+                croped = ori_img[left_top_y:right_btm_y, left_top_x:right_btm_x]
                 croped = cv2.resize(croped, (224, 224))
-                if image_flag == "jpg":
-                    cv2.imwrite(f"{save_path}/extract_{j}.jpg",croped)
-                else:
-                    cv2.imwrite(f"{save_path}/extract_{j}.png",croped)
 
-            except cv2.error:
+                count += 1
+
+                if image_flag == "jpg":
+                    cv2.imwrite(f"{save_path}/extract_{count}.jpg", croped)
+                else:
+                    cv2.imwrite(f"{save_path}/extract_{count}.png", croped)
+
+            except:
                 pass
 
-                
+            # Visualize the results on the frame
+            annotated_frame = results[0].plot(line_width=(3))
+            annotated_frame = cv2.resize(annotated_frame, (1280, 720))
+            cv2.rectangle(
+                annotated_frame, (0, 0), (50 + 800, 50 + 100), (80, 80, 80), -1
+            )
+            text_1 = f"Number of saved images:{count}"
+            text_2 = f"EXIT => 'q'key"
+
+            cv2.putText(
+                annotated_frame,
+                text_1,
+                (50, 50),
+                fontFace=cv2.FONT_HERSHEY_TRIPLEX,
+                fontScale=1,
+                color=(250, 250, 250),
+            )
+            cv2.putText(
+                annotated_frame,
+                text_2,
+                (50, 100),
+                fontFace=cv2.FONT_HERSHEY_TRIPLEX,
+                fontScale=1,
+                color=(250, 250, 250),
+            )
+
+            # Display the annotated frame
+            if show_flag is True:
+                cv2.imshow("Inference", annotated_frame)
+                # Break the loop if 'q' is pressed
+                if cv2.waitKey(1) & 0xFF == ord("q"):
+                    break
+
+        else:
+            # Break the loop if the end of the video is reached
+            break
+
+    # Release the video capture object and close the display window
+    cap.release()
+    cv2.destroyAllWindows()
+    cv2.waitKey(1)
+    # cv2.destroyWindow("YOLOv8 Inference")
 
     print("\033[32m顔検出完了\033[0m")
+
+    print(f"検出数：[{count}]")
 
     print("\033[32mAll Done!\033[0m")

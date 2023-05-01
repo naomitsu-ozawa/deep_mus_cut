@@ -6,7 +6,7 @@ import os
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
 
-def main(file, device, image, tool):
+def main(file, device, image, tool, show):
     if device is None:
         device = "cpu"
     if image is None:
@@ -18,19 +18,20 @@ def main(file, device, image, tool):
     if tool == "tf":
         from moucut_tools import moucut_tf
 
-        moucut_tf.moucut(file, device, image)
+        moucut_tf.moucut(file, device, image, show)
     elif tool == "coreml":
         device = "mps"
-        from moucut_tools import moucut_core_ml
+        from moucut_tools import moucut_coreml
 
-        moucut_core_ml.moucut(file, device, image)
+        moucut_coreml.moucut(file, device, image, show)
     elif tool == "kmeans_image_extractor":
         from moucut_tools import kmeans_image_extractor
 
         kmeans_image_extractor.main(file, image)
     elif tool == "all_extract":
         from moucut_tools import all_extract
-        all_extract.main(file, device, image)
+
+        all_extract.moucut(file, device, image, show)
 
 
 def get_args():
@@ -42,7 +43,7 @@ def get_args():
         add_help=True,  # -h/–help オプションの追加
     )
 
-    parser.add_argument("-f", "--file", help="動画ファイルのパスを指定して下さい。", required=True)
+    parser.add_argument("-f", "--file", help="動画ファイルのパスを指定して下さい。['file_path','webcam']", required=True)
 
     parser.add_argument(
         "-d",
@@ -62,6 +63,13 @@ def get_args():
         help="出力する画像のフォーマットを指定して下さい。指定しない場合は、['png']で保存します。['jpg','png']",
     )
 
+    parser.add_argument(
+        "-s",
+        "--show",
+        action="store_true",
+        help="検知状況を表示します[True or False]",
+    )
+
     args_list = parser.parse_args()
 
     return args_list
@@ -74,6 +82,7 @@ if __name__ == "__main__":
     device_name = args.device
     image_format = args.image_format
     tool = args.tool
+    show = args.show
 
-    main(file_path, device_name, image_format, tool)
+    main(file_path, device_name, image_format, tool, show)
     print("\033[32m処理が完了しました。\033[0m")
