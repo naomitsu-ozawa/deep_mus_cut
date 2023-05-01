@@ -65,7 +65,7 @@ def moucut(movie_path, decive_flag, image_flag, show_flag):
                 cnn_result = cnn_result["Identity"][0][1]
                 # print(cnn_result)
 
-            except:
+            except (IndexError, cv2.error):
                 cnn_result = 0
                 pass
 

@@ -70,7 +70,7 @@ def moucut(movie_path, decive_flag, image_flag, show_flag):
 
                 # print(cnn_result)
 
-            except:
+            except (IndexError, cv2.error):
                 # cnn_result = 0
                 pass
 
