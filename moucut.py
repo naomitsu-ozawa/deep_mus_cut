@@ -32,10 +32,10 @@ def main(file, device, image, tool, show):
         from moucut_tools import all_extract
 
         all_extract.moucut(file, device, image, show)
-    elif tool == "all_extract_test":
-        from moucut_tools import all_extract_test
+    elif tool == "test":
+        from moucut_tools import test
 
-        all_extract_test.moucut(file, device, image, show)
+        test.moucut(file, device, image, show)
 
 
 def get_args():
