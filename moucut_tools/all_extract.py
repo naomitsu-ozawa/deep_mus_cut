@@ -27,26 +27,28 @@ def read_frames(movie_path, queue, device_flag, show_flag):
             try:
                 result = results[0].cpu().numpy()
                 ori_img = result.orig_img
-                box = result.boxes.xywh
-                # name = result.names
-                xcenter = box[0][0]
-                ycenter = box[0][1]
-                width = box[0][2]
-                height = box[0][3]
+                length = result.boxes.shape[0]
+                for i in range(length):
+                    box = result[i].boxes.xywh
+                    # name = result.names
+                    xcenter = box[0][0]
+                    ycenter = box[0][1]
+                    width = box[0][2]
+                    height = box[0][3]
 
-                if width > height:
-                    height = width
-                elif height > width:
-                    width = height
-                left_top_x = math.floor(xcenter - (width / 2))
-                left_top_y = math.floor(ycenter - (height / 2))
-                right_btm_x = math.floor(xcenter + (width / 2))
-                right_btm_y = math.floor(ycenter + (height / 2))
+                    if width > height:
+                        height = width
+                    elif height > width:
+                        width = height
+                    left_top_x = math.floor(xcenter - (width / 2))
+                    left_top_y = math.floor(ycenter - (height / 2))
+                    right_btm_x = math.floor(xcenter + (width / 2))
+                    right_btm_y = math.floor(ycenter + (height / 2))
 
-                croped = ori_img[left_top_y:right_btm_y, left_top_x:right_btm_x]
-                croped = cv2.resize(croped, (224, 224))
-                detection_count += 1
-                queue.put(croped)
+                    croped = ori_img[left_top_y:right_btm_y, left_top_x:right_btm_x]
+                    croped = cv2.resize(croped, (224, 224))
+                    detection_count += 1
+                    queue.put(croped)
 
             except (IndexError, cv2.error):
                 pass
