@@ -47,7 +47,9 @@ def get_args():
         add_help=True,  # -h/–help オプションの追加
     )
 
-    parser.add_argument("-f", "--file", help="動画ファイルのパスを指定して下さい。['file_path','webcam']", required=True)
+    parser.add_argument(
+        "-f", "--file", help="動画ファイルのパスを指定して下さい。['file_path','webcam']", required=True
+    )
 
     parser.add_argument(
         "-d",

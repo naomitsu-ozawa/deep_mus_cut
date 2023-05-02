@@ -9,7 +9,6 @@ import pandas as pd
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from tqdm import tqdm
-from moucut_tools import cv2pil
 
 
 # kmeansのモデル構築
@@ -27,7 +26,7 @@ def build_pca(df):
 
 
 # 結果をクラスタごとにディレクトリに保存
-def make_cluster_dir(imgs_list, save_path, kmeans,format_flag):
+def make_cluster_dir(imgs_list, save_path, kmeans, format_flag):
     # 保存先のディレクトリを空にして作成
     shutil.rmtree(save_path)
     os.mkdir(save_path)
@@ -40,10 +39,10 @@ def make_cluster_dir(imgs_list, save_path, kmeans,format_flag):
     for label, img, j in tqdm(zip(kmeans.labels_, imgs_list, range(len(imgs_list)))):
         # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         if format_flag == "jpg":
-            cv2.imwrite(save_path + "cluster{}/{}".format(label, f"{j}.jpg"),img)
+            cv2.imwrite(save_path + "cluster{}/{}".format(label, f"{j}.jpg"), img)
         else:
-            cv2.imwrite(save_path + "cluster{}/{}".format(label, f"{j}.png"),img)
-            
+            cv2.imwrite(save_path + "cluster{}/{}".format(label, f"{j}.png"), img)
+
         #  画像圧縮
         #  cv2
         # cv2.imwrite(
@@ -78,17 +77,20 @@ def kmeans_main(save_path, video_name, for_kmeans_array, cluster_num, format_fla
     print(f"\033[32m{VIDEO_NAME}を処理しています。=>k-means\033[0m")
     # 画像データをクラスタリングした結果の保存先
     SAVE_PATH = f"{save_path}/k-means_temp/"
-    # 画像データを主成分分析した結果の保存先
-    CSV_PATH = f"{save_path}/{VIDEO_NAME}_pca.csv"
-    # クラスターフォルダーからそれぞれランダムに抽出した保存先
-    SELECTED_DIR = f"{save_path}/selected_imgs/"
-    image_list = for_kmeans_array
-    if not os.path.exists(SAVE_PATH):
+    if os.path.exists(SAVE_PATH):
+        shutil.rmtree(SAVE_PATH)
+    else:
         try:
             os.makedirs(SAVE_PATH)
         except OSError as e:
             print(f"Failed to create directory {SAVE_PATH}. Reason: {e}")
     print(f"\033[32m一時作業フォルダーを作成しました。\033[0m=>{SAVE_PATH}")
+
+    # 画像データを主成分分析した結果の保存先
+    CSV_PATH = f"{save_path}/{VIDEO_NAME}_pca.csv"
+    # クラスターフォルダーからそれぞれランダムに抽出した保存先
+    SELECTED_DIR = f"{save_path}/selected_imgs/"
+    image_list = for_kmeans_array
     try:
         # すでに画像データを主成分分析した結果のCSVファイルがあれば読み込む、なければexceptへ
         pca_df = pd.read_csv(CSV_PATH)
@@ -132,7 +134,7 @@ def kmeans_main(save_path, video_name, for_kmeans_array, cluster_num, format_fla
     print("\033[32mモデル構築完了\033[0m")
     print("\033[32mクラスタリング中・・・\033[0m")
     # クラスタリング結果からディレクトリ作成
-    make_cluster_dir(image_list, SAVE_PATH, kmeans,format_flag)
+    make_cluster_dir(image_list, SAVE_PATH, kmeans, format_flag)
     print("\033[32mクラスタリング完了\033[0m")
     pca_df["label"] = kmeans.labels_
     # クラスターフォルダーからランダムに抽出

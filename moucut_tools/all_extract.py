@@ -1,5 +1,6 @@
 # %%
 import math
+import multiprocessing as mp
 import os
 from pathlib import Path
 
@@ -8,35 +9,18 @@ from ultralytics import YOLO
 
 
 # %%
-def moucut(movie_path, decive_flag, image_flag, show_flag):
-    if movie_path == "webcam":
-        movie_path = 0
-        movie_file_name = "webcam"
-    else:
-        movie_path = movie_path
-        movie_file_name = Path(movie_path).stem
-
-    save_path = f"croped_image/all_extract_image/{movie_file_name}"
-    os.makedirs(save_path, exist_ok=True)
-
-    device_name = decive_flag
-
-    print("runing_CoreML_version")
-    print(f"物体検出に{device_name}を利用します。")
-    print(f"画像の保存形式は[{image_flag}]です。")
+def read_frames(movie_path, queue, device_flag, show_flag):
+    device_name = device_flag
 
     model = YOLO("moucut_models/b6.pt")
 
-    os.makedirs(save_path, exist_ok=True)
     cap = cv2.VideoCapture(movie_path)
 
-    count = 0
-
     # Loop through the video frames
+    detection_count = 0
     while cap.isOpened():
         # Read a frame from the video
         success, frame = cap.read()
-
         if success:
             # Run YOLOv8 inference on the frame
             results = model(frame, device=device_name, verbose=False)
@@ -61,45 +45,39 @@ def moucut(movie_path, decive_flag, image_flag, show_flag):
 
                 croped = ori_img[left_top_y:right_btm_y, left_top_x:right_btm_x]
                 croped = cv2.resize(croped, (224, 224))
+                detection_count += 1
+                queue.put(croped)
 
-                count += 1
-
-                if image_flag == "jpg":
-                    cv2.imwrite(f"{save_path}/extract_{count}.jpg", croped)
-                else:
-                    cv2.imwrite(f"{save_path}/extract_{count}.png", croped)
-
-            except:
+            except (IndexError, cv2.error):
                 pass
-
-            # Visualize the results on the frame
-            annotated_frame = results[0].plot(line_width=(3))
-            annotated_frame = cv2.resize(annotated_frame, (1280, 720))
-            cv2.rectangle(
-                annotated_frame, (0, 0), (50 + 800, 50 + 100), (80, 80, 80), -1
-            )
-            text_1 = f"Number of saved images:{count}"
-            text_2 = f"EXIT => 'q'key"
-
-            cv2.putText(
-                annotated_frame,
-                text_1,
-                (50, 50),
-                fontFace=cv2.FONT_HERSHEY_TRIPLEX,
-                fontScale=1,
-                color=(250, 250, 250),
-            )
-            cv2.putText(
-                annotated_frame,
-                text_2,
-                (50, 100),
-                fontFace=cv2.FONT_HERSHEY_TRIPLEX,
-                fontScale=1,
-                color=(250, 250, 250),
-            )
 
             # Display the annotated frame
             if show_flag is True:
+                # Visualize the results on the frame
+                annotated_frame = results[0].plot(line_width=(3))
+                annotated_frame = cv2.resize(annotated_frame, (1280, 720))
+                cv2.rectangle(
+                    annotated_frame, (0, 0), (50 + 800, 50 + 100), (80, 80, 80), -1
+                )
+                text_1 = f"Number of saved images:{detection_count}"
+                text_2 = "EXIT => 'q'key"
+
+                cv2.putText(
+                    annotated_frame,
+                    text_1,
+                    (50, 50),
+                    fontFace=cv2.FONT_HERSHEY_TRIPLEX,
+                    fontScale=1,
+                    color=(250, 250, 250),
+                )
+                cv2.putText(
+                    annotated_frame,
+                    text_2,
+                    (50, 100),
+                    fontFace=cv2.FONT_HERSHEY_TRIPLEX,
+                    fontScale=1,
+                    color=(250, 250, 250),
+                )
                 cv2.imshow("Inference", annotated_frame)
                 # Break the loop if 'q' is pressed
                 if cv2.waitKey(1) & 0xFF == ord("q"):
@@ -108,15 +86,53 @@ def moucut(movie_path, decive_flag, image_flag, show_flag):
         else:
             # Break the loop if the end of the video is reached
             break
-
     # Release the video capture object and close the display window
     cap.release()
     cv2.destroyAllWindows()
     cv2.waitKey(1)
     # cv2.destroyWindow("YOLOv8 Inference")
 
-    print("\033[32m顔検出完了\033[0m")
 
-    print(f"検出数：[{count}]")
+def write_frames(queue, save_path, image_flag):
+    count = 0
+    while True:
+        frame = queue.get()
+        if frame is None:
+            break
 
-    print("\033[32mAll Done!\033[0m")
+        if image_flag == "jpg":
+            cv2.imwrite(save_path + "/extract_{}.jpg".format(count), frame)
+        else:
+            cv2.imwrite(save_path + "/extract_{}.png".format(count), frame)
+        count += 1
+
+
+def moucut(movie_path, decive_flag, image_flag, show_flag):
+    print("runing_All_Extract_version")
+    print(f"物体検出に{decive_flag}を利用します。")
+    print(f"画像の保存形式は[{image_flag}]です。")
+
+    if movie_path == "webcam":
+        movie_path = 0
+        movie_file_name = "webcam"
+    else:
+        movie_path = movie_path
+        movie_file_name = Path(movie_path).stem
+
+    save_path = f"croped_image/all_extract_image/{movie_file_name}"
+    os.makedirs(save_path, exist_ok=True)
+
+    queue = mp.Queue(maxsize=10)
+    reader = mp.Process(
+        target=read_frames, args=(movie_path, queue, decive_flag, show_flag)
+    )
+    writer = mp.Process(target=write_frames, args=(queue, save_path, image_flag))
+
+    reader.start()
+    writer.start()
+    reader.join()
+    queue.put(None)
+    writer.join()
+    print("\033[32m顔検出終了\033[0m")
+
+    # print(f"検出数：[{count}]")
