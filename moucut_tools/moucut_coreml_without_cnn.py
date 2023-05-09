@@ -13,16 +13,14 @@ from moucut_tools import kmeans
 
 
 # %%
-def moucut(movie_path, decive_flag, image_flag, show_flag):
+def moucut(movie_path, image_flag, show_flag):
     if movie_path == "webcam":
         movie_path = 0
 
-    device_name = decive_flag
     print("runing_CoreML_version")
-    print(f"物体検出に{device_name}を利用します。")
     print(f"画像の保存形式は[{image_flag}]です。")
 
-    model = YOLO("moucut_models/b6.pt")
+    model = YOLO("moucut_models/yolo.mlmodel", task="detect")
 
     cap = cv2.VideoCapture(movie_path, cv2.CAP_AVFOUNDATION)
     total_frames = cap.get(cv2.CAP_PROP_FRAME_COUNT)
@@ -43,9 +41,9 @@ def moucut(movie_path, decive_flag, image_flag, show_flag):
 
             if success:
                 # Run YOLOv8 inference on the frame
-                results = model(frame, device=device_name, verbose=False)
+                results = model(frame, verbose=False)
                 try:
-                    result = results[0].cpu().numpy()
+                    result = results[0].numpy()
                     ori_img = result.orig_img
                     box = result.boxes.xywh
                     # name = result.names
@@ -66,67 +64,35 @@ def moucut(movie_path, decive_flag, image_flag, show_flag):
                     croped = ori_img[left_top_y:right_btm_y, left_top_x:right_btm_x]
                     croped = cv2.resize(croped, (224, 224))
 
-                    cnn_result = 1.0
-                    # print(cnn_result)
-
                 except (IndexError, cv2.error):
-                    cnn_result = 0
                     pass
 
-                if cnn_result > 0.8:
-                    text = "without cnn prediction"
-                    for_kmeans_array.append(croped)
-                    # Visualize the results on the frame
-                    annotated_frame = results[0].plot(line_width=(3))
-                    annotated_frame = cv2.resize(annotated_frame, (640, 360))
-                    cv2.rectangle(
-                        annotated_frame, (0, 0), (360, 50), (80, 80, 80), -1
-                    )
-                    text_1 = f"CNN_score:OK[{text}]"
-                    text_2 = f"Number of extractable images:{count}"
-                    count += 1
+                text = "without cnn prediction"
+                for_kmeans_array.append(croped)
+                # Visualize the results on the frame
+                annotated_frame = results[0].plot(line_width=(3))
+                annotated_frame = cv2.resize(annotated_frame, (1280, 720))
+                cv2.rectangle(annotated_frame, (0, 0), (360, 50), (80, 80, 80), -1)
+                text_1 = f"CNN_score:OK[{text}]"
+                text_2 = f"Number of extractable images:{count}"
+                count += 1
 
-                    cv2.putText(
-                        annotated_frame,
-                        text_1,
-                        (5, 17),
-                        fontFace=cv2.FONT_HERSHEY_TRIPLEX,
-                        fontScale=0.5,
-                        color=(250, 250, 250),
-                    )
-                    cv2.putText(
-                        annotated_frame,
-                        text_2,
-                        (5, 37),
-                        fontFace=cv2.FONT_HERSHEY_TRIPLEX,
-                        fontScale=0.5,
-                        color=(250, 250, 250),
-                    )
-                else:
-                    annotated_frame = results[0].plot(line_width=(1))
-                    annotated_frame = cv2.resize(annotated_frame, (640, 360))
-                    cv2.rectangle(
-                        annotated_frame, (0, 0), (360, 50), (80, 80, 80), -1
-                    )
-                    text_1 = "CNN_score:NG"
-                    text_2 = f"Number of extractable images:{count}"
-
-                    cv2.putText(
-                        annotated_frame,
-                        text_1,
-                        (5, 17),
-                        fontFace=cv2.FONT_HERSHEY_TRIPLEX,
-                        fontScale=0.5,
-                        color=(250, 250, 250),
-                    )
-                    cv2.putText(
-                        annotated_frame,
-                        text_2,
-                        (5, 37),
-                        fontFace=cv2.FONT_HERSHEY_TRIPLEX,
-                        fontScale=0.5,
-                        color=(250, 250, 250),
-                    )
+                cv2.putText(
+                    annotated_frame,
+                    text_1,
+                    (5, 17),
+                    fontFace=cv2.FONT_HERSHEY_TRIPLEX,
+                    fontScale=0.5,
+                    color=(250, 250, 250),
+                )
+                cv2.putText(
+                    annotated_frame,
+                    text_2,
+                    (5, 37),
+                    fontFace=cv2.FONT_HERSHEY_TRIPLEX,
+                    fontScale=0.5,
+                    color=(250, 250, 250),
+                )
 
                 # Display the annotated frame
                 if show_flag is True:

@@ -2,6 +2,7 @@
 import math
 import multiprocessing as mp
 import os
+import platform
 import time
 from pathlib import Path
 
@@ -12,11 +13,17 @@ from ultralytics import YOLO
 
 # %%
 def read_frames(movie_path, queue, device_flag, show_flag):
-    device_name = device_flag
+    os_name = platform.system()
 
-    model = YOLO("moucut_models/b6.pt")
+    if os_name == "Darwin":
+        model = YOLO("moucut_models/yolo.mlmodel", task="detect")
+        cap = cv2.VideoCapture(movie_path, cv2.CAP_AVFOUNDATION)
+        device_name = ""
+    else:
+        model = YOLO("moucut_models/b6.pt")
+        device_name = device_flag
+        cap = cv2.VideoCapture(movie_path)
 
-    cap = cv2.VideoCapture(movie_path)
     total_frames = cap.get(cv2.CAP_PROP_FRAME_COUNT)
 
     # Loop through the video frames
@@ -31,9 +38,18 @@ def read_frames(movie_path, queue, device_flag, show_flag):
             success, frame = cap.read()
             if success:
                 # Run YOLOv8 inference on the frame
-                results = model(frame, device=device_name, verbose=False)
+
+                if os_name == "Darwin":
+                    results = model(frame, verbose=False)
+                else:
+                    results = model(frame, device=device_name, verbose=False)
+
                 try:
-                    result = results[0].cpu().numpy()
+                    if os_name == "Darwin":
+                        result = results[0].numpy()
+                    else:
+                        result = results[0].cpu().numpy()
+
                     ori_img = result.orig_img
                     length = result.boxes.shape[0]
                     for i in range(length):

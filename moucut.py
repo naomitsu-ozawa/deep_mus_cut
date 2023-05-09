@@ -19,24 +19,27 @@ def main(file, device, image, tool, show):
         from moucut_tools import moucut_tf
 
         moucut_tf.moucut(file, device, image, show)
+
     elif tool == "coreml":
-        device = "mps"
         from moucut_tools import moucut_coreml
 
-        moucut_coreml.moucut(file, device, image, show)
+        moucut_coreml.moucut(file, image, show)
+
     elif tool == "coreml_without_cnn":
-        device = "mps"
         from moucut_tools import moucut_coreml_without_cnn
 
-        moucut_coreml_without_cnn.moucut(file, device, image, show)
+        moucut_coreml_without_cnn.moucut(file, image, show)
+
     elif tool == "kmeans_image_extractor":
         from moucut_tools import kmeans_image_extractor
 
         kmeans_image_extractor.main(file, image)
+
     elif tool == "all_extract":
         from moucut_tools import all_extract
 
         all_extract.moucut(file, device, image, show)
+
     elif tool == "test":
         from moucut_tools import test
 
@@ -57,15 +60,15 @@ def get_args():
     )
 
     parser.add_argument(
-        "-d",
-        "--device",
-        help="物体検知で利用するデバイスを指定して下さい。指定しない場合は、['cpu']で実行します。['cpu','cuda','mps']",
-        type=str,
-    )
-    parser.add_argument(
         "-t",
         "--tool",
         help="使用するツールを指定して下さい。['tf','coreml','kmeans_image_extractor','all_extract']\ntf => 画像分類にTensorflowを使います。",
+        type=str,
+    )
+    parser.add_argument(
+        "-d",
+        "--device",
+        help="物体検知で利用するデバイスを指定して下さい。指定しない場合は、['cpu']で実行します。['cpu','cuda']",
         type=str,
     )
     parser.add_argument(
