@@ -26,7 +26,7 @@ def build_pca(df):
 
 
 # 結果をクラスタごとにディレクトリに保存
-def make_cluster_dir(imgs_list, save_path, kmeans, format_flag):
+def make_cluster_dir(imgs_list, save_path, kmeans, format_flag, video_name):
     # 保存先のディレクトリを空にして作成
     shutil.rmtree(save_path)
     os.mkdir(save_path)
@@ -38,10 +38,15 @@ def make_cluster_dir(imgs_list, save_path, kmeans, format_flag):
         os.makedirs(cluster_dir)
     for label, img, j in tqdm(zip(kmeans.labels_, imgs_list, range(len(imgs_list)))):
         # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        file_number = str(j).zfill(6)
         if format_flag == "jpg":
-            cv2.imwrite(save_path + "cluster{}/{}".format(label, f"{j}.jpg"), img)
+            cv2.imwrite(
+                save_path + "cluster{}/{}".format(label, f"{video_name}-{file_number}.jpg"), img
+            )
         else:
-            cv2.imwrite(save_path + "cluster{}/{}".format(label, f"{j}.png"), img)
+            cv2.imwrite(
+                save_path + "cluster{}/{}".format(label, f"{video_name}-{file_number}.png"), img
+            )
 
         #  画像圧縮
         #  cv2
@@ -134,7 +139,7 @@ def kmeans_main(save_path, video_name, for_kmeans_array, cluster_num, format_fla
     print("\033[32mモデル構築完了\033[0m")
     print("\033[32mクラスタリング中・・・\033[0m")
     # クラスタリング結果からディレクトリ作成
-    make_cluster_dir(image_list, SAVE_PATH, kmeans, format_flag)
+    make_cluster_dir(image_list, SAVE_PATH, kmeans, format_flag, video_name)
     print("\033[32mクラスタリング完了\033[0m")
     pca_df["label"] = kmeans.labels_
     # クラスターフォルダーからランダムに抽出

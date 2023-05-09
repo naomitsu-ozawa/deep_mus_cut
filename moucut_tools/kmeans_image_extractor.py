@@ -7,7 +7,7 @@ from tqdm import tqdm
 from moucut_tools import kmeans
 
 
-def main(movie_path,format_flag):
+def main(movie_path, format_flag):
     cluster_num = int(input("\033[32m抽出する枚数を入力してください\033[0m >"))
     # source video path
     movie_file = movie_path
@@ -28,5 +28,7 @@ def main(movie_path,format_flag):
         img = frame
         for_kmeans_array.append(img)
 
-    kmeans.kmeans_main(save_path, movie_file_name, for_kmeans_array, cluster_num,format_flag)
+    kmeans.kmeans_main(
+        save_path, movie_file_name, for_kmeans_array, cluster_num, format_flag
+    )
     print("\033[32mAll Done!\033[0m")

@@ -24,6 +24,11 @@ def main(file, device, image, tool, show):
         from moucut_tools import moucut_coreml
 
         moucut_coreml.moucut(file, device, image, show)
+    elif tool == "coreml_without_cnn":
+        device = "mps"
+        from moucut_tools import moucut_coreml_without_cnn
+
+        moucut_coreml_without_cnn.moucut(file, device, image, show)
     elif tool == "kmeans_image_extractor":
         from moucut_tools import kmeans_image_extractor
 

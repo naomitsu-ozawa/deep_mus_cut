@@ -86,9 +86,9 @@ def moucut(movie_path, decive_flag, image_flag, show_flag):
                     for_kmeans_array.append(croped)
                     # Visualize the results on the frame
                     annotated_frame = results[0].plot(line_width=(3))
-                    annotated_frame = cv2.resize(annotated_frame, (1280, 720))
+                    annotated_frame = cv2.resize(annotated_frame, (640, 360))
                     cv2.rectangle(
-                        annotated_frame, (0, 0), (50 + 800, 50 + 100), (80, 80, 80), -1
+                        annotated_frame, (0, 0), (360, 50), (80, 80, 80), -1
                     )
                     text_1 = f"CNN_score:OK[{cnn_result}]"
                     text_2 = f"Number of extractable images:{count}"
@@ -97,24 +97,24 @@ def moucut(movie_path, decive_flag, image_flag, show_flag):
                     cv2.putText(
                         annotated_frame,
                         text_1,
-                        (50, 50),
+                        (5, 17),
                         fontFace=cv2.FONT_HERSHEY_TRIPLEX,
-                        fontScale=1,
+                        fontScale=0.5,
                         color=(250, 250, 250),
                     )
                     cv2.putText(
                         annotated_frame,
                         text_2,
-                        (50, 100),
+                        (5, 37),
                         fontFace=cv2.FONT_HERSHEY_TRIPLEX,
-                        fontScale=1,
+                        fontScale=0.5,
                         color=(250, 250, 250),
                     )
                 else:
                     annotated_frame = results[0].plot(line_width=(1))
-                    annotated_frame = cv2.resize(annotated_frame, (1280, 720))
+                    annotated_frame = cv2.resize(annotated_frame, (640, 360))
                     cv2.rectangle(
-                        annotated_frame, (0, 0), (50 + 800, 50 + 100), (80, 80, 80), -1
+                        annotated_frame, (0, 0), (360, 50), (80, 80, 80), -1
                     )
                     text_1 = "CNN_score:NG"
                     text_2 = f"Number of extractable images:{count}"
@@ -122,25 +122,25 @@ def moucut(movie_path, decive_flag, image_flag, show_flag):
                     cv2.putText(
                         annotated_frame,
                         text_1,
-                        (50, 50),
+                        (5, 17),
                         fontFace=cv2.FONT_HERSHEY_TRIPLEX,
-                        fontScale=1,
+                        fontScale=0.5,
                         color=(250, 250, 250),
                     )
                     cv2.putText(
                         annotated_frame,
                         text_2,
-                        (50, 100),
+                        (5, 37),
                         fontFace=cv2.FONT_HERSHEY_TRIPLEX,
-                        fontScale=1,
+                        fontScale=0.5,
                         color=(250, 250, 250),
                     )
 
                 # Display the annotated frame
                 if show_flag is True:
                     cv2.imshow("Inference", annotated_frame)
-                    # Break the loop if 'q' is pressed
-                    if cv2.waitKey(1) & 0xFF == ord("q"):
+                    key = cv2.waitKey(1)
+                    if key == 27:
                         break
 
             else:
