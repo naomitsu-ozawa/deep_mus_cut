@@ -1,49 +1,55 @@
 import argparse
 import os
 
+from moucut_tools import moucut_default, all_extract, kmeans_image_extractor
+
 # from moucut_tools import moucut_tf,moucut_core_ml
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
 
-def main(file, device, image, tool, show):
-    if device is None:
-        device = "cpu"
-    if image is None:
-        image = "png"
+def main(movie_path, device_flag, image_flag, tool, show_flag, cluster_num, mode, wc_flag):
+    from ultralytics import YOLO
 
+    if device_flag is None:
+        device_flag = "cpu"
+    if image_flag is None:
+        image_flag = "png"
     if tool is None:
-        tool = "tf"
+        tool = "default"
+    if mode is None:
+        mode = "coreml"
 
-    if tool == "tf":
-        from moucut_tools import moucut_tf
+    if mode == "coreml":
+        import coremltools as ct
 
-        moucut_tf.moucut(file, device, image, show)
+        yolo_model = YOLO("moucut_models/yolo.mlmodel", task="detect")
+        cnn_model = ct.models.MLModel("moucut_models/ct_cnn.mlmodel")
 
-    elif tool == "coreml":
-        from moucut_tools import moucut_coreml
+    elif mode == "tf":
+        import tensorflow as tf
 
-        moucut_coreml.moucut(file, image, show)
+        yolo_model = YOLO("moucut_models/b6.pt")
+        cnn_model = tf.keras.models.load_model("moucut_models/cnn.h5", compile=True)
 
-    elif tool == "coreml_without_cnn":
-        from moucut_tools import moucut_coreml_without_cnn
-
-        moucut_coreml_without_cnn.moucut(file, image, show)
-
-    elif tool == "kmeans_image_extractor":
-        from moucut_tools import kmeans_image_extractor
-
-        kmeans_image_extractor.main(file, image)
+    if tool == "default":
+        moucut_default.moucut(
+            movie_path,
+            device_flag,
+            image_flag,
+            show_flag,
+            yolo_model,
+            cnn_model,
+            mode,
+            cluster_num,
+            wc_flag
+        )
 
     elif tool == "all_extract":
-        from moucut_tools import all_extract
+        all_extract.moucut(movie_path, device_flag, image_flag, show_flag)
 
-        all_extract.moucut(file, device, image, show)
-
-    elif tool == "test":
-        from moucut_tools import test
-
-        test.moucut(file, device, image, show)
+    elif tool == "kmeans_image_ectractor":
+        kmeans_image_extractor.main(movie_path, image_flag)
 
 
 def get_args():
@@ -54,34 +60,67 @@ def get_args():
         epilog="end",  # 引数のヘルプの後で表示
         add_help=True,  # -h/–help オプションの追加
     )
-
+    # opiton file name
     parser.add_argument(
-        "-f", "--file", help="動画ファイルのパスを指定して下さい。['file_path','webcam']", required=True
+        "-f",
+        "--movie_path",
+        help="ファイルのパスかwebcamを指定して下さい。['movie_path','webcam']",
+        required=True,
     )
 
+    # option mode
+    parser.add_argument(
+        "-m",
+        "--mode",
+        help="tensorflow&pytorchを利用する or coremlを利用する['tf','coreml']",
+        type=str,
+    )
+
+    # option tf&pt device option
+    parser.add_argument(
+        "-d",
+        "--device_flag",
+        help="mode=tfで利用するデバイスを指定して下さい。指定しない場合は、['cpu']で実行します。['cpu','cuda']",
+        type=str,
+    )
+
+    # option tools
     parser.add_argument(
         "-t",
         "--tool",
-        help="使用するツールを指定して下さい。['tf','coreml','kmeans_image_extractor','all_extract']\ntf => 画像分類にTensorflowを使います。",
+        help="使用するツールを指定して下さい。['default','kmeans_image_extractor','all_extract']",
         type=str,
     )
-    parser.add_argument(
-        "-d",
-        "--device",
-        help="物体検知で利用するデバイスを指定して下さい。指定しない場合は、['cpu']で実行します。['cpu','cuda']",
-        type=str,
-    )
+
+    # option image format
     parser.add_argument(
         "-i",
         "--image_format",
-        help="出力する画像のフォーマットを指定して下さい。指定しない場合は、['png']で保存します。['jpg','png']",
+        help="画像の保存フォーマットを指定して下さい。指定しない場合は、['png']で保存します。['jpg','png']",
     )
 
+    # option preview show
     parser.add_argument(
         "-s",
-        "--show",
+        "--show_flag",
         action="store_true",
         help="検知状況を表示します[True or False]",
+    )
+
+    # option preview show
+    parser.add_argument(
+        "-wc",
+        "--without_cnn",
+        action="store_true",
+        help="CNNモデルによる分類をスキップします。",
+    )
+
+    # option extract number
+    parser.add_argument(
+        "-n",
+        "--number",
+        type=int,
+        help="抽出枚数",
     )
 
     args_list = parser.parse_args()
@@ -92,11 +131,14 @@ def get_args():
 if __name__ == "__main__":
     args = get_args()
 
-    file_path = args.file
-    device_name = args.device
+    movie_path_path = args.movie_path
+    device_name = args.device_flag
     image_format = args.image_format
     tool = args.tool
-    show = args.show
+    show_flag = args.show_flag
+    cluster_num = args.number
+    mode = args.mode
+    wc_flag = args.without_cnn
 
-    main(file_path, device_name, image_format, tool, show)
+    main(movie_path_path, device_name, image_format, tool, show_flag, cluster_num, mode, wc_flag)
     print("\033[32m処理が完了しました。\033[0m")

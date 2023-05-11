@@ -14,7 +14,7 @@ from moucut_tools import kmeans
 
 
 # %%
-def moucut(movie_path, device, image_flag, show_flag, yolo_model, cnn_model, mode, cluster_num):
+def moucut(movie_path, device, image_flag, show_flag, yolo_model, cnn_model, mode, cluster_num, wc_flag):
     if movie_path == "webcam":
         timezone = datetime.timezone(datetime.timedelta(hours=+9), "JST")
         dt = datetime.datetime.now()
@@ -58,7 +58,7 @@ def moucut(movie_path, device, image_flag, show_flag, yolo_model, cnn_model, mod
             n += 1
             # Read a frame from the video
             success, frame = cap.read()
-
+            cnn_result = 0
             if success:
                 # Run YOLOv8 inference on the frame
                 results = yolo_model(frame, verbose=False)
@@ -94,26 +94,30 @@ def moucut(movie_path, device, image_flag, show_flag, yolo_model, cnn_model, mod
                         croped = ori_img[left_top_y:right_btm_y, left_top_x:right_btm_x]
                         croped = cv2.resize(croped, (224, 224))
 
-                        if mode == "coreml":
-                            img_np = np.array(croped).astype(np.float32)
-                            img_np = img_np[np.newaxis, :, :, :]
-                            cnn_result = cnn_model.predict({"input_1": img_np})
-                            cnn_result = cnn_result["Identity"][0][1]
-                            if cnn_result > 0.8:
-                                for_kmeans_array.append(croped)
-                                count += 1
+                        if not wc_flag:
+                            if mode == "coreml":
+                                img_np = np.array(croped).astype(np.float32)
+                                img_np = img_np[np.newaxis, :, :, :]
+                                cnn_result = cnn_model.predict({"input_1": img_np})
+                                cnn_result = cnn_result["Identity"][0][1]
+                                if cnn_result > 0.8:
+                                    for_kmeans_array.append(croped)
+                                    count += 1
 
-                        elif mode == "tf":
-                            data = np.array(croped).astype(np.float32)
-                            data = data[tf.newaxis]
-                            x = tf.keras.applications.mobilenet_v3.preprocess_input(data)
-                            cnn_result = cnn_model(x, training=False)
-                            cnn_result = cnn_result.numpy()
-                            cnn_result = cnn_result[0]
-                            if cnn_result[1] > 0.8:
-                                for_kmeans_array.append(croped)
-                                count += 1
-                    # print(cnn_result)
+                            elif mode == "tf":
+                                data = np.array(croped).astype(np.float32)
+                                data = data[tf.newaxis]
+                                x = tf.keras.applications.mobilenet_v3.preprocess_input(data)
+                                cnn_result = cnn_model(x, training=False)
+                                cnn_result = cnn_result.numpy()
+                                cnn_result = cnn_result[0]
+                                if cnn_result[1] > 0.8:
+                                    for_kmeans_array.append(croped)
+                                    count += 1
+                        else:
+                            cnn_result = "without cnn"
+                            for_kmeans_array.append(croped)
+                            count += 1
 
                 except (IndexError, cv2.error):
                     cnn_result = 0
