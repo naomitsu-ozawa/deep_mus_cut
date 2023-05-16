@@ -61,6 +61,9 @@ def moucut(
     count = 0
     n = 0
 
+    if mode == "coreml":
+        input_name = cnn_model.get_spec().description.input[0].name
+
     # Loop through the video frames
     with tqdm(total=total_frames) as pbar:
         while cap.isOpened():
@@ -109,7 +112,7 @@ def moucut(
                             if mode == "coreml":
                                 img_np = np.array(croped).astype(np.float32)
                                 img_np = img_np[np.newaxis, :, :, :]
-                                cnn_result = cnn_model.predict({"input_1": img_np})
+                                cnn_result = cnn_model.predict({input_name: img_np})
                                 cnn_result = cnn_result["Identity"][0][1]
                                 if cnn_result > 0.8:
                                     for_kmeans_array.append(croped)
@@ -149,9 +152,11 @@ def moucut(
                     text_2 = f"Number of extractable images:{count}"
 
                     prog = round(n / total_frames * 100)
-                    prog_bar = round(prog*3.5)
+                    prog_bar = round(prog * 3.5)
                     text_3 = f"|{n}/{round(total_frames)}|{prog}%|"
-                    cv2.rectangle(annotated_frame, (5, 65), (prog_bar, 70), (250, 250, 250), -1)
+                    cv2.rectangle(
+                        annotated_frame, (5, 65), (prog_bar, 70), (250, 250, 250), -1
+                    )
                     cv2.putText(
                         annotated_frame,
                         text_1,

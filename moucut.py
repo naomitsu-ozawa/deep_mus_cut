@@ -8,7 +8,9 @@ from moucut_tools import moucut_default, all_extract, kmeans_image_extractor
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
 
-def main(movie_path, device_flag, image_flag, tool, show_flag, cluster_num, mode, wc_flag):
+def main(
+    movie_path, device_flag, image_flag, tool, show_flag, cluster_num, mode, wc_flag
+):
     from ultralytics import YOLO
 
     if device_flag is None:
@@ -42,7 +44,7 @@ def main(movie_path, device_flag, image_flag, tool, show_flag, cluster_num, mode
             cnn_model,
             mode,
             cluster_num,
-            wc_flag
+            wc_flag,
         )
 
     elif tool == "all_extract":
@@ -140,5 +142,14 @@ if __name__ == "__main__":
     mode = args.mode
     wc_flag = args.without_cnn
 
-    main(movie_path_path, device_name, image_format, tool, show_flag, cluster_num, mode, wc_flag)
+    main(
+        movie_path_path,
+        device_name,
+        image_format,
+        tool,
+        show_flag,
+        cluster_num,
+        mode,
+        wc_flag,
+    )
     print("\033[32m処理が完了しました。\033[0m")
