@@ -14,7 +14,17 @@ from moucut_tools import kmeans
 
 
 # %%
-def moucut(movie_path, device, image_flag, show_flag, yolo_model, cnn_model, mode, cluster_num, wc_flag):
+def moucut(
+    movie_path,
+    device,
+    image_flag,
+    show_flag,
+    yolo_model,
+    cnn_model,
+    mode,
+    cluster_num,
+    wc_flag,
+):
     if movie_path == "webcam":
         timezone = datetime.timezone(datetime.timedelta(hours=+9), "JST")
         dt = datetime.datetime.now()
@@ -30,6 +40,7 @@ def moucut(movie_path, device, image_flag, show_flag, yolo_model, cnn_model, mod
         running_mode = "CoreML"
     elif mode == "tf":
         import tensorflow as tf
+
         running_mode = "TensorFlow&PyTorch"
 
     os_name = platform.system()
@@ -107,7 +118,9 @@ def moucut(movie_path, device, image_flag, show_flag, yolo_model, cnn_model, mod
                             elif mode == "tf":
                                 data = np.array(croped).astype(np.float32)
                                 data = data[tf.newaxis]
-                                x = tf.keras.applications.mobilenet_v3.preprocess_input(data)
+                                x = tf.keras.applications.mobilenet_v3.preprocess_input(
+                                    data
+                                )
                                 cnn_result = cnn_model(x, training=False)
                                 cnn_result = cnn_result.numpy()
                                 cnn_result = cnn_result[0]
@@ -115,7 +128,7 @@ def moucut(movie_path, device, image_flag, show_flag, yolo_model, cnn_model, mod
                                     for_kmeans_array.append(croped)
                                     count += 1
                         else:
-                            cnn_result = "without cnn"
+                            # cnn_result = "without cnn"
                             for_kmeans_array.append(croped)
                             count += 1
 
@@ -123,14 +136,22 @@ def moucut(movie_path, device, image_flag, show_flag, yolo_model, cnn_model, mod
                     cnn_result = 0
                     pass
 
+                if wc_flag:
+                    cnn_result = "without cnn"
+
                 if show_flag is True:
                     # Visualize the results on the frame
                     annotated_frame = results[0].plot(line_width=(3))
                     annotated_frame = cv2.resize(annotated_frame, (1280, 720))
-                    cv2.rectangle(annotated_frame, (0, 0), (360, 50), (80, 80, 80), -1)
+                    cv2.rectangle(annotated_frame, (0, 0), (360, 75), (80, 80, 80), -1)
+
                     text_1 = f"CNN_score:[{cnn_result}]"
                     text_2 = f"Number of extractable images:{count}"
 
+                    prog = round(n / total_frames * 100)
+                    prog_bar = round(prog*3.5)
+                    text_3 = f"|{n}/{round(total_frames)}|{prog}%|"
+                    cv2.rectangle(annotated_frame, (5, 65), (prog_bar, 70), (250, 250, 250), -1)
                     cv2.putText(
                         annotated_frame,
                         text_1,
@@ -143,6 +164,14 @@ def moucut(movie_path, device, image_flag, show_flag, yolo_model, cnn_model, mod
                         annotated_frame,
                         text_2,
                         (5, 37),
+                        fontFace=cv2.FONT_HERSHEY_TRIPLEX,
+                        fontScale=0.5,
+                        color=(250, 250, 250),
+                    )
+                    cv2.putText(
+                        annotated_frame,
+                        text_3,
+                        (5, 57),
                         fontFace=cv2.FONT_HERSHEY_TRIPLEX,
                         fontScale=0.5,
                         color=(250, 250, 250),
