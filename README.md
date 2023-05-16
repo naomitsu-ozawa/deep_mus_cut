@@ -71,6 +71,8 @@ GPUを利用したい場合、お使いのプラットフォームに合わせ�
 | -t,--tool | 使用するツール名 [default,kmeans_image_extractor,all_extract] |
 | -i,--image_format | 出力画像のフォーマット [jpg,png] |
 | -s,--show | プレビューモード |
+| -n,--number | 抽出枚数 |
+
   
 #### modeについて
 | --mode | 詳細 |
