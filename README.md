@@ -72,14 +72,17 @@ GPUを利用したい場合、お使いのプラットフォームに合わせ�
 | -i,--image_format | 出力画像のフォーマット [jpg,png] |
 | -s,--show | プレビューモード |
 | -n,--number | 抽出枚数 |
+| -wc,--without_cnn | 画像分類を行わずに解析します。 |
   
 #### modeについて
+Defaultは”CoreML”で動作するようになっています。 CoreML非対応の環境で動作せる場合は、”tf”を指定して下さい。
 | --mode | 詳細 |
 | ---- | ---- |
 | coreml | 物体検出と画像分類にCoreMlモデルを使用します。(default) |
 | tf | 物体検出と画像分類にPyTrochとTensorFlowを使用します。 |
 
 #### deviceについて
+モード”tf”時の物体検出で利用するPyTorchデバイスを指定できます。
 | --device | 詳細 |
 | ---- | ---- |
 | cpu | 物体検知にcpuを使います。(default) |
