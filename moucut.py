@@ -29,7 +29,7 @@ def main(
         webcam_list.webcam_list()
         return
     if movie_path is None:
-        print("ファイルのパスかWebcamを指定して下さい。")
+        print("-fオプションでファイルのパスかWebcamを指定して下さい。")
         return
 
     if device_flag is None:
