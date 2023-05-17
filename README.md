@@ -23,18 +23,21 @@ graph TD
 ---
 
 ## インストール
-1. Ultralyticsをインストールします。  
+1. リポジトリをクローンします。  
+   ```git clone https://github.com/naomitsu-ozawa/deep_mou_cut_2.git```
+2. Ultralyticsをインストールします。  
    ```pip install ultralytics```
-2. Scikit-learnをインストールしてください。  
+3. Scikit-learnをインストールしてください。  
 ```pip install scikit-learn```  
-3. CoreMLに対応したMacの場合は、CoreMLtoolsをインストールします。  
+1. CoreMLに対応したMacの場合は、CoreMLtoolsをインストールします。  
    ```pip install coremltools```  
-4. Windows/Linux/mac(intel)で利用する場合は、Tensorflowをインストールします。  
+2. Windows/Linux/mac(intel)で利用する場合は、Tensorflowをインストールします。  
 ```pip install tensorflow```    
   
-numpyでエラーが起こる場合は、pipの方のnumpyを更新します。  
+- numpyでエラーが起こる場合は、pipの方のnumpyを更新します。  
 ```pip install -U numpy```  
-
+### アップデート方法 
+- deep_mou_cut_2フォルダに移動後、git pullして下さい。
 ---
 ### 使い方
   
@@ -65,11 +68,11 @@ GPUを利用したい場合、お使いのプラットフォームに合わせ�
 ### オプション
 | option | description |  
 | ---- | ---- |
-| -f,--file | 解析したいファイルのパス（必須） |
-| -m,--mode | モード[coreml,tf] |
-| -d,--device | 物体検知部分で利用するデバイス名 [cpu,cuda,mps]|
-| -t,--tool | 使用するツール名 [default,kmeans_image_extractor,all_extract] |
-| -i,--image_format | 出力画像のフォーマット [jpg,png] |
+| -f,--file | 解析したいファイルのパス（必須）[file_path,webcam]<br>-f <file_path>を指定すると動画ファイルの解析を行います。<br>-f webcamを指定するとデバイスID：０のカメラに接続できます。(テスト機能) |
+| -m,--mode | モード[coreml,tf]<br>-m coreml：物体検知と画像分類にCore MLを利用します。<br>-m tf：物体検知にPyTorch、画像分類にTensorFlowを利用します。 |
+| -d,--device | 物体検知部分で利用するデバイス名 [cpu,cuda,mps]<br>--mode tfの時のPyTrochデバイスを指定できます。|
+| -t,--tool | 使用するツール名 [default,kmeans_image_extractor,all_extract]<br>-t default：未指定と同じ動作になります。<br>-t kmeans_image_extractor：動画からk-meansアルゴリズムを利用して指定枚数のフレーム画像を抽出します。<br>-t all_extract：検知された顔を全て画像として保存します。<br><br> |
+| -i,--image_format | 出力画像のフォーマット [jpg,png]<br>-i png：デフォルトです。未指定と同じ動作になります。<br>-i jpg：JPEG形式で保存します。容量を節約したい場合に有効です。 |
 | -s,--show | プレビューモード |
 | -n,--number | 抽出枚数 |
 | -wc,--without_cnn | 画像分類を行わずに解析します。 |
