@@ -1,7 +1,12 @@
 import argparse
 import os
 
-from moucut_tools import moucut_default, all_extract, kmeans_image_extractor
+from moucut_tools import (
+    moucut_default,
+    all_extract,
+    kmeans_image_extractor,
+    webcam_list,
+)
 
 # from moucut_tools import moucut_tf,moucut_core_ml
 
@@ -24,7 +29,6 @@ def main(
     if camera_list is True:
         mode = "camera_list"
         print("webcamera list")
-        from moucut_tools import webcam_list
 
         webcam_list.webcam_list()
         return
