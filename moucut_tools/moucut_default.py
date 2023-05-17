@@ -3,6 +3,7 @@ import datetime
 import math
 import os
 import platform
+import re
 import time
 from pathlib import Path
 
@@ -14,6 +15,15 @@ from moucut_tools import kmeans
 
 
 # %%
+class StrRe(str):
+    def __init__(self, var):
+        self.var = var
+        pass
+
+    def __eq__(self, pattern):
+        return True if re.search(pattern, self.var) is not None else False
+
+
 def moucut(
     movie_path,
     device,
@@ -25,18 +35,20 @@ def moucut(
     cluster_num,
     wc_flag,
 ):
-    if movie_path == "webcam":
-        timezone = datetime.timezone(datetime.timedelta(hours=+9), "JST")
-        dt = datetime.datetime.now()
-        dt = dt.astimezone(timezone)
-        dt = "{0:%Y-%m-%d-%H-%M-%S}".format(dt)
-        movie_path = 0
-        movie_file_name = f"webcam{dt}"
-    else:
-        movie_file_name = Path(movie_path).stem
+    match StrRe(movie_path):
+        case "webcam*":
+            timezone = datetime.timezone(datetime.timedelta(hours=+9), "JST")
+            dt = datetime.datetime.now()
+            dt = dt.astimezone(timezone)
+            dt = "{0:%Y-%m-%d-%H-%M-%S}".format(dt)
+            movie_path = int(movie_path[-1])
+            movie_file_name = f"webcam{dt}"
+            webcam_flag = True
+        case _:
+            movie_file_name = Path(movie_path).stem
+            webcam_flag = False
 
     if mode == "coreml":
-        # import coremltools as ct
         running_mode = "CoreML"
     elif mode == "tf":
         import tensorflow as tf
@@ -54,7 +66,11 @@ def moucut(
     else:
         cap = cv2.VideoCapture(movie_path)
 
-    total_frames = cap.get(cv2.CAP_PROP_FRAME_COUNT)
+    if webcam_flag:
+        total_frames = None
+        print("use_webcam")
+    else:
+        total_frames = cap.get(cv2.CAP_PROP_FRAME_COUNT)
 
     for_kmeans_array = []
 
@@ -151,12 +167,6 @@ def moucut(
                     text_1 = f"CNN_score:[{cnn_result}]"
                     text_2 = f"Number of extractable images:{count}"
 
-                    prog = round(n / total_frames * 100)
-                    prog_bar = round(prog * 3.5)
-                    text_3 = f"|{n}/{round(total_frames)}|{prog}%|"
-                    cv2.rectangle(
-                        annotated_frame, (5, 65), (prog_bar, 70), (250, 250, 250), -1
-                    )
                     cv2.putText(
                         annotated_frame,
                         text_1,
@@ -173,6 +183,21 @@ def moucut(
                         fontScale=0.5,
                         color=(250, 250, 250),
                     )
+
+                    if not webcam_flag:
+                        prog = round(n / total_frames * 100)
+                        prog_bar = round(prog * 3.5)
+                        text_3 = f"|{n}/{round(total_frames)}|{prog}%|"
+                        cv2.rectangle(
+                            annotated_frame,
+                            (5, 65),
+                            (prog_bar, 70),
+                            (250, 250, 250),
+                            -1,
+                        )
+                    else:
+                        text_3 = "webcam"
+
                     cv2.putText(
                         annotated_frame,
                         text_3,

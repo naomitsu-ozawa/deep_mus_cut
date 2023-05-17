@@ -23,6 +23,8 @@ graph TD
 ---
 
 ## インストール
+- python3.10~で動作します。
+- conda等で仮想環境を作成して下さい。
 1. リポジトリをクローンします。  
    ```git clone https://github.com/naomitsu-ozawa/deep_mou_cut_2.git```
 2. Ultralyticsをインストールします。  
@@ -68,7 +70,7 @@ GPUを利用したい場合、お使いのプラットフォームに合わせ�
 ### オプション
 | option | description |  
 | ---- | ---- |
-| -f,--file | 解析したいファイルのパス（必須）[file_path,webcam]<br>-f <file_path>を指定すると動画ファイルの解析を行います。<br>-f webcamを指定するとデバイスID：０のカメラに接続できます。(テスト機能) |
+| -f,--file | 解析したいファイルのパス（必須）[file_path,webcam]<br>-f <file_path>を指定すると動画ファイルの解析を行います。<br>-f webcam0を指定するとデバイスID：０のカメラに接続できます。(テスト機能)<br>複数台カメラが接続されている場合は、webcam*の番号を変更してみて下さい。 |
 | -m,--mode | モード[coreml,tf]<br>-m coreml：物体検知と画像分類にCore MLを利用します。<br>-m tf：物体検知にPyTorch、画像分類にTensorFlowを利用します。 |
 | -d,--device | 物体検知部分で利用するデバイス名 [cpu,cuda,mps]<br>--mode tfの時のPyTrochデバイスを指定できます。|
 | -t,--tool | 使用するツール名 [default,kmeans_image_extractor,all_extract]<br>-t default：未指定と同じ動作になります。<br>-t kmeans_image_extractor：動画からk-meansアルゴリズムを利用して指定枚数のフレーム画像を抽出します。<br>-t all_extract：検知された顔を全て画像として保存します。<br><br> |

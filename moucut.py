@@ -9,9 +9,28 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
 
 def main(
-    movie_path, device_flag, image_flag, tool, show_flag, cluster_num, mode, wc_flag
+    movie_path,
+    device_flag,
+    image_flag,
+    tool,
+    show_flag,
+    cluster_num,
+    mode,
+    wc_flag,
+    camera_list,
 ):
     from ultralytics import YOLO
+
+    if camera_list is True:
+        mode = "camera_list"
+        print("webcamera list")
+        from moucut_tools import webcam_list
+
+        webcam_list.webcam_list()
+        return
+    if movie_path is None:
+        print("ファイルのパスかWebcamを指定して下さい。")
+        return
 
     if device_flag is None:
         device_flag = "cpu"
@@ -67,7 +86,7 @@ def get_args():
         "-f",
         "--movie_path",
         help="ファイルのパスかwebcamを指定して下さい。['movie_path','webcam']",
-        required=True,
+        # required=True,
     )
 
     # option mode
@@ -125,6 +144,14 @@ def get_args():
         help="抽出枚数",
     )
 
+    # option webcamera list
+    parser.add_argument(
+        "-cl",
+        "--camera_list",
+        action="store_true",
+        help="webcamera list",
+    )
+
     args_list = parser.parse_args()
 
     return args_list
@@ -141,6 +168,7 @@ if __name__ == "__main__":
     cluster_num = args.number
     mode = args.mode
     wc_flag = args.without_cnn
+    camera_list = args.camera_list
 
     main(
         movie_path_path,
@@ -151,5 +179,6 @@ if __name__ == "__main__":
         cluster_num,
         mode,
         wc_flag,
+        camera_list,
     )
     print("\033[32m処理が完了しました。\033[0m")
