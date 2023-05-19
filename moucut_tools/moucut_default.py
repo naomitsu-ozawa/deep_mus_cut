@@ -80,6 +80,8 @@ def moucut(
     if mode == "coreml":
         input_name = cnn_model.get_spec().description.input[0].name
 
+    pip_croped = np.zeros((224, 224, 3))
+
     # Loop through the video frames
     with tqdm(total=total_frames) as pbar:
         while cap.isOpened():
@@ -89,6 +91,7 @@ def moucut(
             # Read a frame from the video
             success, frame = cap.read()
             cnn_result = 0
+
             if success:
                 # Run YOLOv8 inference on the frame
                 results = yolo_model(frame, verbose=False)
@@ -104,7 +107,6 @@ def moucut(
                     ori_img = result.orig_img
                     length = result.boxes.shape[0]
                     for i in range(length):
-                        # print('roop!')
                         box = result[i].boxes.xywh
                         # name = result.names
                         xcenter = box[0][0]
@@ -130,9 +132,13 @@ def moucut(
                                 img_np = img_np[np.newaxis, :, :, :]
                                 cnn_result = cnn_model.predict({input_name: img_np})
                                 cnn_result = cnn_result["Identity"][0][1]
+                                cnn_result = round(float(cnn_result), 4)
+                                cnn_bar = int(cnn_result * 139 + 101)
+
                                 if cnn_result > 0.8:
                                     for_kmeans_array.append(croped)
                                     count += 1
+                                    pip_croped = croped
 
                             elif mode == "tf":
                                 data = np.array(croped).astype(np.float32)
@@ -162,10 +168,10 @@ def moucut(
                     # Visualize the results on the frame
                     annotated_frame = results[0].plot(line_width=(3))
                     annotated_frame = cv2.resize(annotated_frame, (1280, 720))
-                    cv2.rectangle(annotated_frame, (0, 0), (360, 75), (80, 80, 80), -1)
+                    cv2.rectangle(annotated_frame, (0, 0), (256, 320), (80, 80, 80), -1)
 
-                    text_1 = f"CNN_score:[{cnn_result}]"
-                    text_2 = f"Number of extractable images:{count}"
+                    text_1 = "CNN_score:"
+                    text_2 = f"Extractable images:{count}"
 
                     cv2.putText(
                         annotated_frame,
@@ -183,10 +189,17 @@ def moucut(
                         fontScale=0.5,
                         color=(250, 250, 250),
                     )
+                    cv2.rectangle(
+                        annotated_frame,
+                        (100, 5),
+                        (cnn_bar, 20),
+                        (250, 250, 250),
+                        -1,
+                    )
 
                     if not webcam_flag:
                         prog = round(n / total_frames * 100)
-                        prog_bar = round(prog * 3.5)
+                        prog_bar = round(prog * 2.54)
                         text_3 = f"|{n}/{round(total_frames)}|{prog}%|"
                         cv2.rectangle(
                             annotated_frame,
@@ -206,6 +219,14 @@ def moucut(
                         fontScale=0.5,
                         color=(250, 250, 250),
                     )
+                    # PiP
+                    pip_x = 16
+                    pip_y = 80
+                    pip_h, pip_w = pip_croped.shape[:2]
+                    if pip_croped.shape == (224, 224, 3):
+                        annotated_frame[
+                            pip_y : pip_y + pip_h, pip_x : pip_x + pip_w
+                        ] = pip_croped
 
                     # Display the annotated frame
                     cv2.imshow("Inference", annotated_frame)
