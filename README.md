@@ -1,7 +1,7 @@
 # deep_mou_cut_2
 ## 動画からマウスの顔をいい感じで画像で保存するアプリ  
 
-https://github.com/naomitsu-ozawa/deep_mou_cut_2/assets/129124821/a8fa2b48-55bc-49cf-ae91-6f6f4a27ce3e
+https://github.com/naomitsu-ozawa/deep_mou_cut_2/assets/129124821/ea1ff869-2e6b-4ba1-9224-e11d7a950d8a
 
 ## 説明
 映像内のマウスの顔を検知していい感じに切り取ってくれます。  
