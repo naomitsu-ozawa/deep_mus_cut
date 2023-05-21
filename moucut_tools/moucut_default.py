@@ -91,6 +91,7 @@ def moucut(
             # Read a frame from the video
             success, frame = cap.read()
             cnn_result = 0
+            cnn_bar = 101
 
             if success:
                 # Run YOLOv8 inference on the frame
@@ -225,7 +226,7 @@ def moucut(
                     pip_h, pip_w = pip_croped.shape[:2]
                     if pip_croped.shape == (224, 224, 3):
                         annotated_frame[
-                            pip_y : pip_y + pip_h, pip_x : pip_x + pip_w
+                            pip_y: pip_y + pip_h, pip_x: pip_x + pip_w
                         ] = pip_croped
 
                     # Display the annotated frame
