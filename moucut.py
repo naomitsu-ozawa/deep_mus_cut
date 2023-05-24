@@ -2,13 +2,12 @@ import argparse
 import os
 
 from moucut_tools import (
-    moucut_default,
     all_extract,
     kmeans_image_extractor,
+    moucut_default,
+    tf2ml,
     webcam_list,
 )
-
-# from moucut_tools import moucut_tf,moucut_core_ml
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
@@ -75,6 +74,9 @@ def main(
 
     elif tool == "kmeans_image_ectractor":
         kmeans_image_extractor.main(movie_path, image_flag)
+
+    elif tool == "tf2ml":
+        tf2ml.tf2ml(movie_path)
 
 
 def get_args():
@@ -164,7 +166,7 @@ def get_args():
 if __name__ == "__main__":
     args = get_args()
 
-    movie_path_path = args.movie_path
+    movie_path = args.movie_path
     device_name = args.device_flag
     image_format = args.image_format
     tool = args.tool
@@ -175,7 +177,7 @@ if __name__ == "__main__":
     camera_list = args.camera_list
 
     main(
-        movie_path_path,
+        movie_path,
         device_name,
         image_format,
         tool,
