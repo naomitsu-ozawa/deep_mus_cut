@@ -72,7 +72,7 @@ def main(
     elif tool == "all_extract":
         all_extract.moucut(movie_path, device_flag, image_flag, show_flag)
 
-    elif tool == "kmeans_image_ectractor":
+    elif tool == "kmeans_image_extractor":
         kmeans_image_extractor.main(movie_path, image_flag)
 
     elif tool == "tf2ml":
