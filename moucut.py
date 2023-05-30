@@ -41,6 +41,8 @@ def main(
         image_flag = "png"
     if tool is None:
         tool = "default"
+    elif tool == "tf2ml":
+        mode = "tf2ml"
     if mode is None:
         mode = "coreml"
 
@@ -55,6 +57,9 @@ def main(
 
         yolo_model = YOLO("moucut_models/b6.pt")
         cnn_model = tf.keras.models.load_model("moucut_models/cnn.h5", compile=True)
+
+    elif mode == "tf2ml":
+        print("mode:tf2ml")
 
     if tool == "default":
         moucut_default.moucut(
