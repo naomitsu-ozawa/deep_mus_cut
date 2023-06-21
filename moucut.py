@@ -7,6 +7,7 @@ from moucut_tools import (
     moucut_default,
     tf2ml,
     webcam_list,
+    moucut_sex_determination,
 )
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
@@ -78,10 +79,23 @@ def main(
         all_extract.moucut(movie_path, device_flag, image_flag, show_flag)
 
     elif tool == "kmeans_image_extractor":
-        kmeans_image_extractor.main(movie_path, image_flag)
+        kmeans_image_extractor.main(movie_path, image_flag, cluster_num)
 
     elif tool == "tf2ml":
         tf2ml.tf2ml(movie_path)
+
+    elif tool == "sexing":
+        moucut_sex_determination.moucut(
+            movie_path,
+            device_flag,
+            image_flag,
+            show_flag,
+            yolo_model,
+            cnn_model,
+            mode,
+            cluster_num,
+            wc_flag,
+        )
 
 
 def get_args():

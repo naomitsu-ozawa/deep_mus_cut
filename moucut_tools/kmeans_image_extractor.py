@@ -7,8 +7,11 @@ from tqdm import tqdm
 from moucut_tools import kmeans
 
 
-def main(movie_path, format_flag):
-    cluster_num = int(input("\033[32m抽出する枚数を入力してください\033[0m >"))
+def main(movie_path, format_flag, cluster_num):
+    if cluster_num is None:
+        cluster_num = int(input("\033[32m抽出する枚数を入力してください\033[0m >"))
+    else:
+        pass
     # source video path
     movie_file = movie_path
     movie_file_name = Path(movie_file).stem

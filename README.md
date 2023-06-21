@@ -33,8 +33,10 @@ graph TD
 ```pip install scikit-learn```  
 1. CoreMLに対応したMacの場合は、CoreMLtoolsをインストールします。  
    ```pip install coremltools```  
-2. Windows/Linux/mac(intel)で利用する場合は、Tensorflowをインストールします。  
-```pip install tensorflow```    
+2. CoreML非対応のWindows/Linux/macで利用する場合は、Tensorflowをインストールします。  
+```pip install tensorflow```  
+macの場合は以下もインストールする。  
+```pip install tensorflow-metal```    
   
 - numpyでエラーが起こる場合は、pipの方のnumpyを更新します。  
 ```pip install -U numpy```  
