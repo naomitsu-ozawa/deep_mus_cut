@@ -100,7 +100,6 @@ Defaultは”CoreML”で動作するようになっています。 CoreML非対
 #### toolについて
 | --tool | 詳細 |
 | ---- | ---- |
-| all_extract | 動画からマウスの顔を全て抽出します。|
 | kmeans_image_extractor | k-meansアルゴリズムを使って動画から指定枚数の画像を抽出します。|
 | tf2ml| Tensorflow2.xで訓練されたCNNをCoreML形式へ変換します。|
 | sexing (sexing_multi)| 技術DEMOプログラムです。|
