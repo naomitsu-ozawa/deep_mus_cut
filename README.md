@@ -75,11 +75,12 @@ GPUを利用したい場合、お使いのプラットフォームに合わせ�
 | -f,--file | 解析したいファイルのパス（必須）[file_path,webcam]<br>-f <file_path>を指定すると動画ファイルの解析を行います。<br>-f webcam0を指定するとデバイスID：０のカメラに接続できます。(テスト機能)<br>複数台カメラが接続されている場合は、webcam*の番号を変更してみて下さい。 |
 | -m,--mode | モード[coreml,tf]<br>-m coreml：物体検知と画像分類にCore MLを利用します。<br>-m tf：物体検知にPyTorch、画像分類にTensorFlowを利用します。 |
 | -d,--device | 物体検知部分で利用するデバイス名 [cpu,cuda,mps]<br>--mode tfの時のPyTrochデバイスを指定できます。|
-| -t,--tool | 使用するツール名 [default,kmeans_image_extractor,all_extract]<br>-t default：未指定と同じ動作になります。<br>-t kmeans_image_extractor：動画からk-meansアルゴリズムを利用して指定枚数のフレーム画像を抽出します。<br>-t all_extract：検知された顔を全て画像として保存します。<br><br> |
+| -t,--tool | 使用するツール名 <br>-t default：未指定と同じ動作になります。<br>-t kmeans_image_extractor：動画からk-meansアルゴリズムを利用して指定枚数のフレーム画像を抽出します。<br>-t tf2ml:TensorflowモデルをCoreMLモデルへ変換します。<br>-t sexing (sexing_multi):demo用<br> |
 | -i,--image_format | 出力画像のフォーマット [jpg,png]<br>-i png：デフォルトです。未指定と同じ動作になります。<br>-i jpg：JPEG形式で保存します。容量を節約したい場合に有効です。 |
 | -s,--show | プレビューモード |
 | -n,--number | 抽出枚数 |
 | -wc,--without_cnn | 画像分類を行わずに解析します。 |
+| -a,--all | 検知された画像を全て保存します。k-meansは行いません。 |
   
 #### modeについて
 Defaultは”CoreML”で動作するようになっています。 CoreML非対応の環境で動作せる場合は、”tf”を指定して下さい。
@@ -100,7 +101,9 @@ Defaultは”CoreML”で動作するようになっています。 CoreML非対
 | --tool | 詳細 |
 | ---- | ---- |
 | all_extract | 動画からマウスの顔を全て抽出します。|
-| kmeans_image_extractor | k-meansアルゴリズムを使って動画から指定枚数の画像を抽出し|ます。
+| kmeans_image_extractor | k-meansアルゴリズムを使って動画から指定枚数の画像を抽出します。|
+| tf2ml| Tensorflow2.xで訓練されたCNNをCoreML形式へ変換します。|
+| sexing (sexing_multi)| 技術DEMOプログラムです。|
   
 #### 保存できるフォーマットについて  
 - オプションを指定しない場合は、png形式で保存されます。オプションで指定することでjpg形式で保存可能です。
