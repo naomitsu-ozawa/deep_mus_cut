@@ -2,12 +2,12 @@ import argparse
 import os
 
 from moucut_tools import (
-    all_extract,
     kmeans_image_extractor,
     moucut_default,
     tf2ml,
     webcam_list,
     moucut_sex_determination,
+    moucut_sex_determination_multi,
 )
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
@@ -23,6 +23,7 @@ def main(
     mode,
     wc_flag,
     camera_list,
+    all_extract
 ):
     from ultralytics import YOLO
 
@@ -73,10 +74,8 @@ def main(
             mode,
             cluster_num,
             wc_flag,
+            all_extract
         )
-
-    elif tool == "all_extract":
-        all_extract.moucut(movie_path, device_flag, image_flag, show_flag)
 
     elif tool == "kmeans_image_extractor":
         kmeans_image_extractor.main(movie_path, image_flag, cluster_num)
@@ -86,6 +85,18 @@ def main(
 
     elif tool == "sexing":
         moucut_sex_determination.moucut(
+            movie_path,
+            device_flag,
+            image_flag,
+            show_flag,
+            yolo_model,
+            cnn_model,
+            mode,
+            cluster_num,
+            wc_flag,
+        )
+    elif tool == "sexing_multi":
+        moucut_sex_determination_multi.moucut(
             movie_path,
             device_flag,
             image_flag,
@@ -134,7 +145,7 @@ def get_args():
     parser.add_argument(
         "-t",
         "--tool",
-        help="使用するツールを指定して下さい。['default','kmeans_image_extractor','all_extract']",
+        help="使用するツールを指定して下さい。['default','kmeans_image_extractor']",
         type=str,
     )
 
@@ -177,6 +188,14 @@ def get_args():
         help="webcamera list",
     )
 
+    # option all extract
+    parser.add_argument(
+        "-a",
+        "--all",
+        action="store_true",
+        help="all_extract",
+    )
+
     args_list = parser.parse_args()
 
     return args_list
@@ -194,6 +213,7 @@ if __name__ == "__main__":
     mode = args.mode
     wc_flag = args.without_cnn
     camera_list = args.camera_list
+    all_extract = args.all
 
     main(
         movie_path,
@@ -205,5 +225,6 @@ if __name__ == "__main__":
         mode,
         wc_flag,
         camera_list,
+        all_extract,
     )
     print("\033[32m処理が完了しました。\033[0m")

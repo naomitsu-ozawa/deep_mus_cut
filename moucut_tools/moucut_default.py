@@ -11,7 +11,7 @@ import cv2
 import numpy as np
 from tqdm import tqdm
 
-from moucut_tools import kmeans
+from moucut_tools import kmeans, all_save
 
 
 # %%
@@ -34,6 +34,7 @@ def moucut(
     mode,
     cluster_num,
     wc_flag,
+    all_extract,
 ):
     match StrRe(movie_path):
         case "webcam*":
@@ -95,7 +96,13 @@ def moucut(
 
             if success:
                 # Run YOLOv8 inference on the frame
-                results = yolo_model(frame, verbose=False)
+                results = yolo_model(
+                    frame,
+                    # max_det=1, # max detecxtion num.
+                    # conf=0.8, # object confidence threshold for detection
+                    verbose=False,
+                )
+
                 try:
                     if mode == "coreml":
                         result = results[0].numpy()
@@ -105,15 +112,24 @@ def moucut(
                         print("modeを指定して下さい")
                         return
 
-                    ori_img = result.orig_img
+                    # ori_img = result.orig_img
+                    ori_img = frame
+                    save_frame = frame.copy()
+
                     length = result.boxes.shape[0]
                     for i in range(length):
                         box = result[i].boxes.xywh
+                        cv_box = result[i].boxes.xyxy
                         # name = result.names
                         xcenter = box[0][0]
                         ycenter = box[0][1]
                         width = box[0][2]
                         height = box[0][3]
+
+                        cv_top_x = int(cv_box[0][0]) + 1
+                        cv_top_y = int(cv_box[0][1]) + 1
+                        cv_btm_x = int(cv_box[0][2]) - 1
+                        cv_btm_y = int(cv_box[0][3]) - 1
 
                         if width > height:
                             height = width
@@ -124,7 +140,10 @@ def moucut(
                         right_btm_x = math.floor(xcenter + (width / 2))
                         right_btm_y = math.floor(ycenter + (height / 2))
 
-                        croped = ori_img[left_top_y:right_btm_y, left_top_x:right_btm_x]
+                        croped = save_frame[
+                            left_top_y:right_btm_y, left_top_x:right_btm_x
+                        ]
+                        # croped = ori_img[left_top_y:right_btm_y, left_top_x:right_btm_x]
                         croped = cv2.resize(croped, (224, 224))
 
                         if not wc_flag:
@@ -136,10 +155,62 @@ def moucut(
                                 cnn_result = round(float(cnn_result), 4)
                                 cnn_bar = int(cnn_result * 139 + 101)
 
-                                if cnn_result > 0.8:
+                                if cnn_result > 0.7:
                                     for_kmeans_array.append(croped)
                                     count += 1
                                     pip_croped = croped
+
+                                    cv2.rectangle(
+                                        ori_img,
+                                        (cv_top_x, cv_top_y),
+                                        (cv_btm_x, cv_btm_y),
+                                        (250, 0, 0),
+                                        thickness=3,
+                                        lineType=cv2.LINE_AA,
+                                    )
+                                    cv2.rectangle(
+                                        ori_img,
+                                        (cv_top_x, cv_top_y),
+                                        (cv_top_x + 250, cv_top_y + 40),
+                                        (250, 0, 0),
+                                        thickness=-1,
+                                        lineType=cv2.LINE_AA,
+                                    )
+                                    cv2.putText(
+                                        ori_img,
+                                        text="OK",
+                                        org=(cv_top_x, cv_top_y + 20),
+                                        fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+                                        fontScale=1.0,
+                                        color=(250, 250, 250),
+                                        thickness=2,
+                                    )
+                                else:
+                                    cv2.rectangle(
+                                        ori_img,
+                                        (cv_top_x, cv_top_y),
+                                        (cv_btm_x, cv_btm_y),
+                                        (127, 127, 127),
+                                        thickness=3,
+                                        lineType=cv2.LINE_AA,
+                                    )
+                                    cv2.rectangle(
+                                        ori_img,
+                                        (cv_top_x, cv_top_y),
+                                        (cv_top_x + 250, cv_top_y + 40),
+                                        (127, 127, 127),
+                                        thickness=-1,
+                                        lineType=cv2.LINE_AA,
+                                    )
+                                    cv2.putText(
+                                        ori_img,
+                                        text="not detect",
+                                        org=(cv_top_x, cv_top_y + 20),
+                                        fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+                                        fontScale=1.0,
+                                        color=(250, 250, 250),
+                                        thickness=2,
+                                    )
 
                             elif mode == "tf":
                                 data = np.array(croped).astype(np.float32)
@@ -167,7 +238,8 @@ def moucut(
 
                 if show_flag is True:
                     # Visualize the results on the frame
-                    annotated_frame = results[0].plot(line_width=(3))
+                    # annotated_frame = results[0].plot(line_width=(3))
+                    annotated_frame = ori_img
                     annotated_frame = cv2.resize(annotated_frame, (1280, 720))
                     cv2.rectangle(annotated_frame, (0, 0), (256, 320), (80, 80, 80), -1)
 
@@ -226,7 +298,7 @@ def moucut(
                     pip_h, pip_w = pip_croped.shape[:2]
                     if pip_croped.shape == (224, 224, 3):
                         annotated_frame[
-                            pip_y: pip_y + pip_h, pip_x: pip_x + pip_w
+                            pip_y:pip_y + pip_h, pip_x:pip_x + pip_w
                         ] = pip_croped
 
                     # Display the annotated frame
@@ -249,15 +321,17 @@ def moucut(
 
     print(f"検出数：[{count}]")
 
-    if cluster_num is None:
-        cluster_num = int(input("\033[32m抽出する枚数を入力してください\033[0m >"))
-    else:
-        pass
-
     save_path = f"croped_image/{movie_file_name}"
     os.makedirs(save_path, exist_ok=True)
 
-    kmeans.kmeans_main(
-        save_path, movie_file_name, for_kmeans_array, cluster_num, image_flag
-    )
+    if all_extract is True:
+        all_save.main(movie_path, for_kmeans_array, image_flag)
+    else:
+        if cluster_num is None:
+            cluster_num = int(input("\033[32m抽出する枚数を入力してください\033[0m >"))
+        else:
+            pass
+        kmeans.kmeans_main(
+            save_path, movie_file_name, for_kmeans_array, cluster_num, image_flag
+        )
     print("\033[32mAll Done!\033[0m")
