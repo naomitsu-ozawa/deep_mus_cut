@@ -11,7 +11,7 @@ https://github.com/naomitsu-ozawa/deep_mou_cut_2/assets/129124821/702d32ab-1227-
 ```mermaid
 %%{init:{'theme':'forest'}}%%
 graph TD
-    A[imput] -->|解析したい動画| B(物体検知\nYolov8 Custom model)
+    A[input] -->|解析したい動画| B(物体検知\nYolov8 Custom model)
     B -->|検知された部位の画像| C(画像分類\nMobile_net V3 Custom model)
     C -->|分類された画像| D(クラスタリング\nk-means)
     D -->|クラスタリングされた画像| E("random.sample([k-means-images],1)")
