@@ -238,8 +238,10 @@ def moucut(
 
                 if show_flag is True:
                     # Visualize the results on the frame
-                    # annotated_frame = results[0].plot(line_width=(3))
-                    annotated_frame = ori_img
+                    if wc_flag is True:
+                        annotated_frame = results[0].plot(line_width=(3))
+                    else:
+                        annotated_frame = ori_img
                     annotated_frame = cv2.resize(annotated_frame, (1280, 720))
                     cv2.rectangle(annotated_frame, (0, 0), (256, 320), (80, 80, 80), -1)
 
