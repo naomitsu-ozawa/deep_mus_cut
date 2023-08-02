@@ -99,7 +99,7 @@ def moucut(
                 results = yolo_model(
                     frame,
                     # max_det=1, # max detecxtion num.
-                    # conf=0.8, # object confidence threshold for detection
+                    conf=0.6,  # object confidence threshold for detection
                     verbose=False,
                 )
 
@@ -300,7 +300,7 @@ def moucut(
                     pip_h, pip_w = pip_croped.shape[:2]
                     if pip_croped.shape == (224, 224, 3):
                         annotated_frame[
-                            pip_y:pip_y + pip_h, pip_x:pip_x + pip_w
+                            pip_y : pip_y + pip_h, pip_x : pip_x + pip_w
                         ] = pip_croped
 
                     # Display the annotated frame
