@@ -23,7 +23,7 @@ def main(
     mode,
     wc_flag,
     camera_list,
-    all_extract
+    all_extract,
 ):
     from ultralytics import YOLO
 
@@ -74,7 +74,7 @@ def main(
             mode,
             cluster_num,
             wc_flag,
-            all_extract
+            all_extract,
         )
 
     elif tool == "kmeans_image_extractor":
