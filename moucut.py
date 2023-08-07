@@ -7,6 +7,7 @@ from moucut_tools import (
     tf2ml,
     webcam_list,
     moucut_sex_determination,
+    moucut_sex_determination_yokogao,
     moucut_sex_determination_multi,
 )
 
@@ -95,6 +96,22 @@ def main(
             cluster_num,
             wc_flag,
         )
+
+    elif tool == "sexing_yokogao":
+        cnn_model_2 = ct.models.MLModel("moucut_models/ct_cnn_2.mlmodel")
+        moucut_sex_determination_yokogao.moucut(
+            movie_path,
+            device_flag,
+            image_flag,
+            show_flag,
+            yolo_model,
+            cnn_model,
+            cnn_model_2,
+            mode,
+            cluster_num,
+            wc_flag,
+        )
+
     elif tool == "sexing_multi":
         moucut_sex_determination_multi.moucut(
             movie_path,
