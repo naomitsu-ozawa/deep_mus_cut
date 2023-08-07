@@ -26,6 +26,7 @@ def main(
     camera_list,
     all_extract,
 ):
+    print("moucut.py_start")
     from ultralytics import YOLO
 
     if camera_list is True:
@@ -99,6 +100,7 @@ def main(
 
     elif tool == "sexing_yokogao":
         cnn_model_2 = ct.models.MLModel("moucut_models/ct_cnn_2.mlmodel")
+        print("moucut.py_end")
         moucut_sex_determination_yokogao.moucut(
             movie_path,
             device_flag,

@@ -36,6 +36,7 @@ def moucut(
     cluster_num,
     wc_flag,
 ):
+    print("yokogao_start")
     match StrRe(movie_path):
         case "webcam*":
             timezone = datetime.timezone(datetime.timedelta(hours=+9), "JST")
@@ -287,3 +288,4 @@ def moucut(
     #     save_path, movie_file_name, for_kmeans_array, cluster_num, image_flag
     # )
     print("\033[32mAll Done!\033[0m")
+    print("yokogao_end")
