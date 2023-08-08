@@ -5,13 +5,10 @@ import math
 import platform
 import re
 import time
-# from pathlib import Path
 
 import cv2
 import numpy as np
 from tqdm import tqdm
-
-# from moucut_tools import kmeans
 
 
 # %%
@@ -134,30 +131,34 @@ def moucut(
 
                         if not wc_flag:
                             if mode == "coreml":
-
                                 img_np = np.array(croped).astype(np.float32)
                                 img_np = img_np[np.newaxis, :, :, :]
 
                                 # step1 face direction
-                                cnn_res_derection = cnn_model.predict({input_name: img_np})
+                                cnn_res_derection = cnn_model.predict(
+                                    {input_name: img_np}
+                                )
                                 cnn_res_derection = cnn_res_derection["Identity"][0][1]
 
-                                if cnn_res_derection > 0.7:
-
+                                if cnn_res_derection > 0.5:
                                     # step2 sexing
-                                    cnn_result = cnn_model_2.predict({input_name_second: img_np})
+                                    cnn_result = cnn_model_2.predict(
+                                        {input_name_second: img_np}
+                                    )
                                     cnn_result_male = cnn_result["Identity"][0][0]
                                     cnn_result_female = cnn_result["Identity"][0][1]
                                     cnn_result_male = round(float(cnn_result_male), 4)
-                                    cnn_result_female = round(float(cnn_result_female), 4)
+                                    cnn_result_female = round(
+                                        float(cnn_result_female), 4
+                                    )
 
                                     # cnn_bar_male = int(cnn_result_male * 139 + 101)
                                     # cnn_bar_female = int(cnn_result_female * 139 + 101)
 
-                                    if cnn_result_male > 0.8:
+                                    if cnn_result_male > 0.6:
                                         count_male += 1
                                         pip_croped = croped
-                                    elif cnn_result_female > 0.8:
+                                    elif cnn_result_female > 0.6:
                                         count_female += 1
                                         pip_croped = croped
 
@@ -177,8 +178,9 @@ def moucut(
                     text_1_1 = "Male___:"
                     text_1_2 = "Female_:"
 
-                    count_bar_male = int(count_male/total_frames*139) + 101
-                    count_bar_female = int(count_female/total_frames*139) + 101
+                    sexing_frames = 1 + count_female + count_male
+                    count_bar_male = int(count_male / sexing_frames * 139) + 101
+                    count_bar_female = int(count_female / sexing_frames * 139) + 101
 
                     # text_2_1 = f"Extractable images:{count_male}"
                     # text_2_2 = f"Extractable images:{count_female}"
@@ -245,7 +247,7 @@ def moucut(
                     pip_h, pip_w = pip_croped.shape[:2]
                     if pip_croped.shape == (224, 224, 3):
                         annotated_frame[
-                            pip_y: pip_y + pip_h, pip_x: pip_x + pip_w
+                            pip_y : pip_y + pip_h, pip_x : pip_x + pip_w
                         ] = pip_croped
 
                     # Display the annotated frame
@@ -262,7 +264,6 @@ def moucut(
     cap.release()
     cv2.destroyAllWindows()
     cv2.waitKey(1)
-    # cv2.destroyWindow("YOLOv8 Inference")
 
     print("\033[32m顔検出完了\033[0m")
 
@@ -270,22 +271,14 @@ def moucut(
     print(f"検出数♀：[{count_female}]")
 
     if count_male > count_female:
-        rate = count_male/(count_female + count_male)*100
-        print(f"{rate}％の確率で性別判定は”オス”です")
+        rate = count_male / (count_female + count_male) * 100
+        result_meessage = f"{rate}％の確率で性別判定は”オス”です"
+        print(result_meessage)
+
     elif count_female > count_male:
-        rate = count_female/(count_female + count_male)*100
-        print(f"{rate}％の確率で性別判定は”メス”です")
+        rate = count_female / (count_female + count_male) * 100
+        result_meessage = f"{rate}％の確率で性別判定は”メス”です"
+        print(result_meessage)
 
-    # if cluster_num is None:
-    #     cluster_num = int(input("\033[32m抽出する枚数を入力してください\033[0m >"))
-    # else:
-    #     pass
-
-    # save_path = f"croped_image/{movie_file_name}"
-    # os.makedirs(save_path, exist_ok=True)
-
-    # kmeans.kmeans_main(
-    #     save_path, movie_file_name, for_kmeans_array, cluster_num, image_flag
-    # )
     print("\033[32mAll Done!\033[0m")
     print("yokogao_end")
