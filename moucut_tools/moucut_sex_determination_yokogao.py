@@ -147,20 +147,34 @@ def moucut(
                                     )
                                     cnn_result_male = cnn_result["Identity"][0][0]
                                     cnn_result_female = cnn_result["Identity"][0][1]
-                                    cnn_result_male = round(float(cnn_result_male), 4)
-                                    cnn_result_female = round(
-                                        float(cnn_result_female), 4
-                                    )
+                                    # cnn_result_male = round(float(cnn_result_male), 4)
+                                    # cnn_result_female = round(
+                                    #     float(cnn_result_female), 4
+                                    # )
 
                                     # cnn_bar_male = int(cnn_result_male * 139 + 101)
                                     # cnn_bar_female = int(cnn_result_female * 139 + 101)
 
-                                    if cnn_result_male > 0.6:
-                                        count_male += 1
-                                        pip_croped = croped
-                                    elif cnn_result_female > 0.6:
+                                    if cnn_result_female > 0.001:
                                         count_female += 1
                                         pip_croped = croped
+                                    elif cnn_result_male > 0.999:
+                                        count_male += 1
+                                        pip_croped = croped
+
+                                    # if cnn_result_male > cnn_result_female:
+                                    #     count_male += 1
+                                    #     pip_croped = croped
+                                    # elif cnn_result_female >= cnn_result_male:
+                                    #     count_female += 1
+                                    #     pip_croped = croped
+
+                                    # if cnn_result_male > 0.5:
+                                    #     count_male += 1
+                                    #     pip_croped = croped
+                                    # elif cnn_result_female > 0.5:
+                                    #     count_female += 1
+                                    #     pip_croped = croped
 
                 except (IndexError, cv2.error):
                     cnn_result = 0
@@ -247,7 +261,7 @@ def moucut(
                     pip_h, pip_w = pip_croped.shape[:2]
                     if pip_croped.shape == (224, 224, 3):
                         annotated_frame[
-                            pip_y : pip_y + pip_h, pip_x : pip_x + pip_w
+                            pip_y: pip_y + pip_h, pip_x: pip_x + pip_w
                         ] = pip_croped
 
                     # Display the annotated frame
@@ -272,13 +286,16 @@ def moucut(
 
     if count_male > count_female:
         rate = count_male / (count_female + count_male) * 100
+        result_sex = "male"
         result_meessage = f"{rate}％の確率で性別判定は”オス”です"
         print(result_meessage)
 
     elif count_female > count_male:
         rate = count_female / (count_female + count_male) * 100
+        result_sex = "female"
         result_meessage = f"{rate}％の確率で性別判定は”メス”です"
         print(result_meessage)
 
     print("\033[32mAll Done!\033[0m")
     print("yokogao_end")
+    return count_male, count_female, rate, result_sex

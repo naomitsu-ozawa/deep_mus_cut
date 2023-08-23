@@ -300,7 +300,7 @@ def moucut(
                     pip_h, pip_w = pip_croped.shape[:2]
                     if pip_croped.shape == (224, 224, 3):
                         annotated_frame[
-                            pip_y : pip_y + pip_h, pip_x : pip_x + pip_w
+                            pip_y: pip_y + pip_h, pip_x: pip_x + pip_w
                         ] = pip_croped
 
                     # Display the annotated frame
@@ -333,6 +333,11 @@ def moucut(
             cluster_num = int(input("\033[32m抽出する枚数を入力してください\033[0m >"))
         else:
             pass
+        if count < cluster_num:
+            cluster_num = count - 1
+        else:
+            pass
+
         kmeans.kmeans_main(
             save_path, movie_file_name, for_kmeans_array, cluster_num, image_flag
         )
