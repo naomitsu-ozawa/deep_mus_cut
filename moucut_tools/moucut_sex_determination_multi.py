@@ -137,8 +137,8 @@ def moucut(
                                 cnn_result = cnn_model.predict({input_name: img_np})
                                 cnn_result_male = cnn_result["Identity"][0][0]
                                 cnn_result_female = cnn_result["Identity"][0][1]
-                                cnn_result_male = round(float(cnn_result_male), 4)
-                                cnn_result_female = round(float(cnn_result_female), 4)
+                                # cnn_result_male = round(float(cnn_result_male), 4)
+                                # cnn_result_female = round(float(cnn_result_female), 4)
 
                                 if cnn_result_male > cnn_result_female:
                                     count_male += 1

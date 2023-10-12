@@ -1,6 +1,7 @@
 # %%
 import datetime
 import math
+
 # import os
 import platform
 import re
@@ -154,11 +155,13 @@ def moucut(
 
                                     # cnn_bar_male = int(cnn_result_male * 139 + 101)
                                     # cnn_bar_female = int(cnn_result_female * 139 + 101)
+                                    female_threshold = 0.5
+                                    # female_threshold = 0.0002
 
-                                    if cnn_result_female > 0.001:
+                                    if cnn_result_female >= female_threshold:
                                         count_female += 1
                                         pip_croped = croped
-                                    elif cnn_result_male > 0.999:
+                                    elif cnn_result_male > (1 - female_threshold):
                                         count_male += 1
                                         pip_croped = croped
 
@@ -294,6 +297,12 @@ def moucut(
         rate = count_female / (count_female + count_male) * 100
         result_sex = "female"
         result_meessage = f"{rate}％の確率で性別判定は”メス”です"
+        print(result_meessage)
+
+    elif count_female == count_male:
+        rate = count_female / (count_female + count_male) * 100
+        result_sex = "unknown"
+        result_meessage = "判定できません"
         print(result_meessage)
 
     print("\033[32mAll Done!\033[0m")

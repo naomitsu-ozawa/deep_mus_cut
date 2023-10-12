@@ -1,17 +1,15 @@
 # %%
 import datetime
 import math
-import os
+# import os
 import platform
 import re
 import time
-from pathlib import Path
+# from pathlib import Path
 
 import cv2
 import numpy as np
 from tqdm import tqdm
-
-from moucut_tools import kmeans
 
 
 # %%
@@ -42,16 +40,18 @@ def moucut(
             dt = dt.astimezone(timezone)
             dt = "{0:%Y-%m-%d-%H-%M-%S}".format(dt)
             movie_path = int(movie_path[-1])
-            movie_file_name = f"webcam{dt}"
+            # movie_file_name = f"webcam{dt}"
             webcam_flag = True
         case _:
-            movie_file_name = Path(movie_path).stem
+            # movie_file_name = Path(movie_path).stem
             webcam_flag = False
 
     if mode == "coreml":
         running_mode = "CoreML"
     elif mode == "tf":
-        import tensorflow as tf
+        messe = "not supported"
+        return print(messe)
+        # import tensorflow as tf
 
         running_mode = "TensorFlow&PyTorch"
 
@@ -90,8 +90,10 @@ def moucut(
             # Read a frame from the video
             success, frame = cap.read()
             cnn_result = 0
-            cnn_bar_male = 101
-            cnn_bar_female = 101
+            cnn_result_male = 0
+            cnn_result_female = 0
+            # cnn_bar_male = 101
+            # cnn_bar_female = 101
 
             if success:
                 # Run YOLOv8 inference on the frame
@@ -134,16 +136,16 @@ def moucut(
                                 cnn_result = cnn_model.predict({input_name: img_np})
                                 cnn_result_male = cnn_result["Identity"][0][0]
                                 cnn_result_female = cnn_result["Identity"][0][1]
-                                cnn_result_male = round(float(cnn_result_male), 4)
-                                cnn_result_female = round(float(cnn_result_female), 4)
+                                cnn_result_male_score = round(float(cnn_result_male), 2)
+                                cnn_result_female_score = round(float(cnn_result_female), 2)
 
-                                cnn_bar_male = int(cnn_result_male * 139 + 101)
-                                cnn_bar_female = int(cnn_result_female * 139 + 101)
+                                # cnn_bar_male = int(cnn_result_male * 139 + 101)
+                                # cnn_bar_female = int(cnn_result_female * 139 + 101)
 
-                                if cnn_result_male > 0.8:
+                                if cnn_result_male > cnn_result_female:
                                     count_male += 1
                                     pip_croped = croped
-                                elif cnn_result_female > 0.8:
+                                elif cnn_result_female > cnn_result_male:
                                     count_female += 1
                                     pip_croped = croped
 
@@ -180,8 +182,9 @@ def moucut(
                     text_1_1 = "Male___:"
                     text_1_2 = "Female_:"
 
-                    count_bar_male = int(count_male/total_frames*139) + 101
-                    count_bar_female = int(count_female/total_frames*139) + 101
+                    sexing_frames = 1 + count_female + count_male
+                    count_bar_male = int(count_male/sexing_frames*139) + 101
+                    count_bar_female = int(count_female/sexing_frames*139) + 101
 
                     # text_2_1 = f"Extractable images:{count_male}"
                     # text_2_2 = f"Extractable images:{count_female}"
@@ -242,13 +245,34 @@ def moucut(
                         fontScale=0.5,
                         color=(250, 250, 250),
                     )
+
+                    # test
+                    text_4 = f"m{cnn_result_male_score}"
+                    text_5 = f":f{cnn_result_female_score}"
+                    cv2.putText(
+                        annotated_frame,
+                        text_4,
+                        (150, 57),
+                        fontFace=cv2.FONT_HERSHEY_TRIPLEX,
+                        fontScale=0.5,
+                        color=(250, 250, 250),
+                    )
+                    # test
+                    cv2.putText(
+                        annotated_frame,
+                        text_5,
+                        (206, 57),
+                        fontFace=cv2.FONT_HERSHEY_TRIPLEX,
+                        fontScale=0.5,
+                        color=(250, 250, 250),
+                    )
                     # PiP
                     pip_x = 16
                     pip_y = 80
                     pip_h, pip_w = pip_croped.shape[:2]
                     if pip_croped.shape == (224, 224, 3):
                         annotated_frame[
-                            pip_y : pip_y + pip_h, pip_x : pip_x + pip_w
+                            pip_y: pip_y + pip_h, pip_x: pip_x + pip_w
                         ] = pip_croped
 
                     # Display the annotated frame
@@ -274,20 +298,16 @@ def moucut(
 
     if count_male > count_female:
         rate = count_male/(count_female + count_male)*100
+        result_sex = "male"
         print(f"{rate}％の確率で性別判定は”オス”です")
     elif count_female > count_male:
         rate = count_female/(count_female + count_male)*100
+        result_sex = "female"
         print(f"{rate}％の確率で性別判定は”メス”です")
+    elif count_female == count_male:
+        rate = count_male/(count_female + count_male)*100
+        result_sex = "unknown"
+        print(f"♂{rate}%:♀{rate}%なので判別できません")
 
-    # if cluster_num is None:
-    #     cluster_num = int(input("\033[32m抽出する枚数を入力してください\033[0m >"))
-    # else:
-    #     pass
-
-    # save_path = f"croped_image/{movie_file_name}"
-    # os.makedirs(save_path, exist_ok=True)
-
-    # kmeans.kmeans_main(
-    #     save_path, movie_file_name, for_kmeans_array, cluster_num, image_flag
-    # )
     print("\033[32mAll Done!\033[0m")
+    return count_male, count_female, rate, result_sex
