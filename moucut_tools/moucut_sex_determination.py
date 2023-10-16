@@ -92,6 +92,8 @@ def moucut(
             cnn_result = 0
             cnn_result_male = 0
             cnn_result_female = 0
+            cnn_result_male_score = 0
+            cnn_result_female_score = 0
             # cnn_bar_male = 101
             # cnn_bar_female = 101
 

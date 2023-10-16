@@ -96,12 +96,21 @@ def moucut(
 
             if success:
                 # Run YOLOv8 inference on the frame
-                results = yolo_model(
-                    frame,
-                    # max_det=1, # max detecxtion num.
-                    conf=0.6,  # object confidence threshold for detection
-                    verbose=False,
-                )
+                if mode == "coreml":
+                    results = yolo_model(
+                        frame,
+                        # max_det=1, # max detecxtion num.
+                        conf=0.6,  # object confidence threshold for detection
+                        verbose=False,
+                    )
+                elif mode == "tf":
+                    results = yolo_model(
+                        frame,
+                        # max_det=1, # max detecxtion num.
+                        device=device,
+                        # conf=0.6,  # object confidence threshold for detection
+                        verbose=False,
+                    )
 
                 try:
                     if mode == "coreml":
@@ -224,6 +233,59 @@ def moucut(
                                 if cnn_result[1] > 0.8:
                                     for_kmeans_array.append(croped)
                                     count += 1
+                                    pip_croped = croped
+                                    cv2.rectangle(
+                                        ori_img,
+                                        (cv_top_x, cv_top_y),
+                                        (cv_btm_x, cv_btm_y),
+                                        (250, 0, 0),
+                                        thickness=3,
+                                        lineType=cv2.LINE_AA,
+                                    )
+                                    cv2.rectangle(
+                                        ori_img,
+                                        (cv_top_x, cv_top_y),
+                                        (cv_top_x + 250, cv_top_y + 40),
+                                        (250, 0, 0),
+                                        thickness=-1,
+                                        lineType=cv2.LINE_AA,
+                                    )
+                                    cv2.putText(
+                                        ori_img,
+                                        text="OK",
+                                        org=(cv_top_x, cv_top_y + 20),
+                                        fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+                                        fontScale=1.0,
+                                        color=(250, 250, 250),
+                                        thickness=2,
+                                    )
+                                else:
+                                    cv2.rectangle(
+                                        ori_img,
+                                        (cv_top_x, cv_top_y),
+                                        (cv_btm_x, cv_btm_y),
+                                        (127, 127, 127),
+                                        thickness=3,
+                                        lineType=cv2.LINE_AA,
+                                    )
+                                    cv2.rectangle(
+                                        ori_img,
+                                        (cv_top_x, cv_top_y),
+                                        (cv_top_x + 250, cv_top_y + 40),
+                                        (127, 127, 127),
+                                        thickness=-1,
+                                        lineType=cv2.LINE_AA,
+                                    )
+                                    cv2.putText(
+                                        ori_img,
+                                        text="not detect",
+                                        org=(cv_top_x, cv_top_y + 20),
+                                        fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+                                        fontScale=1.0,
+                                        color=(250, 250, 250),
+                                        thickness=2,
+                                    )
+
                         else:
                             # cnn_result = "without cnn"
                             for_kmeans_array.append(croped)
