@@ -65,7 +65,7 @@ def moucut(
     if os_name == "Darwin":
         cap = cv2.VideoCapture(movie_path, cv2.CAP_AVFOUNDATION)
     else:
-        cap = cv2.VideoCapture(movie_path)
+        cap = cv2.VideoCapture(movie_path, cv2.CAP_ANY)
 
     if webcam_flag:
         total_frames = None

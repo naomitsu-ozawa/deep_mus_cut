@@ -4,7 +4,7 @@ import os
 from moucut_tools import (
     kmeans_image_extractor,
     moucut_default,
-    tf2ml,
+    # tf2ml,
     webcam_list,
     moucut_sex_determination,
     moucut_sex_determination_yokogao,
@@ -59,7 +59,7 @@ def main(
     elif mode == "tf":
         import tensorflow as tf
 
-        yolo_model = YOLO("moucut_models/b6.pt")
+        yolo_model = YOLO("moucut_models/yolo.pt")
         cnn_model = tf.keras.models.load_model("moucut_models/cnn.h5", compile=True)
 
     elif mode == "tf2ml":
