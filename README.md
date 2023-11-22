@@ -73,7 +73,7 @@ GPUを利用したい場合、お使いのプラットフォームに合わせ�
 | option | description |  
 | ---- | ---- |
 | -f,--file | 解析したいファイルのパス（必須）[file_path,webcam]<br>-f <file_path>を指定すると動画ファイルの解析を行います。<br>-f webcam0を指定するとデバイスID：０のカメラに接続できます。(テスト機能)<br>複数台カメラが接続されている場合は、webcam*の番号を変更してみて下さい。 |
-| -m,--mode | モード[coreml,tf]<br>-m coreml：物体検知と画像分類にCore MLを利用します。<br>-m tf：物体検知にPyTorch、画像分類にTensorFlowを利用します。 |
+| -m,--mode | モード[coreml,tf_pt]<br>-m coreml：物体検知と画像分類にCore MLを利用します。<br>-m tf_pt：物体検知にPyTorch、画像分類にTensorFlowを利用します。 |
 | -d,--device | 物体検知部分で利用するデバイス名 [cpu,cuda,mps]<br>--mode tfの時のPyTrochデバイスを指定できます。|
 | -t,--tool | 使用するツール名 <br>-t default：未指定と同じ動作になります。<br>-t kmeans_image_extractor：動画からk-meansアルゴリズムを利用して指定枚数のフレーム画像を抽出します。<br>-t tf2ml:TensorflowモデルをCoreMLモデルへ変換します。<br>-t sexing (sexing_multi):demo用<br> |
 | -i,--image_format | 出力画像のフォーマット [jpg,png]<br>-i png：デフォルトです。未指定と同じ動作になります。<br>-i jpg：JPEG形式で保存します。容量を節約したい場合に有効です。 |
@@ -87,10 +87,10 @@ Defaultは”CoreML”で動作するようになっています。 CoreML非対
 | --mode | 詳細 |
 | ---- | ---- |
 | coreml | 物体検出と画像分類にCoreMlモデルを使用します。(default) |
-| tf | 物体検出と画像分類にPyTrochとTensorFlowを使用します。 |
+| tf_pt | 物体検出と画像分類にPyTrochとTensorFlowを使用します。 |
 
 #### deviceについて
-モード”tf”時の物体検出で利用するPyTorchデバイスを指定できます。
+モード”tf_pt”時の物体検出で利用するPyTorchデバイスを指定できます。
 | --device | 詳細 |
 | ---- | ---- |
 | cpu | 物体検知にcpuを使います。(default) |
@@ -101,7 +101,7 @@ Defaultは”CoreML”で動作するようになっています。 CoreML非対
 | --tool | 詳細 |
 | ---- | ---- |
 | kmeans_image_extractor | k-meansアルゴリズムを使って動画から指定枚数の画像を抽出します。|
-| tf2ml| Tensorflow2.xで訓練されたCNNをCoreML形式へ変換します。|
+| tf2ml| Tensorflow2.xで訓練されたCNNをCoreML形式へ変換します。Mac専用の機能です。|
 | sexing (sexing_multi)| 技術DEMOプログラムです。|
   
 #### 保存できるフォーマットについて  
