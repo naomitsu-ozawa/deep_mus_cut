@@ -54,7 +54,8 @@ def moucut(
         import tensorflow as tf
 
         running_mode = "TensorFlow&PyTorch"
-        return print(running_mode)
+
+    print(running_mode)
 
     os_name = platform.system()
 
@@ -146,44 +147,47 @@ def moucut(
 
                             elif mode == "tf_pt":
                                 # tf_ptモードの処理を書く
+                                data = np.array(croped).astype(np.float32)
+                                data = data[tf.newaxis]
+                                x = tf.keras.applications.mobilenet_v3.preprocess_input(
+                                    data
+                                )
+                                cnn_res_derection = cnn_model(x, training=False)
+                                cnn_res_derection = cnn_res_derection.numpy()
+                                cnn_res_derection = cnn_res_derection[0][1]
 
-                                if cnn_res_derection > 0.5:
-                                    # step2 sexing
+                            if cnn_res_derection > 0.5:
+                                # step2 sexing
+                                if mode == "coreml":
                                     cnn_result = cnn_model_2.predict(
                                         {input_name_second: img_np}
                                     )
                                     cnn_result_male = cnn_result["Identity"][0][0]
                                     cnn_result_female = cnn_result["Identity"][0][1]
-                                    # cnn_result_male = round(float(cnn_result_male), 4)
-                                    # cnn_result_female = round(
-                                    #     float(cnn_result_female), 4
-                                    # )
+                                elif mode == "tf_pt":
+                                    cnn_result = cnn_model_2(x, training=False)
+                                    cnn_result = cnn_result.numpy()
+                                    cnn_result_male = cnn_result[0][0]
+                                    cnn_result_female = cnn_result[0][1]
 
-                                    # cnn_bar_male = int(cnn_result_male * 139 + 101)
-                                    # cnn_bar_female = int(cnn_result_female * 139 + 101)
-                                    female_threshold = 0.5
-                                    # female_threshold = 0.0002
+                                # female_threshold = 0.5
+                                # if cnn_result_female >= female_threshold:
+                                #     count_female += 1
+                                #     pip_croped = croped
+                                # elif cnn_result_male > (1 - female_threshold):
+                                #     count_male += 1
+                                #     pip_croped = croped
 
-                                    if cnn_result_female >= female_threshold:
-                                        count_female += 1
-                                        pip_croped = croped
-                                    elif cnn_result_male > (1 - female_threshold):
-                                        count_male += 1
-                                        pip_croped = croped
-
-                                    # if cnn_result_male > cnn_result_female:
-                                    #     count_male += 1
-                                    #     pip_croped = croped
-                                    # elif cnn_result_female >= cnn_result_male:
-                                    #     count_female += 1
-                                    #     pip_croped = croped
-
-                                    # if cnn_result_male > 0.5:
-                                    #     count_male += 1
-                                    #     pip_croped = croped
-                                    # elif cnn_result_female > 0.5:
-                                    #     count_female += 1
-                                    #     pip_croped = croped
+                                if cnn_result_male > cnn_result_female:
+                                    count_male += 1
+                                    pip_croped = croped
+                                elif cnn_result_female >= cnn_result_male:
+                                    count_female += 1
+                                    pip_croped = croped
+                                elif cnn_result_female == cnn_result_male:
+                                    count_female += 1
+                                    count_male += 1
+                                    pip_croped = croped
 
                 except (IndexError, cv2.error):
                     cnn_result = 0
