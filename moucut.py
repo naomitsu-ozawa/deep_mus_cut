@@ -81,6 +81,7 @@ def main(
 
     elif tool == "tf2ml":
         from moucut_tools import tf2ml
+
         print("tools:tf2ml")
         tf2ml.tf2ml(movie_path)
 
@@ -97,25 +98,6 @@ def main(
             wc_flag,
         )
 
-    elif tool == "sexing_yokogao":
-        if mode == "coreml":
-            cnn_model_2 = ct.models.MLModel("moucut_models/ct_cnn_2.mlmodel")
-        elif mode == "tf_pt":
-            cnn_model_2 = tf.keras.models.load_model("moucut_models/ct_cnn_2.h5")
-        print("moucut.py_end")
-        moucut_sex_determination_yokogao.moucut(
-            movie_path,
-            device_flag,
-            image_flag,
-            show_flag,
-            yolo_model,
-            cnn_model,
-            cnn_model_2,
-            mode,
-            cluster_num,
-            wc_flag,
-        )
-
     elif tool == "sexing_multi":
         moucut_sex_determination_multi.moucut(
             movie_path,
@@ -124,6 +106,31 @@ def main(
             show_flag,
             yolo_model,
             cnn_model,
+            mode,
+            cluster_num,
+            wc_flag,
+        )
+
+    elif tool == "sexing_yokogao":
+        if mode == "coreml":
+            try:
+                cnn_model_2 = ct.models.MLModel("moucut_models/ct_cnn_2.mlmodel")
+            except:
+                print("横顔の雌雄判別モデルを[ct_cnn_2.mlmodel]として配置してください。")
+        elif mode == "tf_pt":
+            try:
+                cnn_model_2 = tf.keras.models.load_model("moucut_models/ct_cnn_2.h5")
+            except:
+                print("横顔の雌雄判別モデルを[ct_cnn_2.h5]として配置してください。")
+
+        moucut_sex_determination_yokogao.moucut(
+            movie_path,
+            device_flag,
+            image_flag,
+            show_flag,
+            yolo_model,
+            cnn_model,
+            cnn_model_2,
             mode,
             cluster_num,
             wc_flag,
