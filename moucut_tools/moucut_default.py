@@ -178,7 +178,7 @@ def moucut(
                                 cnn_result = round(float(cnn_result), 4)
                                 cnn_bar = int(cnn_result * 139 + 101)
 
-                            if cnn_result > 0.95:
+                            if cnn_result > 0.9:
                                 for_kmeans_array.append(croped)
                                 count += 1
                                 pip_croped = croped
