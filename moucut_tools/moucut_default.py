@@ -51,7 +51,7 @@ def moucut(
 
     if mode == "coreml":
         running_mode = "CoreML"
-    elif mode == "tf":
+    elif mode == "tf_pt":
         import tensorflow as tf
 
         running_mode = "TensorFlow&PyTorch"
@@ -103,7 +103,7 @@ def moucut(
                         conf=0.6,  # object confidence threshold for detection
                         verbose=False,
                     )
-                elif mode == "tf":
+                elif mode == "tf_pt":
                     results = yolo_model(
                         frame,
                         # max_det=1, # max detecxtion num.
@@ -115,7 +115,7 @@ def moucut(
                 try:
                     if mode == "coreml":
                         result = results[0].numpy()
-                    elif mode == "tf":
+                    elif mode == "tf_pt":
                         result = results[0].cpu().numpy()
                     else:
                         print("modeを指定して下さい")
@@ -221,7 +221,7 @@ def moucut(
                                         thickness=2,
                                     )
 
-                            elif mode == "tf":
+                            elif mode == "tf_pt":
                                 data = np.array(croped).astype(np.float32)
                                 data = data[tf.newaxis]
                                 x = tf.keras.applications.mobilenet_v3.preprocess_input(

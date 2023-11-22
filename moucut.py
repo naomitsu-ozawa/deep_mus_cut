@@ -56,7 +56,7 @@ def main(
         yolo_model = YOLO("moucut_models/yolo.mlmodel", task="detect")
         cnn_model = ct.models.MLModel("moucut_models/ct_cnn.mlmodel")
 
-    elif mode == "tf":
+    elif mode == "tf_pt":
         import tensorflow as tf
 
         yolo_model = YOLO("moucut_models/yolo.pt")
@@ -139,7 +139,7 @@ def get_args():
     parser.add_argument(
         "-f",
         "--movie_path",
-        help="ファイルのパスかwebcamを指定して下さい。['movie_path','webcam']",
+        help="ファイルのパスかwebcamを指定して下さい。['file_path','movie_path','webcam']",
         # required=True,
     )
 
@@ -147,7 +147,7 @@ def get_args():
     parser.add_argument(
         "-m",
         "--mode",
-        help="tensorflow&pytorchを利用する or coremlを利用する['tf','coreml']",
+        help="tensorflow&pytorchを利用する or coremlを利用する['tf_pt','coreml']",
         type=str,
     )
 
@@ -155,7 +155,7 @@ def get_args():
     parser.add_argument(
         "-d",
         "--device_flag",
-        help="mode=tfで利用するデバイスを指定して下さい。指定しない場合は、['cpu']で実行します。['cpu','cuda']",
+        help="mode=tf_ptで利用するデバイスを指定して下さい。指定しない場合は、['cpu']で実行します。['cpu','cuda']",
         type=str,
     )
 
