@@ -4,7 +4,6 @@ import os
 from moucut_tools import (
     kmeans_image_extractor,
     moucut_default,
-    # tf2ml,
     webcam_list,
     moucut_sex_determination,
     moucut_sex_determination_yokogao,
@@ -41,12 +40,13 @@ def main(
 
     if device_flag is None:
         device_flag = "cpu"
+
     if image_flag is None:
         image_flag = "png"
+
     if tool is None:
         tool = "default"
-    elif tool == "tf2ml":
-        mode = "tf2ml"
+
     if mode is None:
         mode = "coreml"
 
@@ -61,9 +61,6 @@ def main(
 
         yolo_model = YOLO("moucut_models/yolo.pt")
         cnn_model = tf.keras.models.load_model("moucut_models/cnn.h5", compile=True)
-
-    elif mode == "tf2ml":
-        print("mode:tf2ml")
 
     if tool == "default":
         moucut_default.moucut(
@@ -83,6 +80,8 @@ def main(
         kmeans_image_extractor.main(movie_path, image_flag, cluster_num)
 
     elif tool == "tf2ml":
+        from moucut_tools import tf2ml
+        print("tools:tf2ml")
         tf2ml.tf2ml(movie_path)
 
     elif tool == "sexing":
@@ -102,17 +101,17 @@ def main(
         cnn_model_2 = ct.models.MLModel("moucut_models/ct_cnn_2.mlmodel")
         print("moucut.py_end")
         moucut_sex_determination_yokogao.moucut(
-                movie_path,
-                device_flag,
-                image_flag,
-                show_flag,
-                yolo_model,
-                cnn_model,
-                cnn_model_2,
-                mode,
-                cluster_num,
-                wc_flag,
-            )
+            movie_path,
+            device_flag,
+            image_flag,
+            show_flag,
+            yolo_model,
+            cnn_model,
+            cnn_model_2,
+            mode,
+            cluster_num,
+            wc_flag,
+        )
 
     elif tool == "sexing_multi":
         moucut_sex_determination_multi.moucut(

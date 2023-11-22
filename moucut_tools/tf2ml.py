@@ -4,7 +4,6 @@ from pathlib import Path
 import coremltools as ct
 import tensorflow as tf
 
-
 # %%
 def tf2ml(input_path):
     print("\033[32mTensorFlowモデルをCoreMLモデルへ変換します。\033[0m")
