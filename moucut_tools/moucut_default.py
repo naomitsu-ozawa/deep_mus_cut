@@ -161,65 +161,9 @@ def moucut(
                                 img_np = img_np[np.newaxis, :, :, :]
                                 cnn_result = cnn_model.predict({input_name: img_np})
                                 cnn_result = cnn_result["Identity"][0][1]
+
                                 cnn_result = round(float(cnn_result), 4)
                                 cnn_bar = int(cnn_result * 139 + 101)
-
-                                if cnn_result > 0.95:
-                                    for_kmeans_array.append(croped)
-                                    count += 1
-                                    pip_croped = croped
-
-                                    cv2.rectangle(
-                                        ori_img,
-                                        (cv_top_x, cv_top_y),
-                                        (cv_btm_x, cv_btm_y),
-                                        (250, 0, 0),
-                                        thickness=3,
-                                        lineType=cv2.LINE_AA,
-                                    )
-                                    cv2.rectangle(
-                                        ori_img,
-                                        (cv_top_x, cv_top_y),
-                                        (cv_top_x + 250, cv_top_y + 40),
-                                        (250, 0, 0),
-                                        thickness=-1,
-                                        lineType=cv2.LINE_AA,
-                                    )
-                                    cv2.putText(
-                                        ori_img,
-                                        text="OK",
-                                        org=(cv_top_x, cv_top_y + 20),
-                                        fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                                        fontScale=1.0,
-                                        color=(250, 250, 250),
-                                        thickness=2,
-                                    )
-                                else:
-                                    cv2.rectangle(
-                                        ori_img,
-                                        (cv_top_x, cv_top_y),
-                                        (cv_btm_x, cv_btm_y),
-                                        (127, 127, 127),
-                                        thickness=3,
-                                        lineType=cv2.LINE_AA,
-                                    )
-                                    cv2.rectangle(
-                                        ori_img,
-                                        (cv_top_x, cv_top_y),
-                                        (cv_top_x + 250, cv_top_y + 40),
-                                        (127, 127, 127),
-                                        thickness=-1,
-                                        lineType=cv2.LINE_AA,
-                                    )
-                                    cv2.putText(
-                                        ori_img,
-                                        text="not detect",
-                                        org=(cv_top_x, cv_top_y + 20),
-                                        fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                                        fontScale=1.0,
-                                        color=(250, 250, 250),
-                                        thickness=2,
-                                    )
 
                             elif mode == "tf_pt":
                                 data = np.array(croped).astype(np.float32)
@@ -229,62 +173,67 @@ def moucut(
                                 )
                                 cnn_result = cnn_model(x, training=False)
                                 cnn_result = cnn_result.numpy()
-                                cnn_result = cnn_result[0]
-                                if cnn_result[1] > 0.8:
-                                    for_kmeans_array.append(croped)
-                                    count += 1
-                                    pip_croped = croped
-                                    cv2.rectangle(
-                                        ori_img,
-                                        (cv_top_x, cv_top_y),
-                                        (cv_btm_x, cv_btm_y),
-                                        (250, 0, 0),
-                                        thickness=3,
-                                        lineType=cv2.LINE_AA,
-                                    )
-                                    cv2.rectangle(
-                                        ori_img,
-                                        (cv_top_x, cv_top_y),
-                                        (cv_top_x + 250, cv_top_y + 40),
-                                        (250, 0, 0),
-                                        thickness=-1,
-                                        lineType=cv2.LINE_AA,
-                                    )
-                                    cv2.putText(
-                                        ori_img,
-                                        text="OK",
-                                        org=(cv_top_x, cv_top_y + 20),
-                                        fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                                        fontScale=1.0,
-                                        color=(250, 250, 250),
-                                        thickness=2,
-                                    )
-                                else:
-                                    cv2.rectangle(
-                                        ori_img,
-                                        (cv_top_x, cv_top_y),
-                                        (cv_btm_x, cv_btm_y),
-                                        (127, 127, 127),
-                                        thickness=3,
-                                        lineType=cv2.LINE_AA,
-                                    )
-                                    cv2.rectangle(
-                                        ori_img,
-                                        (cv_top_x, cv_top_y),
-                                        (cv_top_x + 250, cv_top_y + 40),
-                                        (127, 127, 127),
-                                        thickness=-1,
-                                        lineType=cv2.LINE_AA,
-                                    )
-                                    cv2.putText(
-                                        ori_img,
-                                        text="not detect",
-                                        org=(cv_top_x, cv_top_y + 20),
-                                        fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                                        fontScale=1.0,
-                                        color=(250, 250, 250),
-                                        thickness=2,
-                                    )
+                                cnn_result = cnn_result[0][1]
+
+                                cnn_result = round(float(cnn_result), 4)
+                                cnn_bar = int(cnn_result * 139 + 101)
+
+                            if cnn_result > 0.95:
+                                for_kmeans_array.append(croped)
+                                count += 1
+                                pip_croped = croped
+
+                                cv2.rectangle(
+                                    ori_img,
+                                    (cv_top_x, cv_top_y),
+                                    (cv_btm_x, cv_btm_y),
+                                    (250, 0, 0),
+                                    thickness=3,
+                                    lineType=cv2.LINE_AA,
+                                )
+                                cv2.rectangle(
+                                    ori_img,
+                                    (cv_top_x, cv_top_y),
+                                    (cv_top_x + 250, cv_top_y + 40),
+                                    (250, 0, 0),
+                                    thickness=-1,
+                                    lineType=cv2.LINE_AA,
+                                )
+                                cv2.putText(
+                                    ori_img,
+                                    text="OK",
+                                    org=(cv_top_x, cv_top_y + 20),
+                                    fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+                                    fontScale=1.0,
+                                    color=(250, 250, 250),
+                                    thickness=2,
+                                )
+                            else:
+                                cv2.rectangle(
+                                    ori_img,
+                                    (cv_top_x, cv_top_y),
+                                    (cv_btm_x, cv_btm_y),
+                                    (127, 127, 127),
+                                    thickness=3,
+                                    lineType=cv2.LINE_AA,
+                                )
+                                cv2.rectangle(
+                                    ori_img,
+                                    (cv_top_x, cv_top_y),
+                                    (cv_top_x + 250, cv_top_y + 40),
+                                    (127, 127, 127),
+                                    thickness=-1,
+                                    lineType=cv2.LINE_AA,
+                                )
+                                cv2.putText(
+                                    ori_img,
+                                    text="not detect",
+                                    org=(cv_top_x, cv_top_y + 20),
+                                    fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+                                    fontScale=1.0,
+                                    color=(250, 250, 250),
+                                    thickness=2,
+                                )
 
                         else:
                             # cnn_result = "without cnn"
@@ -362,7 +311,7 @@ def moucut(
                     pip_h, pip_w = pip_croped.shape[:2]
                     if pip_croped.shape == (224, 224, 3):
                         annotated_frame[
-                            pip_y: pip_y + pip_h, pip_x: pip_x + pip_w
+                            pip_y : pip_y + pip_h, pip_x : pip_x + pip_w
                         ] = pip_croped
 
                     # Display the annotated frame

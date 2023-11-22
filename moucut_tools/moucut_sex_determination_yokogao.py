@@ -50,12 +50,11 @@ def moucut(
 
     if mode == "coreml":
         running_mode = "CoreML"
-    elif mode == "tf":
-        # import tensorflow as tf
+    elif mode == "tf_pt":
+        import tensorflow as tf
 
         running_mode = "TensorFlow&PyTorch"
-        message = "not supported tf mode"
-        return print(running_mode + message)
+        return print(running_mode)
 
     os_name = platform.system()
 
@@ -66,7 +65,7 @@ def moucut(
     if os_name == "Darwin":
         cap = cv2.VideoCapture(movie_path, cv2.CAP_AVFOUNDATION)
     else:
-        cap = cv2.VideoCapture(movie_path)
+        cap = cv2.VideoCapture(movie_path, cv2.CAP_ANY)
 
     if webcam_flag:
         total_frames = None
@@ -98,11 +97,15 @@ def moucut(
 
             if success:
                 # Run YOLOv8 inference on the frame
-                results = yolo_model(frame, verbose=False)
+                if mode == "coreml":
+                    results = yolo_model(frame, verbose=False)
+                elif mode == "tf_pt":
+                    results = yolo_model(frame, device=device, verbose=False)
+
                 try:
                     if mode == "coreml":
                         result = results[0].numpy()
-                    elif mode == "tf":
+                    elif mode == "tf_pt":
                         result = results[0].cpu().numpy()
                     else:
                         print("modeを指定して下さい")
@@ -140,6 +143,9 @@ def moucut(
                                     {input_name: img_np}
                                 )
                                 cnn_res_derection = cnn_res_derection["Identity"][0][1]
+
+                            elif mode == "tf_pt":
+                                # tf_ptモードの処理を書く
 
                                 if cnn_res_derection > 0.5:
                                     # step2 sexing
@@ -264,7 +270,7 @@ def moucut(
                     pip_h, pip_w = pip_croped.shape[:2]
                     if pip_croped.shape == (224, 224, 3):
                         annotated_frame[
-                            pip_y: pip_y + pip_h, pip_x: pip_x + pip_w
+                            pip_y : pip_y + pip_h, pip_x : pip_x + pip_w
                         ] = pip_croped
 
                     # Display the annotated frame

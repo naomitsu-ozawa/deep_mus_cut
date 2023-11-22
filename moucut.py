@@ -6,7 +6,7 @@ from moucut_tools import (
     moucut_default,
     webcam_list,
     moucut_sex_determination,
-    moucut_sex_determination_yokogao,
+    moucut_sex_determination_yokogao_test,
     moucut_sex_determination_multi,
 )
 
@@ -98,9 +98,12 @@ def main(
         )
 
     elif tool == "sexing_yokogao":
-        cnn_model_2 = ct.models.MLModel("moucut_models/ct_cnn_2.mlmodel")
+        if mode == "coreml":
+            cnn_model_2 = ct.models.MLModel("moucut_models/ct_cnn_2.mlmodel")
+        elif mode == "tf_pt":
+            cnn_model_2 = tf.keras.models.load_model("moucut_models/ct_cnn_2.h5")
         print("moucut.py_end")
-        moucut_sex_determination_yokogao.moucut(
+        moucut_sex_determination_yokogao_test.moucut(
             movie_path,
             device_flag,
             image_flag,
