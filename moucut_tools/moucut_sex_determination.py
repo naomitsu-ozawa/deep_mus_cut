@@ -48,7 +48,7 @@ def moucut(
 
     if mode == "coreml":
         running_mode = "CoreML"
-    elif mode == "tf":
+    elif mode == "tf_pt":
         messe = "not supported"
         return print(messe)
         # import tensorflow as tf
@@ -103,7 +103,7 @@ def moucut(
                 try:
                     if mode == "coreml":
                         result = results[0].numpy()
-                    elif mode == "tf":
+                    elif mode == "tf_pt":
                         result = results[0].cpu().numpy()
                     else:
                         print("modeを指定して下さい")
@@ -151,7 +151,7 @@ def moucut(
                                     count_female += 1
                                     pip_croped = croped
 
-                        #     elif mode == "tf":
+                        #     elif mode == "tf_pt":
                         #         data = np.array(croped).astype(np.float32)
                         #         data = data[tf.newaxis]
                         #         x = tf.keras.applications.mobilenet_v3.preprocess_input(
