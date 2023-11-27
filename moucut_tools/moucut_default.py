@@ -55,11 +55,6 @@ def moucut(
         import tensorflow as tf
         running_mode = "TensorFlow&PyTorch"
 
-    elif mode == "trt_pt":
-        import tensorflow as tf
-        running_mode = "TensrRT&PyTorch"
-        print("mode_ok")
-
     os_name = platform.system()
 
     print(f"OS:{os_name}")
@@ -84,7 +79,7 @@ def moucut(
 
     if mode == "coreml":
         input_name = cnn_model.get_spec().description.input[0].name
-    elif mode == "trt_pt":
+    elif mode == "tf_pt":
         signature_keys = list(cnn_model.signatures.keys())
         infer = cnn_model.signatures[signature_keys[0]]
         outputs = list(infer.structured_outputs.keys())[0]
@@ -112,7 +107,7 @@ def moucut(
                         conf=0.6,  # object confidence threshold for detection
                         verbose=False,
                     )
-                elif mode == "tf_pt" or mode == "trt_pt":
+                elif mode == "tf_pt":
                     results = yolo_model(
                         frame,
                         # max_det=1, # max detecxtion num.
@@ -124,7 +119,7 @@ def moucut(
                 try:
                     if mode == "coreml":
                         result = results[0].numpy()
-                    elif mode == "tf_pt" or mode == "trt_pt":
+                    elif mode == "tf_pt":
                         result = results[0].cpu().numpy()
                     else:
                         print("modeを指定して下さい")
@@ -172,16 +167,6 @@ def moucut(
                                 cnn_result = cnn_result["Identity"][0][1]
 
                             elif mode == "tf_pt":
-                                data = np.array(croped).astype(np.float32)
-                                data = data[tf.newaxis]
-                                x = tf.keras.applications.mobilenet_v3.preprocess_input(
-                                    data
-                                )
-                                cnn_result = cnn_model(x, training=False)
-                                cnn_result = cnn_result.numpy()
-                                cnn_result = cnn_result[0][1]
-
-                            elif mode == "trt_pt":
                                 data = np.array(croped).astype(np.float32)
                                 data = data[tf.newaxis]
                                 x = tf.keras.applications.mobilenet_v3.preprocess_input(

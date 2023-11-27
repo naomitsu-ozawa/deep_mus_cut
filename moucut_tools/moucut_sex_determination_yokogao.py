@@ -52,10 +52,8 @@ def moucut(
         running_mode = "CoreML"
     elif mode == "tf_pt":
         import tensorflow as tf
+
         running_mode = "TensorFlow&PyTorch"
-    elif mode == "trt_pt":
-        import tensorflow as tf
-        running_mode = "TensorRT&PyTorch"
 
     print(running_mode)
 
@@ -85,14 +83,26 @@ def moucut(
         input_name_second = cnn_model_2.get_spec().description.input[0].name
 
     # tensorRTの処理
-    elif mode == "trt_pt":
+    elif mode == "tf_pt":
+        rt_test_image = np.ones((224, 224, 3), dtype=np.float32) * 125
+        rt_test_image = rt_test_image[tf.newaxis]
+        rt_test_image = tf.constant(rt_test_image)
+
+        print("OK NG モデルを読み込んでいます・・・")
         signature_keys_1 = list(cnn_model.signatures.keys())
         infer_1 = cnn_model.signatures[signature_keys_1[0]]
         outputs_1 = list(infer_1.structured_outputs.keys())[0]
+        test_1 = infer_1(rt_test_image)
+        print("pass OK NG model")
+
+        print("Yokogaoモデルを読み込んでいます・・・")
         signature_keys_2 = list(cnn_model_2.signatures.keys())
         infer_2 = cnn_model_2.signatures[signature_keys_2[0]]
         outputs_2 = list(infer_2.structured_outputs.keys())[0]
-        print("trt_preprossece_ok")
+        test_2 = infer_2(rt_test_image)
+        print("pass Yokogao model")
+
+        print("tf_preload_ok")
 
     pip_croped = np.zeros((224, 224, 3))
 
@@ -118,7 +128,7 @@ def moucut(
                 try:
                     if mode == "coreml":
                         result = results[0].numpy()
-                    elif mode == "tf_pt" or mode == "trt_pt":
+                    elif mode == "tf_pt":
                         result = results[0].cpu().numpy()
                     else:
                         print("modeを指定して下さい")
@@ -158,17 +168,6 @@ def moucut(
                                 cnn_res_derection = cnn_res_derection["Identity"][0][1]
 
                             elif mode == "tf_pt":
-                                # tf_ptモードの処理を書く
-                                data = np.array(croped).astype(np.float32)
-                                data = data[tf.newaxis]
-                                x = tf.keras.applications.mobilenet_v3.preprocess_input(
-                                    data
-                                )
-                                cnn_res_derection = cnn_model(x, training=False)
-                                cnn_res_derection = cnn_res_derection.numpy()
-                                cnn_res_derection = cnn_res_derection[0][1]
-
-                            elif mode == "trt_pt":
                                 data = np.array(croped).astype(np.float32)
                                 data = data[tf.newaxis]
                                 x = tf.keras.applications.mobilenet_v3.preprocess_input(
@@ -187,13 +186,8 @@ def moucut(
                                     )
                                     cnn_result_male = cnn_result["Identity"][0][0]
                                     cnn_result_female = cnn_result["Identity"][0][1]
-                                elif mode == "tf_pt":
-                                    cnn_result = cnn_model_2(x, training=False)
-                                    cnn_result = cnn_result.numpy()
-                                    cnn_result_male = cnn_result[0][0]
-                                    cnn_result_female = cnn_result[0][1]
 
-                                elif mode == "trt_pt":
+                                elif mode == "tf_pt":
                                     cnn_result = infer_2(x)
                                     cnn_result = cnn_result[outputs_2].numpy()
                                     cnn_result_male = cnn_result[0][0]
