@@ -63,6 +63,12 @@ def main(
         yolo_model = YOLO("moucut_models/yolo.pt")
         cnn_model = tf.keras.models.load_model("moucut_models/cnn.h5", compile=True)
 
+    elif mode == "trt_pt":
+        import tensorflow as tf
+
+        yolo_model = YOLO("moucut_models/yolo.pt")
+        cnn_model = tf.saved_model.load("moucut_models/cnn_trt")
+
     if tool == "default":
         moucut_default.moucut(
             movie_path,
@@ -123,6 +129,13 @@ def main(
                 cnn_model_2 = tf.keras.models.load_model("moucut_models/ct_cnn_2.h5")
             except:
                 print("横顔の雌雄判別モデルを[ct_cnn_2.h5]として配置してください。")
+
+        elif mode == "trt_pt":
+            try:
+                cnn_model_2 = tf.saved_model.load("moucut_models/ct_cnn_2_trt")
+            except:
+                print("横顔の雌雄判別モデルを[ct_cnn_2.h5]として配置してください。")
+
 
         moucut_sex_determination_yokogao.moucut(
             movie_path,

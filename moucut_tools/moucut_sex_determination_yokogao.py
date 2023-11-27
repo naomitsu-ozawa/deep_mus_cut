@@ -52,8 +52,10 @@ def moucut(
         running_mode = "CoreML"
     elif mode == "tf_pt":
         import tensorflow as tf
-
         running_mode = "TensorFlow&PyTorch"
+    elif mode == "trt_pt":
+        import tensorflow as tf
+        running_mode = "TensorRT&PyTorch"
 
     print(running_mode)
 
@@ -82,6 +84,16 @@ def moucut(
         input_name = cnn_model.get_spec().description.input[0].name
         input_name_second = cnn_model_2.get_spec().description.input[0].name
 
+    # tensorRTの処理
+    elif mode == "trt_pt":
+        signature_keys_1 = list(cnn_model.signatures.keys())
+        infer_1 = cnn_model.signatures[signature_keys_1[0]]
+        outputs_1 = list(infer_1.structured_outputs.keys())[0]
+        signature_keys_2 = list(cnn_model_2.signatures.keys())
+        infer_2 = cnn_model_2.signatures[signature_keys_2[0]]
+        outputs_2 = list(infer_2.structured_outputs.keys())[0]
+        print("trt_preprossece_ok")
+
     pip_croped = np.zeros((224, 224, 3))
 
     # Loop through the video frames
@@ -100,13 +112,13 @@ def moucut(
                 # Run YOLOv8 inference on the frame
                 if mode == "coreml":
                     results = yolo_model(frame, verbose=False)
-                elif mode == "tf_pt":
+                elif mode == "tf_pt" or mode == "trt_pt":
                     results = yolo_model(frame, device=device, verbose=False)
 
                 try:
                     if mode == "coreml":
                         result = results[0].numpy()
-                    elif mode == "tf_pt":
+                    elif mode == "tf_pt" or mode == "trt_pt":
                         result = results[0].cpu().numpy()
                     else:
                         print("modeを指定して下さい")
@@ -156,6 +168,17 @@ def moucut(
                                 cnn_res_derection = cnn_res_derection.numpy()
                                 cnn_res_derection = cnn_res_derection[0][1]
 
+                            elif mode == "trt_pt":
+                                data = np.array(croped).astype(np.float32)
+                                data = data[tf.newaxis]
+                                x = tf.keras.applications.mobilenet_v3.preprocess_input(
+                                    data
+                                )
+                                x = tf.constant(x)
+                                cnn_res_derection = infer_1(x)
+                                cnn_res_derection = cnn_res_derection[outputs_1].numpy()
+                                cnn_res_derection = cnn_res_derection[0][1]
+
                             if cnn_res_derection > 0.5:
                                 # step2 sexing
                                 if mode == "coreml":
@@ -170,6 +193,12 @@ def moucut(
                                     cnn_result_male = cnn_result[0][0]
                                     cnn_result_female = cnn_result[0][1]
 
+                                elif mode == "trt_pt":
+                                    cnn_result = infer_2(x)
+                                    cnn_result = cnn_result[outputs_2].numpy()
+                                    cnn_result_male = cnn_result[0][0]
+                                    cnn_result_female = cnn_result[0][1]
+
                                 # female_threshold = 0.5
                                 # if cnn_result_female >= female_threshold:
                                 #     count_female += 1
@@ -178,10 +207,10 @@ def moucut(
                                 #     count_male += 1
                                 #     pip_croped = croped
 
-                                if cnn_result_male > cnn_result_female:
+                                if cnn_result_female < cnn_result_male:
                                     count_male += 1
                                     pip_croped = croped
-                                elif cnn_result_female >= cnn_result_male:
+                                elif cnn_result_female > cnn_result_male:
                                     count_female += 1
                                     pip_croped = croped
                                 elif cnn_result_female == cnn_result_male:

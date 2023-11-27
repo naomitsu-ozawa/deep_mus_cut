@@ -53,8 +53,12 @@ def moucut(
         running_mode = "CoreML"
     elif mode == "tf_pt":
         import tensorflow as tf
-
         running_mode = "TensorFlow&PyTorch"
+
+    elif mode == "trt_pt":
+        import tensorflow as tf
+        running_mode = "TensrRT&PyTorch"
+        print("mode_ok")
 
     os_name = platform.system()
 
@@ -80,6 +84,11 @@ def moucut(
 
     if mode == "coreml":
         input_name = cnn_model.get_spec().description.input[0].name
+    elif mode == "trt_pt":
+        signature_keys = list(cnn_model.signatures.keys())
+        infer = cnn_model.signatures[signature_keys[0]]
+        outputs = list(infer.structured_outputs.keys())[0]
+        print("trt_preprossece_ok")
 
     pip_croped = np.zeros((224, 224, 3))
 
@@ -103,19 +112,19 @@ def moucut(
                         conf=0.6,  # object confidence threshold for detection
                         verbose=False,
                     )
-                elif mode == "tf_pt":
+                elif mode == "tf_pt" or mode == "trt_pt":
                     results = yolo_model(
                         frame,
                         # max_det=1, # max detecxtion num.
                         device=device,
-                        # conf=0.6,  # object confidence threshold for detection
+                        conf=0.6,  # object confidence threshold for detection
                         verbose=False,
                     )
 
                 try:
                     if mode == "coreml":
                         result = results[0].numpy()
-                    elif mode == "tf_pt":
+                    elif mode == "tf_pt" or mode == "trt_pt":
                         result = results[0].cpu().numpy()
                     else:
                         print("modeを指定して下さい")
@@ -162,9 +171,6 @@ def moucut(
                                 cnn_result = cnn_model.predict({input_name: img_np})
                                 cnn_result = cnn_result["Identity"][0][1]
 
-                                cnn_result = round(float(cnn_result), 4)
-                                cnn_bar = int(cnn_result * 139 + 101)
-
                             elif mode == "tf_pt":
                                 data = np.array(croped).astype(np.float32)
                                 data = data[tf.newaxis]
@@ -175,8 +181,19 @@ def moucut(
                                 cnn_result = cnn_result.numpy()
                                 cnn_result = cnn_result[0][1]
 
-                                cnn_result = round(float(cnn_result), 4)
-                                cnn_bar = int(cnn_result * 139 + 101)
+                            elif mode == "trt_pt":
+                                data = np.array(croped).astype(np.float32)
+                                data = data[tf.newaxis]
+                                x = tf.keras.applications.mobilenet_v3.preprocess_input(
+                                    data
+                                )
+                                x = tf.constant(x)
+                                cnn_result = infer(x)
+                                cnn_result = cnn_result[outputs].numpy()
+                                cnn_result = cnn_result[0][1]
+
+                            cnn_result = round(float(cnn_result), 4)
+                            cnn_bar = int(cnn_result * 139 + 101)
 
                             if cnn_result > 0.9:
                                 for_kmeans_array.append(croped)
