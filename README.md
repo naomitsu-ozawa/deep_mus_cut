@@ -25,44 +25,55 @@ graph TD
 ## インストール
 - python3.10~で動作します。
 - conda等で仮想環境を作成して下さい。
+### Mac、 Linux、 Windows(WSL2)、共通
 1. リポジトリをクローンします。  
-   ```git clone https://github.com/naomitsu-ozawa/deep_mou_cut_2.git```
+   ```git clone https://github.com/naomitsu-ozawa/deep_mus_cut.git```
 2. Ultralyticsをインストールします。  
    ```pip install ultralytics```
 3. Scikit-learnをインストールしてください。  
 ```pip install scikit-learn```  
+  
+### Mac
 1. CoreMLに対応したMacの場合は、CoreMLtoolsをインストールします。  
    ```pip install coremltools```  
-2. CoreML非対応のWindows/Linux/macで利用する場合は、Tensorflowをインストールします。  
-```pip install tensorflow```  
-macの場合は以下もインストールする。  
-```pip install tensorflow-metal```    
-  
+2. CoreML非対応のMacで利用する場合は、Tensorflowをインストールします。  
+  ```pip install tensorflow```    
+  ```pip install tensorflow-metal```    
 - numpyでエラーが起こる場合は、pipの方のnumpyを更新します。  
-```pip install -U numpy```  
+  ```pip install -U numpy```  
+  
+### Linux&Windows(WSL2)
+1. CUDA対応のTensorflowをインストールします。
+   ```pip install tensorflow[and-cuda]```
+2. CUDA対応のPyTorchをインストールするために一度アンインストールします。  
+   ```pip uninstall torch torchvision torchaudio```  
+   こちらからCUDA対応のPyTorchをインストールします。  
+   ```pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118```  
+   CUDAは、11.8をセットアップしてください。  
+
 ### アップデート方法 
-- deep_mou_cut_2フォルダに移動後、git pullして下さい。
+- deep_mus_cutフォルダに移動後、git pullして下さい。
 ---
 ### 使い方
   
 次のコマンドで解析が始まります。  
-```python moucut.py -f <movie_file_path>```  
+```python muscut.py -f <movie_file_path>```  
   
 変数に解析したい動画のパスを入れて指定することもできます。  
 ```
 movie="<movie_file_path>"  
-python moucut.py -f $movie
+python muscut.py -f $movie
 ```    
   
 顔検知中のプレビューを表示させるには、-sオプションをつけて下さい。  
-```python moucut.py -f $movie -s```  
+```python muscut.py -f $movie -s```  
 
 
 ### 顔検出でGPUを使う方法
--m　オプションに"tf"を指定して下さい。
+-m　オプションに"tf_pt"を指定して下さい。
 -d　オプションに "cuda"を指定して下さい。 
 （Macの場合は"mps"）  
-```python moucut.py -f ＄movie -m tf -d cuda```  
+```python muscut.py -f ＄movie -m tf_pt -d cuda```  
   
 CNNモデルの分類ではTensorFlowを使っています。  
 GPUを利用したい場合、お使いのプラットフォームに合わせたTensorFlowを環境にインストールしてください。  
