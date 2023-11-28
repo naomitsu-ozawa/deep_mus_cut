@@ -1,6 +1,4 @@
 # Deep_Mus_Cut
-![図1](https://github.com/naomitsu-ozawa/deep_mus_cut/assets/129124821/fae5e681-81a6-409b-923f-0e8e8291d247)
-
 <p align="center">
   <img src="https://github.com/naomitsu-ozawa/deep_mus_cut/assets/129124821/fae5e681-81a6-409b-923f-0e8e8291d247" />
 </p>
