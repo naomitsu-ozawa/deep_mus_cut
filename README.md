@@ -1,4 +1,4 @@
-# deep_mou_cut_2
+# Deep_Mus_Cut
 ## 動画からマウスの顔をいい感じで画像で保存するアプリ  
 
 https://github.com/naomitsu-ozawa/deep_mou_cut_2/assets/129124821/702d32ab-1227-40a7-8f73-65153dc51fd0
