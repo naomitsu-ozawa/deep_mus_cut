@@ -35,6 +35,7 @@ def muscut(
     cluster_num,
     wc_flag,
     all_extract,
+    cnn_conf
 ):
     match StrRe(movie_path):
         case "webcam*":
@@ -180,7 +181,7 @@ def muscut(
                             cnn_result = round(float(cnn_result), 4)
                             cnn_bar = int(cnn_result * 139 + 101)
 
-                            if cnn_result > 0.9:
+                            if cnn_result > cnn_conf:
                                 for_kmeans_array.append(croped)
                                 count += 1
                                 pip_croped = croped

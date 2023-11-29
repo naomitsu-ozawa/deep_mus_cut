@@ -1,5 +1,6 @@
 import argparse
 import os
+import platform
 
 from muscut_tools import (
     kmeans_image_extractor,
@@ -12,6 +13,7 @@ from muscut_tools import (
 
 os.environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "true"
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+os_name = platform.system()
 
 
 def main(
@@ -25,6 +27,7 @@ def main(
     wc_flag,
     camera_list,
     all_extract,
+    cnn_conf,
 ):
     print("muscut.py_start")
     from ultralytics import YOLO
@@ -39,8 +42,8 @@ def main(
         print("-fオプションでファイルのパスかWebcamを指定して下さい。")
         return
 
-    if device_flag is None:
-        device_flag = "cpu"
+    # if device_flag is None:
+    #     device_flag = "cpu"
 
     if image_flag is None:
         image_flag = "png"
@@ -49,7 +52,10 @@ def main(
         tool = "default"
 
     if mode is None:
-        mode = "coreml"
+        if os_name == "Darwin":
+            mode = "coreml"
+        elif os_name == "Linux" or os_name == "Windows":
+            mode = "tf_pt"
 
     if mode == "coreml":
         import coremltools as ct
@@ -60,8 +66,26 @@ def main(
     elif mode == "tf_pt":
         import tensorflow as tf
 
+        GPU_flag = tf.test.is_gpu_available()
+        if GPU_flag and device_flag is None:
+            if os_name == "Darwin":
+                device_flag = "mps"
+                print("GPU: metal")
+            else:
+                device_flag = "cuda"
+                print("GPU: CUDA")
+        else:
+            device_flag = "cpu"
+            print("GPU: not use")
+
         yolo_model = YOLO("muscut_models/yolo.pt")
         cnn_model = tf.saved_model.load("muscut_models/cnn/savedmodel")
+
+    if cnn_conf is None:
+        cnn_conf = 0.9
+        print("cnn_conf: default 0.9")
+    else:
+        print(f"cnn_conf = {cnn_conf}")
 
     if tool == "default":
         muscut_default.muscut(
@@ -75,6 +99,7 @@ def main(
             cluster_num,
             wc_flag,
             all_extract,
+            cnn_conf,
         )
 
     elif tool == "kmeans_image_extractor":
@@ -97,6 +122,7 @@ def main(
             mode,
             cluster_num,
             wc_flag,
+            # cnn_conf
         )
 
     elif tool == "sexing_multi":
@@ -110,6 +136,7 @@ def main(
             mode,
             cluster_num,
             wc_flag,
+            # cnn_conf
         )
 
     elif tool == "sexing_yokogao":
@@ -130,7 +157,6 @@ def main(
                 cnn_model_2 = tf.saved_model.load("muscut_models/ct_cnn_2/savedmodel")
             except:
                 print("横顔の雌雄判別モデルを[ct_cnn_2.h5]として配置してください。")
-
 
         muscut_sex_determination_yokogao.muscut(
             movie_path,
@@ -201,6 +227,8 @@ def get_args():
         help="検知状況を表示します[True or False]",
     )
 
+    parser.add_argument("-c", "--cnn_conf", type=float, help="画像分類モデルの閾値を、少数で設定")
+
     # option preview show
     parser.add_argument(
         "-wc",
@@ -251,6 +279,7 @@ if __name__ == "__main__":
     wc_flag = args.without_cnn
     camera_list = args.camera_list
     all_extract = args.all
+    cnn_conf = args.cnn_conf
 
     main(
         movie_path,
@@ -263,5 +292,6 @@ if __name__ == "__main__":
         wc_flag,
         camera_list,
         all_extract,
+        cnn_conf,
     )
     print("\033[32m処理が完了しました。\033[0m")
