@@ -122,7 +122,6 @@ def main(
             mode,
             cluster_num,
             wc_flag,
-            # cnn_conf
         )
 
     elif tool == "sexing_multi":
@@ -136,7 +135,6 @@ def main(
             mode,
             cluster_num,
             wc_flag,
-            # cnn_conf
         )
 
     elif tool == "sexing_yokogao":
@@ -147,16 +145,9 @@ def main(
                 print("横顔の雌雄判別モデルを[ct_cnn_2.mlmodel]として配置してください。")
         elif mode == "tf_pt":
             try:
-                cnn_model_2 = tf.keras.models.load_model("muscut_models/ct_cnn_2.h5")
                 cnn_model_2 = tf.saved_model.load("muscut_models/ct_cnn_2/savedmodel")
             except:
-                print("横顔の雌雄判別モデルを[ct_cnn_2.h5]として配置してください。")
-
-        elif mode == "trt_pt":
-            try:
-                cnn_model_2 = tf.saved_model.load("muscut_models/ct_cnn_2/savedmodel")
-            except:
-                print("横顔の雌雄判別モデルを[ct_cnn_2.h5]として配置してください。")
+                print("横顔の雌雄判別モデルを[ct_cnn_2/savedmodel]として配置してください。")
 
         muscut_sex_determination_yokogao.muscut(
             movie_path,
@@ -169,6 +160,7 @@ def main(
             mode,
             cluster_num,
             wc_flag,
+            cnn_conf
         )
 
 

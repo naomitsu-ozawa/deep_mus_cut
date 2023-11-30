@@ -33,6 +33,7 @@ def muscut(
     mode,
     cluster_num,
     wc_flag,
+    cnn_conf
 ):
     print("yokogao_start")
     match StrRe(movie_path):
@@ -178,7 +179,7 @@ def muscut(
                                 cnn_res_derection = cnn_res_derection[outputs_1].numpy()
                                 cnn_res_derection = cnn_res_derection[0][1]
 
-                            if cnn_res_derection > 0.5:
+                            if cnn_res_derection > cnn_conf:
                                 # step2 sexing
                                 if mode == "coreml":
                                     cnn_result = cnn_model_2.predict(
