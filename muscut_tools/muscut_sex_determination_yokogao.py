@@ -156,10 +156,11 @@ def muscut(
 
                         croped = ori_img[left_top_y:right_btm_y, left_top_x:right_btm_x]
                         croped = cv2.resize(croped, (224, 224))
+                        pred_croped = cv2.cvtColor(croped, cv2.COLOR_BGR2RGB)
 
                         if not wc_flag:
                             if mode == "coreml":
-                                img_np = np.array(croped).astype(np.float32)
+                                img_np = np.array(pred_croped).astype(np.float32)
                                 img_np = img_np[np.newaxis, :, :, :]
 
                                 # step1 face direction
@@ -169,7 +170,7 @@ def muscut(
                                 cnn_res_derection = cnn_res_derection["Identity"][0][1]
 
                             elif mode == "tf_pt":
-                                data = np.array(croped).astype(np.float32)
+                                data = np.array(pred_croped).astype(np.float32)
                                 data = data[tf.newaxis]
                                 x = tf.keras.applications.mobilenet_v3.preprocess_input(
                                     data
