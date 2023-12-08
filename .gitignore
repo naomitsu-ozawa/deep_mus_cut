@@ -1,6 +1,6 @@
-!/*.md
-!/muscut.py
-!/muscut_models/*
-!/muscut_tools/*.py
+!*.md
+!muscut.py
+!muscut_models/
+!muscut_tools/*.py
 *
 *.DS_Store
