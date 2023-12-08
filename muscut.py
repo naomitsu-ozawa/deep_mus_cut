@@ -42,9 +42,6 @@ def main(
         print("-fオプションでファイルのパスかWebcamを指定して下さい。")
         return
 
-    # if device_flag is None:
-    #     device_flag = "cpu"
-
     if image_flag is None:
         image_flag = "png"
 
