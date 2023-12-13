@@ -35,7 +35,7 @@ def muscut(
     cluster_num,
     wc_flag,
     all_extract,
-    cnn_conf
+    cnn_conf,
 ):
     match StrRe(movie_path):
         case "webcam*":
@@ -54,6 +54,7 @@ def muscut(
         running_mode = "CoreML"
     elif mode == "tf_pt":
         import tensorflow as tf
+
         running_mode = "TensorFlow&PyTorch"
 
     os_name = platform.system()
@@ -65,7 +66,8 @@ def muscut(
     if os_name == "Darwin":
         cap = cv2.VideoCapture(movie_path, cv2.CAP_AVFOUNDATION)
     else:
-        cap = cv2.VideoCapture(movie_path, cv2.CAP_ANY)
+        # cap = cv2.VideoCapture(movie_path, cv2.CAP_ANY)
+        cap = cv2.VideoCapture(movie_path, cv2.CAP_FFMPEG)
 
     if webcam_flag:
         total_frames = None
@@ -96,10 +98,14 @@ def muscut(
             n += 1
             # Read a frame from the video
             success, frame = cap.read()
+
             cnn_result = 0
             cnn_bar = 101
 
             if success:
+                # test 4K重いのでリサイズする？
+                # frame = cv2.resize(frame, (1920, 1080))
+
                 # Run YOLOv8 inference on the frame
                 if mode == "coreml":
                     results = yolo_model(
