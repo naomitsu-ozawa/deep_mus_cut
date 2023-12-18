@@ -2,7 +2,8 @@
 !muscut.py
 !muscut_models/yolo.pt
 !muscut_models/ct_cnn.mlmodel
-!muscut_models/cnn/savedmodel/
+!muscut_models/cnn.keras
 !muscut_tools/*.py
 *
 *.DS_Store
+# !muscut_models/cnn/savedmodel/
