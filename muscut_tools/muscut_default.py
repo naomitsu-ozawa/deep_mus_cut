@@ -167,23 +167,39 @@ def muscut(
                         croped = cv2.resize(croped, (224, 224))
                         pred_croped = cv2.cvtColor(croped, cv2.COLOR_BGR2RGB)
 
+                        #pint check
+                        p = cv2.Sobel(pred_croped,
+                                        dx=1,
+                                        dy=1,
+                                        ddepth=cv2.CV_8U,
+                                        ksize=5,
+                                        scale=1,
+                                        delta=50
+                                        ).var()
+                        if p > 2600:
+                            pint_check = True
+                        else:
+                            pint_check = False
+
                         if not wc_flag:
                             if mode == "coreml":
-                                img_np = np.array(pred_croped).astype(np.float32)
-                                img_np = img_np[np.newaxis, :, :, :]
-                                cnn_result = cnn_model.predict({input_name: img_np})
-                                cnn_result = cnn_result["Identity"][0][1]
+                                if pint_check:
+                                    img_np = np.array(pred_croped).astype(np.float32)
+                                    img_np = img_np[np.newaxis, :, :, :]
+                                    cnn_result = cnn_model.predict({input_name: img_np})
+                                    cnn_result = cnn_result["Identity"][0][1]
 
                             elif mode == "tf_pt":
-                                data = np.array(pred_croped).astype(np.float32)
-                                data = data[tf.newaxis]
-                                x = tf.keras.applications.mobilenet_v3.preprocess_input(
-                                    data
-                                )
-                                x = tf.constant(x)
-                                cnn_result = infer(x)
-                                cnn_result = cnn_result[outputs].numpy()
-                                cnn_result = cnn_result[0][1]
+                                if pint_check:
+                                    data = np.array(pred_croped).astype(np.float32)
+                                    data = data[tf.newaxis]
+                                    x = tf.keras.applications.mobilenet_v3.preprocess_input(
+                                        data
+                                    )
+                                    x = tf.constant(x)
+                                    cnn_result = infer(x)
+                                    cnn_result = cnn_result[outputs].numpy()
+                                    cnn_result = cnn_result[0][1]
 
                             cnn_result = round(float(cnn_result), 4)
                             cnn_bar = int(cnn_result * 139 + 101)
