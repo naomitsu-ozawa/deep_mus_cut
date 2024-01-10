@@ -36,7 +36,7 @@ def muscut(
     wc_flag,
     all_extract,
     cnn_conf,
-    pint
+    pint,
 ):
     match StrRe(movie_path):
         case "webcam*":
@@ -103,6 +103,9 @@ def muscut(
             cnn_result = 0
             cnn_bar = 101
 
+            # yolo conf setting
+            yolo_conf = 0.9
+
             if success:
                 # test 4K重いのでリサイズする？
                 # frame = cv2.resize(frame, (1920, 1080))
@@ -112,7 +115,7 @@ def muscut(
                     results = yolo_model(
                         frame,
                         # max_det=1, # max detecxtion num.
-                        conf=0.6,  # object confidence threshold for detection
+                        conf=yolo_conf,  # object confidence threshold for detection
                         verbose=False,
                     )
                 elif mode == "tf_pt":
@@ -120,7 +123,7 @@ def muscut(
                         frame,
                         # max_det=1, # max detecxtion num.
                         device=device,
-                        conf=0.6,  # object confidence threshold for detection
+                        conf=yolo_conf,  # object confidence threshold for detection
                         verbose=False,
                     )
 
