@@ -28,6 +28,7 @@ def main(
     camera_list,
     all_extract,
     cnn_conf,
+    pint
 ):
     print("muscut.py_start")
     from ultralytics import YOLO
@@ -85,6 +86,12 @@ def main(
     else:
         print(f"cnn_conf = {cnn_conf}")
 
+    if pint is None:
+        pint = 2600
+        print(f"pint_check_threshold: default 2600")
+    else:
+        print(f"pint_check_threshold = {pint}")
+
     if tool == "default":
         muscut_default.muscut(
             movie_path,
@@ -98,6 +105,7 @@ def main(
             wc_flag,
             all_extract,
             cnn_conf,
+            pint
         )
 
     elif tool == "kmeans_image_extractor":
@@ -159,7 +167,8 @@ def main(
             mode,
             cluster_num,
             wc_flag,
-            cnn_conf
+            cnn_conf,
+            pint
         )
 
 
@@ -236,6 +245,14 @@ def get_args():
         help="抽出枚数",
     )
 
+    # option pint check
+    parser.add_argument(
+        "-p",
+        "--pint",
+        type=int,
+        help="ピントチェックの閾値、デフォルト2600",
+    )
+
     # option webcamera list
     parser.add_argument(
         "-cl",
@@ -266,6 +283,7 @@ if __name__ == "__main__":
     tool = args.tool
     show_flag = args.show_flag
     cluster_num = args.number
+    pint = args.pint
     mode = args.mode
     wc_flag = args.without_cnn
     camera_list = args.camera_list
@@ -284,5 +302,6 @@ if __name__ == "__main__":
         camera_list,
         all_extract,
         cnn_conf,
+        pint
     )
     print("\033[32m処理が完了しました。\033[0m")

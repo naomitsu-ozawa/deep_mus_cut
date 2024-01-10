@@ -36,6 +36,7 @@ def muscut(
     wc_flag,
     all_extract,
     cnn_conf,
+    pint
 ):
     match StrRe(movie_path):
         case "webcam*":
@@ -176,7 +177,7 @@ def muscut(
                                         scale=1,
                                         delta=50
                                         ).var()
-                        if p > 2600:
+                        if p > pint:
                             pint_check = True
                         else:
                             pint_check = False
