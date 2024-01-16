@@ -161,6 +161,7 @@ def kmeans_main(save_path, video_name, for_kmeans_array, cluster_num, format_fla
             shutil.copy(img_file, SELECTED_DIR)
     try:
         shutil.rmtree(SAVE_PATH)
+        os.remove(CSV_PATH)
     except Exception as e:
         print(f"Failed to delete {SAVE_PATH}. Reason: {e}")
     print("\033[32m一時ファイルを削除しました\033[0m")
