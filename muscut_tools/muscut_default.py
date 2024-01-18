@@ -136,7 +136,6 @@ def muscut(
                         print("modeを指定して下さい")
                         return
 
-                    # ori_img = result.orig_img
                     ori_img = frame
                     save_frame = frame.copy()
 
@@ -144,7 +143,6 @@ def muscut(
                     for i in range(length):
                         box = result[i].boxes.xywh
                         cv_box = result[i].boxes.xyxy
-                        # name = result.names
                         xcenter = box[0][0]
                         ycenter = box[0][1]
                         width = box[0][2]
@@ -167,7 +165,7 @@ def muscut(
                         croped = save_frame[
                             left_top_y:right_btm_y, left_top_x:right_btm_x
                         ]
-                        # croped = ori_img[left_top_y:right_btm_y, left_top_x:right_btm_x]
+
                         croped = cv2.resize(croped, (224, 224))
                         pred_croped = cv2.cvtColor(croped, cv2.COLOR_BGR2RGB)
 
@@ -270,7 +268,6 @@ def muscut(
                                 )
 
                         else:
-                            # cnn_result = "without cnn"
                             for_kmeans_array.append(croped)
                             count += 1
 
@@ -362,7 +359,6 @@ def muscut(
     cap.release()
     cv2.destroyAllWindows()
     cv2.waitKey(1)
-    # cv2.destroyWindow("YOLOv8 Inference")
 
     print("\033[32m顔検出完了\033[0m")
 

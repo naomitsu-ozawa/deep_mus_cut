@@ -117,8 +117,6 @@ def muscut(
             # Read a frame from the video
             success, frame = cap.read()
             cnn_result = 0
-            # cnn_bar_male = 101
-            # cnn_bar_female = 101
 
             if success:
                 # Run YOLOv8 inference on the frame
@@ -140,7 +138,6 @@ def muscut(
                     length = result.boxes.shape[0]
                     for i in range(length):
                         box = result[i].boxes.xywh
-                        # name = result.names
                         xcenter = box[0][0]
                         ycenter = box[0][1]
                         width = box[0][2]
@@ -216,6 +213,7 @@ def muscut(
                                     cnn_result_male = cnn_result[0][0]
                                     cnn_result_female = cnn_result[0][1]
 
+                                # 閾値で判定したい場合のコード
                                 # female_threshold = 0.5
                                 # if cnn_result_female >= female_threshold:
                                 #     count_female += 1
@@ -255,9 +253,6 @@ def muscut(
                     count_bar_male = int(count_male / sexing_frames * 139) + 101
                     count_bar_female = int(count_female / sexing_frames * 139) + 101
 
-                    # text_2_1 = f"Extractable images:{count_male}"
-                    # text_2_2 = f"Extractable images:{count_female}"
-
                     cv2.putText(
                         annotated_frame,
                         text_1_1,
@@ -270,7 +265,6 @@ def muscut(
                         annotated_frame,
                         (100, 5),
                         (count_bar_male, 20),
-                        # (cnn_bar_male, 20),
                         (250, 250, 250),
                         -1,
                     )
@@ -287,7 +281,6 @@ def muscut(
                         annotated_frame,
                         (100, 23),
                         (count_bar_female, 40),
-                        # (cnn_bar_female, 40),
                         (250, 250, 250),
                         -1,
                     )
