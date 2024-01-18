@@ -78,7 +78,6 @@ def main(
             print("GPU: not use")
 
         yolo_model = YOLO("muscut_models/yolo.pt")
-        # cnn_model = tf.saved_model.load("muscut_models/cnn/savedmodel")
         cnn_model = tf.keras.models.load_model("muscut_models/cnn/savedmodel")
 
     if cnn_conf is None:
@@ -152,7 +151,6 @@ def main(
                 print("横顔の雌雄判別モデルを[ct_cnn_2.mlmodel]として配置してください。")
         elif mode == "tf_pt":
             try:
-                # cnn_model_2 = tf.saved_model.load("muscut_models/ct_cnn_2/savedmodel")
                 cnn_model_2 = tf.keras.models.load_model("muscut_models/ct_cnn_2/savedmodel")
             except:
                 print("横顔の雌雄判別モデルを[ct_cnn_2/savedmodel]として配置してください。")
