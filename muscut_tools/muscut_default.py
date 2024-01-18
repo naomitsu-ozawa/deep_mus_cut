@@ -192,6 +192,8 @@ def muscut(
                                     img_np = img_np[np.newaxis, :, :, :]
                                     cnn_result = cnn_model.predict({input_name: img_np})
                                     cnn_result = cnn_result["Identity"][0][1]
+                                else:
+                                    cnn_result = 0
 
                             elif mode == "tf_pt":
                                 if pint_check:
@@ -204,6 +206,8 @@ def muscut(
                                     cnn_result = infer(x)
                                     cnn_result = cnn_result[outputs].numpy()
                                     cnn_result = cnn_result[0][1]
+                                else:
+                                    cnn_result = 0
 
                             cnn_result = round(float(cnn_result), 4)
                             cnn_bar = int(cnn_result * 139 + 101)
