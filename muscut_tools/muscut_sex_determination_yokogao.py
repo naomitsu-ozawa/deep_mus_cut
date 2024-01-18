@@ -184,6 +184,8 @@ def muscut(
                                         {input_name: img_np}
                                     )
                                     cnn_res_derection = cnn_res_derection["Identity"][0][1]
+                                else:
+                                    cnn_res_derection = 0
 
                             elif mode == "tf_pt":
                                 if pint_check:
@@ -196,6 +198,8 @@ def muscut(
                                     cnn_res_derection = infer_1(x)
                                     cnn_res_derection = cnn_res_derection[outputs_1].numpy()
                                     cnn_res_derection = cnn_res_derection[0][1]
+                                else:
+                                    cnn_res_derection = 0
 
                             if cnn_res_derection > cnn_conf:
                                 # step2 sexing
