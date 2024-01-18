@@ -55,13 +55,18 @@ graph TD
   ```pip install -U numpy```  
   
 ### Linux&Windows(WSL2)
-1. CUDA対応のTensorflowをインストールします。
+1. Tensorflowのインストール  
+   1. CUDA対応のTensorflowをインストールします。
    ```pip install tensorflow[and-cuda]```
-2. CUDA対応のPyTorchをインストールするために一度アンインストールします。  
+2. PyTorchのインストール
+   1. tensorflow2.13以前を使う場合（CUDA11.xを使う場合）
+      1. CUDA対応のPyTorchをインストールするために一度アンインストールします。  
    ```pip uninstall torch torchvision torchaudio```  
    こちらからCUDA対応のPyTorchをインストールします。  
    ```pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118```  
-   CUDAは、11.8をセットアップしてください。  
+   2. tensorflow2.14以降を使う場合（CUDA12.xを使う場合）
+      1. そのままで大丈夫
+
 
 ### アップデート方法 
 - deep_mus_cutフォルダに移動後、git pullして下さい。
