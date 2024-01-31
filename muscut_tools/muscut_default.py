@@ -12,6 +12,7 @@ import numpy as np
 from tqdm import tqdm
 
 from muscut_tools import kmeans, all_save
+from muscut_functions import cv_functions
 
 
 # %%
@@ -114,14 +115,14 @@ def muscut(
                 if mode == "coreml":
                     results = yolo_model(
                         frame,
-                        max_det=1, # max detecxtion num.
+                        max_det=1,  # max detecxtion num.
                         conf=yolo_conf,  # object confidence threshold for detection
                         verbose=False,
                     )
                 elif mode == "tf_pt":
                     results = yolo_model(
                         frame,
-                        max_det=1, # max detecxtion num.
+                        max_det=1,  # max detecxtion num.
                         device=device,
                         conf=yolo_conf,  # object confidence threshold for detection
                         verbose=False,
@@ -141,26 +142,17 @@ def muscut(
 
                     length = result.boxes.shape[0]
                     for i in range(length):
-                        box = result[i].boxes.xywh
-                        cv_box = result[i].boxes.xyxy
-                        xcenter = box[0][0]
-                        ycenter = box[0][1]
-                        width = box[0][2]
-                        height = box[0][3]
-
-                        cv_top_x = int(cv_box[0][0]) + 1
-                        cv_top_y = int(cv_box[0][1]) + 1
-                        cv_btm_x = int(cv_box[0][2]) - 1
-                        cv_btm_y = int(cv_box[0][3]) - 1
-
-                        if width > height:
-                            height = width
-                        elif height > width:
-                            width = height
-                        left_top_x = math.floor(xcenter - (width / 2))
-                        left_top_y = math.floor(ycenter - (height / 2))
-                        right_btm_x = math.floor(xcenter + (width / 2))
-                        right_btm_y = math.floor(ycenter + (height / 2))
+                        # xy convert to square
+                        (
+                            left_top_x,
+                            left_top_y,
+                            right_btm_x,
+                            right_btm_y,
+                            cv_top_x,
+                            cv_top_y,
+                            cv_btm_x,
+                            cv_btm_y,
+                        ) = cv_functions.crop_modified_xy(result[i])
 
                         croped = save_frame[
                             left_top_y:right_btm_y, left_top_x:right_btm_x
@@ -169,19 +161,8 @@ def muscut(
                         croped = cv2.resize(croped, (224, 224))
                         pred_croped = cv2.cvtColor(croped, cv2.COLOR_BGR2RGB)
 
-                        #pint check
-                        p = cv2.Sobel(pred_croped,
-                                        dx=1,
-                                        dy=1,
-                                        ddepth=cv2.CV_8U,
-                                        ksize=5,
-                                        scale=1,
-                                        delta=50
-                                        ).var()
-                        if p > pint:
-                            pint_check = True
-                        else:
-                            pint_check = False
+                        # pint check
+                        pint_check = cv_functions.pint_check(pred_croped, pint)
 
                         if not wc_flag:
                             if mode == "coreml":
@@ -215,58 +196,25 @@ def muscut(
                                 count += 1
                                 pip_croped = croped
 
-                                cv2.rectangle(
+                                cv_functions.display_detected_frame(
                                     ori_img,
-                                    (cv_top_x, cv_top_y),
-                                    (cv_btm_x, cv_btm_y),
+                                    "OK",
+                                    cv_top_x,
+                                    cv_top_y,
+                                    cv_btm_x,
+                                    cv_btm_y,
                                     (250, 0, 0),
-                                    thickness=3,
-                                    lineType=cv2.LINE_AA,
-                                )
-                                cv2.rectangle(
-                                    ori_img,
-                                    (cv_top_x, cv_top_y),
-                                    (cv_top_x + 250, cv_top_y + 40),
-                                    (250, 0, 0),
-                                    thickness=-1,
-                                    lineType=cv2.LINE_AA,
-                                )
-                                cv2.putText(
-                                    ori_img,
-                                    text="OK",
-                                    org=(cv_top_x, cv_top_y + 20),
-                                    fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                                    fontScale=1.0,
-                                    color=(250, 250, 250),
-                                    thickness=2,
                                 )
                             else:
-                                cv2.rectangle(
+                                cv_functions.display_detected_frame(
                                     ori_img,
-                                    (cv_top_x, cv_top_y),
-                                    (cv_btm_x, cv_btm_y),
+                                    "Not Detect",
+                                    cv_top_x,
+                                    cv_top_y,
+                                    cv_btm_x,
+                                    cv_btm_y,
                                     (127, 127, 127),
-                                    thickness=3,
-                                    lineType=cv2.LINE_AA,
                                 )
-                                cv2.rectangle(
-                                    ori_img,
-                                    (cv_top_x, cv_top_y),
-                                    (cv_top_x + 250, cv_top_y + 40),
-                                    (127, 127, 127),
-                                    thickness=-1,
-                                    lineType=cv2.LINE_AA,
-                                )
-                                cv2.putText(
-                                    ori_img,
-                                    text="not detect",
-                                    org=(cv_top_x, cv_top_y + 20),
-                                    fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                                    fontScale=1.0,
-                                    color=(250, 250, 250),
-                                    thickness=2,
-                                )
-
                         else:
                             for_kmeans_array.append(croped)
                             count += 1
@@ -284,73 +232,21 @@ def muscut(
                         annotated_frame = results[0].plot(line_width=(3))
                     else:
                         annotated_frame = ori_img
-                    annotated_frame = cv2.resize(annotated_frame, (1280, 720))
-                    cv2.rectangle(annotated_frame, (0, 0), (256, 320), (80, 80, 80), -1)
 
-                    text_1 = "CNN_score:"
-                    text_2 = f"Extractable images:{count}"
-
-                    cv2.putText(
+                    annotated_frame = cv_functions.display_preview_screen(
                         annotated_frame,
-                        text_1,
-                        (5, 17),
-                        fontFace=cv2.FONT_HERSHEY_TRIPLEX,
-                        fontScale=0.5,
-                        color=(250, 250, 250),
-                    )
-                    cv2.putText(
-                        annotated_frame,
-                        text_2,
-                        (5, 37),
-                        fontFace=cv2.FONT_HERSHEY_TRIPLEX,
-                        fontScale=0.5,
-                        color=(250, 250, 250),
-                    )
-                    cv2.rectangle(
-                        annotated_frame,
-                        (100, 5),
-                        (cnn_bar, 20),
-                        (250, 250, 250),
-                        -1,
+                        cnn_bar,
+                        count,
+                        total_frames,
+                        pip_croped,
+                        webcam_flag,
+                        n,
                     )
 
-                    if not webcam_flag:
-                        prog = round(n / total_frames * 100)
-                        prog_bar = round(prog * 2.54)
-                        text_3 = f"|{n}/{round(total_frames)}|{prog}%|"
-                        cv2.rectangle(
-                            annotated_frame,
-                            (5, 65),
-                            (prog_bar, 70),
-                            (250, 250, 250),
-                            -1,
-                        )
-                    else:
-                        text_3 = "webcam"
-
-                    cv2.putText(
-                        annotated_frame,
-                        text_3,
-                        (5, 57),
-                        fontFace=cv2.FONT_HERSHEY_TRIPLEX,
-                        fontScale=0.5,
-                        color=(250, 250, 250),
-                    )
-                    # PiP
-                    pip_x = 16
-                    pip_y = 80
-                    pip_h, pip_w = pip_croped.shape[:2]
-                    if pip_croped.shape == (224, 224, 3):
-                        annotated_frame[
-                            pip_y : pip_y + pip_h, pip_x : pip_x + pip_w
-                        ] = pip_croped
-
-                    # Display the annotated frame
                     cv2.imshow("Inference", annotated_frame)
                     key = cv2.waitKey(1)
                     if key == 27:
                         break
-
             else:
                 # Break the loop if the end of the video is reached
                 break
