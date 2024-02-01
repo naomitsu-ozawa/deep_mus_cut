@@ -9,12 +9,15 @@ from muscut_tools import (
     muscut_sex_determination,
     muscut_sex_determination_yokogao,
     muscut_sex_determination_multi,
+    muscut_logo
 )
 
 os.environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "true"
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 os_name = platform.system()
 
+#start logo
+muscut_logo.logo()
 
 def main(
     movie_path,
