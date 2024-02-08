@@ -13,8 +13,7 @@ import numpy as np
 from tqdm import tqdm
 
 from muscut_functions import cv_functions
-from muscut_tools import all_save, kmeans
-from test_lib import kmeans_ok_frames, muscut_cutting, muscut_rembg
+from muscut_tools import all_save, kmeans, kmeans_ok_frames, muscut_cutting, muscut_rembg
 
 
 # %%
