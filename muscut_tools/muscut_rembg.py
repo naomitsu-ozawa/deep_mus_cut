@@ -32,7 +32,14 @@ def rembg_it(files, output_path, session):
         save_image_path = f"{output_path}/{file_name}_rembgout.png"
 
         input = cv2.imread(input_path)
-        output = remove(input, session=session)
+        output = remove(
+            input, 
+            # alpha_matting=True,
+            # alpha_matting_foreground_threshold=240,  # default 240
+            # alpha_matting_background_threshold=10,  # default 10
+            # alpha_matting_erode_size=5,  # default 10
+            session=session,
+            )
         cv2.imwrite(save_image_path, output)
         sleep(0.0000002)
         files.set_description("Processing %s" % file_name)
@@ -44,7 +51,7 @@ def create_directory_if_not_exists(directory):
 
 
 def main(save_path):
-    # u2net model
+    # rembgで使うマスク抽出モデル
     # u2net default
     # u2netp light weight model
     # isnet-general-use new pre trained model
@@ -56,10 +63,7 @@ def main(save_path):
     print(f"model:{unet_model_name}")
     session = new_session(
         unet_model_name,
-        # providers=['TensorrtExecutionProvider','CUDAExecutionProvider']
         providers=providers,
-        # providers=['CPUExecutionProvider']
-        # providers=['TensorrtExecutionProvider']
     )
 
     files_path = f"{save_path}/selected_imgs"
