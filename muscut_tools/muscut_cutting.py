@@ -32,7 +32,7 @@ def cutting(img, device, yolo_model, mode, output_folder):
     elif mode == "tf_pt":
         result = results[0].cpu().numpy()
 
-    save_frame = image.copy()
+    save_frame = image
 
     length = result.boxes.shape[0]
     for i in range(length):
@@ -63,7 +63,7 @@ def create_directory_if_not_exists(directory):
 
 def main(input_path, device, yolo_model, mode):
     imgs = glob.glob(f"{input_path}/*.png")
-    print("合成中・・・")
+    print("切り取り中・・・")
     imgs = tqdm(imgs)
     for img in imgs:
         output_folder = f"{os.path.dirname(os.path.dirname(img))}/with_rembg"
