@@ -1,15 +1,31 @@
 from muscut_functions import cv_functions
-import numpy
+import numpy as np
 import glob
 import os
 import cv2
 from tqdm import tqdm
 
+
+def black_back(img):
+    # 画像の高さと幅を取得
+    height, width = img.shape[:2]
+
+    # 黒背景の画像を作成
+    black_background = np.zeros((height, width, 3), dtype=np.uint8)
+
+# 元の画像のアルファチャンネルを無視して黒背景の画像に貼り付け
+    black_background[:, :] = img[:, :, :3]
+
+    return black_background
+
+
 def cutting(img, device, yolo_model, mode, output_folder):
     file_name = os.path.basename(img)
     # Run YOLOv8 inference on the frame
     image = cv2.imread(img, -1)
-    inf_image = cv2.imread(img)
+    inf_image = black_back(image)
+    # inf_image = cv2.imread(img)
+
     yolo_conf = 0.9
     if mode == "coreml":
         results = yolo_model(
