@@ -13,7 +13,7 @@ import numpy as np
 from tqdm import tqdm
 
 from muscut_functions import cv_functions
-from muscut_tools import all_save, kmeans, kmeans_ok_frames, muscut_cutting, muscut_rembg
+from muscut_tools import all_save, kmeans, kmeans_ok_frames, muscut_cutting, muscut_rembg, muscut_cutting_multi_process, muscut_rembg_multi_process
 
 
 # %%
@@ -284,11 +284,16 @@ def main(
             image_flag,
         )
 
+
+        #####
+        input_path = f"{save_path}"
         # rembg
-        muscut_rembg.main(save_path)
+        # muscut_rembg.main(save_path)
+        muscut_rembg_multi_process.main(input_path)
+
         # muscut cutting
-        input_path = f"{save_path}/rembg_imgs"
-        muscut_cutting.main(input_path, device, yolo_model, mode)
+        # muscut_cutting.main(input_path, device, yolo_model, mode)
+        muscut_cutting_multi_process.main(input_path, device, yolo_model, mode)
 
         try:
             shutil.rmtree(f"{save_path}/selected_imgs")

@@ -78,6 +78,7 @@ def create_directory_if_not_exists(directory):
 
 
 def main(input_path, device, yolo_model, mode):
+    input_path = f"{input_path}/rembg_imgs"
     imgs = glob.glob(f"{input_path}/*.png")
     print("切り取り中・・・")
     imgs = tqdm(imgs)

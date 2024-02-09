@@ -1,5 +1,11 @@
+import glob
 import math
+import os
+from multiprocessing import Pool
+
 import cv2
+import numpy as np
+from tqdm import tqdm
 
 
 def crop_modified_xy(result):
@@ -143,3 +149,48 @@ def display_preview_screen(
         annotated_frame[pip_y : pip_y + pip_h, pip_x : pip_x + pip_w] = pip_croped
 
     return annotated_frame
+
+
+def read_image(img_path):
+    imgname = os.path.basename(img_path)
+    return cv2.imread(img_path, -1), imgname
+
+
+def read_images_parallel(imgs):
+    # プロセス数を取得（最大はCPUコア数）
+    num_processes = os.cpu_count()
+
+    # プールを作成
+    pool = Pool(processes=num_processes)
+
+    with tqdm(total=len(imgs), desc="Loading...") as pbar:
+        # pool.imap() からの値を1つずつ取得して処理する
+        rimgs = []
+        imgnames = []
+        for result in pool.imap(read_image, imgs):
+            img, img_name = result
+            rimgs.append(img)
+            imgnames.append(img_name)
+            pbar.update(1)
+
+
+
+    # プールを閉じる
+    pool.close()
+    pool.join()
+
+    print("All images loaded.")
+    return rimgs, imgnames
+
+
+def black_back(img):
+    # 画像の高さと幅を取得
+    height, width = img.shape[:2]
+
+    # 黒背景の画像を作成
+    black_background = np.zeros((height, width, 3), dtype=np.uint8)
+
+    # 元の画像のアルファチャンネルを無視して黒背景の画像に貼り付け
+    black_background[:, :] = img[:, :, :3]
+
+    return black_background
