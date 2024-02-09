@@ -27,24 +27,20 @@ def build_pca(df):
 
 
 ###########################################################################3
-def process_images(start, end, imgs_list, save_path, kmeans, format_flag, video_name):
+def process_images(start, end, imgs_list, save_path, kmeans, format_flag, video_name, progress_queue):
     for j in range(start, end):
         label = kmeans.labels_[j]
         img = imgs_list[j]
         file_number = str(j).zfill(6)
         if format_flag == "jpg":
             cv2.imwrite(
-                save_path
-                + "cluster{}/{}".format(label, f"{video_name}-{file_number}.jpg"),
-                img,
+                save_path + "cluster{}/{}".format(label, f"{video_name}-{file_number}.jpg"), img
             )
         else:
             cv2.imwrite(
-                save_path
-                + "cluster{}/{}".format(label, f"{video_name}-{file_number}.png"),
-                img,
+                save_path + "cluster{}/{}".format(label, f"{video_name}-{file_number}.png"), img
             )
-
+    progress_queue.put(1)  # プロセスの処理完了をキューに追加
 
 def make_cluster_dir_parallel(imgs_list, save_path, kmeans, format_flag, video_name):
     # 保存先のディレクトリを空にして作成
@@ -60,20 +56,23 @@ def make_cluster_dir_parallel(imgs_list, save_path, kmeans, format_flag, video_n
     num_processes = multiprocessing.cpu_count()
     processes = []
     imgs_per_process = len(imgs_list) // num_processes
-
-    print("\033[32m仕分け中\033[0m")
+    progress_queue = multiprocessing.Queue()  # プロセスの進捗を管理するためのキュー
 
     for i in range(num_processes):
         start = i * imgs_per_process
         end = start + imgs_per_process if i < num_processes - 1 else len(imgs_list)
         p = multiprocessing.Process(
             target=process_images,
-            args=(start, end, imgs_list, save_path, kmeans, format_flag, video_name),
+            args=(start, end, imgs_list, save_path, kmeans, format_flag, video_name, progress_queue),
         )
         processes.append(p)
         p.start()
 
-    for p in tqdm(processes):
+    # プロセスの処理完了を監視し、進捗を更新する
+    for _ in tqdm(range(num_processes), desc='Processing images'):
+        progress_queue.get()
+
+    for p in processes:
         p.join()
     
     print("\033[32mクラスタごとにファイル作成完了\033[0m")

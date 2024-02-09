@@ -46,7 +46,7 @@ def main(input_path):
     # sam
     # silueta
 
-    print("背景除去開始")
+    print("\033[32m背景除去開始\033[0m")
     unet_model_name = "isnet-general-use"
     print(f"model:{unet_model_name}")
     session = new_session(
@@ -58,9 +58,9 @@ def main(input_path):
         imgaes, imgnames, session, output_folder
     )
 
-    datas = tqdm(zip(rembg_images, output_paths))
+    datas = tqdm(zip(rembg_images, output_paths), desc="Saving...")
     for img_data, path in datas:
         # 画像を保存する
         cv2.imwrite(path, img_data)
 
-    print("背景除去完了")
+    print("\033[32m背景除去完了\033[0m")
