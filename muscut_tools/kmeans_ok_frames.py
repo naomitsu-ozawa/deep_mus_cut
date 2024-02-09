@@ -9,6 +9,7 @@ import pandas as pd
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from tqdm import tqdm
+import multiprocessing
 
 
 # kmeansのモデル構築
@@ -23,6 +24,62 @@ def build_pca(df):
     pca = PCA()
     pca.fit(df)
     return pca
+
+
+###########################################################################3
+def process_images(start, end, imgs_list, save_path, kmeans, format_flag, video_name):
+    for j in range(start, end):
+        label = kmeans.labels_[j]
+        img = imgs_list[j]
+        file_number = str(j).zfill(6)
+        if format_flag == "jpg":
+            cv2.imwrite(
+                save_path
+                + "cluster{}/{}".format(label, f"{video_name}-{file_number}.jpg"),
+                img,
+            )
+        else:
+            cv2.imwrite(
+                save_path
+                + "cluster{}/{}".format(label, f"{video_name}-{file_number}.png"),
+                img,
+            )
+
+
+def make_cluster_dir_parallel(imgs_list, save_path, kmeans, format_flag, video_name):
+    # 保存先のディレクトリを空にして作成
+    shutil.rmtree(save_path)
+    os.mkdir(save_path)
+    # クラスタごとのディレクトリ作成
+    for i in tqdm(range(kmeans.n_clusters), desc='Creating directories'):
+        cluster_dir = save_path + "cluster{}".format(i)
+        if os.path.exists(cluster_dir):
+            shutil.rmtree(cluster_dir)
+        os.makedirs(cluster_dir)
+
+    num_processes = multiprocessing.cpu_count()
+    processes = []
+    imgs_per_process = len(imgs_list) // num_processes
+
+    print("\033[32m仕分け中\033[0m")
+
+    for i in range(num_processes):
+        start = i * imgs_per_process
+        end = start + imgs_per_process if i < num_processes - 1 else len(imgs_list)
+        p = multiprocessing.Process(
+            target=process_images,
+            args=(start, end, imgs_list, save_path, kmeans, format_flag, video_name),
+        )
+        processes.append(p)
+        p.start()
+
+    for p in tqdm(processes):
+        p.join()
+    
+    print("\033[32mクラスタごとにファイル作成完了\033[0m")
+
+
+#########################################################################
 
 
 # 結果をクラスタごとにディレクトリに保存
@@ -41,13 +98,16 @@ def make_cluster_dir(imgs_list, save_path, kmeans, format_flag, video_name):
         file_number = str(j).zfill(6)
         if format_flag == "jpg":
             cv2.imwrite(
-                save_path + "cluster{}/{}".format(label, f"{video_name}-{file_number}.jpg"), img
+                save_path
+                + "cluster{}/{}".format(label, f"{video_name}-{file_number}.jpg"),
+                img,
             )
         else:
             cv2.imwrite(
-                save_path + "cluster{}/{}".format(label, f"{video_name}-{file_number}.png"), img
+                save_path
+                + "cluster{}/{}".format(label, f"{video_name}-{file_number}.png"),
+                img,
             )
-
 
     print("\033[32mクラスタごとにファイル作成完了\033[0m")
 
@@ -66,7 +126,14 @@ def create_npy_image_list(for_kmeans_array):
     return npy_image_list
 
 
-def kmeans_main(save_path, video_name, for_kmeans_array, for_kmeans_fullframe, cluster_num, format_flag):
+def kmeans_main(
+    save_path,
+    video_name,
+    for_kmeans_array,
+    for_kmeans_fullframe,
+    cluster_num,
+    format_flag,
+):
     VIDEO_NAME = video_name
     print(f"\033[32m{VIDEO_NAME}を処理しています。=>k-means\033[0m")
     # 画像データをクラスタリングした結果の保存先
@@ -122,16 +189,18 @@ def kmeans_main(save_path, video_name, for_kmeans_array, for_kmeans_fullframe, c
         kmeans = build_kmeans(train_df, cluster_num)
     except ValueError as e:
         print(e)
-        messe = print("\033[31m\033[1mエラー！\033[0m抽出枚数を少なくして下さい。n_sample数以下に指定して下さい。")
+        messe = print(
+            "\033[31m\033[1mエラー！\033[0m抽出枚数を少なくして下さい。n_sample数以下に指定して下さい。"
+        )
         return messe
 
     print("\033[32mモデル構築完了\033[0m")
     print("\033[32mクラスタリング中・・・\033[0m")
     # クラスタリング結果からディレクトリ作成
 
-
     # image_listをフルフレーム画像に差し替える
-    make_cluster_dir(image_list, SAVE_PATH, kmeans, format_flag, video_name)
+    make_cluster_dir_parallel(image_list, SAVE_PATH, kmeans, format_flag, video_name)
+    # make_cluster_dir(image_list, SAVE_PATH, kmeans, format_flag, video_name)
     print("\033[32mクラスタリング完了\033[0m")
     pca_df["label"] = kmeans.labels_
     # クラスターフォルダーからランダムに抽出
