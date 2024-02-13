@@ -194,3 +194,28 @@ def black_back(img):
     black_background[:, :] = img[:, :, :3]
 
     return black_background
+
+
+def check_coordinates(
+    left_top_x,
+    left_top_y,
+    right_btm_x,
+    right_btm_y,
+    cv_top_x,
+    cv_top_y,
+    cv_btm_x,
+    cv_btm_y,
+):
+    if (
+        left_top_x < 0
+        or left_top_y < 0
+        or right_btm_x < 0
+        or right_btm_y < 0
+        or cv_top_x < 0
+        or cv_top_y < 0
+        or cv_btm_x < 0
+        or cv_btm_y < 0
+    ):
+        raise ValueError("Coordinates cannot be negative")
+    else:
+        return True

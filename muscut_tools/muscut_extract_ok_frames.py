@@ -13,7 +13,15 @@ import numpy as np
 from tqdm import tqdm
 
 from muscut_functions import cv_functions
-from muscut_tools import all_save, kmeans, kmeans_ok_frames, muscut_cutting, muscut_rembg, muscut_cutting_multi_process, muscut_rembg_multi_process
+from muscut_tools import (
+    all_save,
+    kmeans,
+    kmeans_ok_frames,
+    muscut_cutting,
+    muscut_rembg,
+    muscut_cutting_multi_process,
+    muscut_rembg_multi_process,
+)
 
 
 # %%
@@ -157,6 +165,17 @@ def main(
                             cv_btm_y,
                         ) = cv_functions.crop_modified_xy(result[i])
 
+                        # cv_functions.check_coordinates(
+                        #     left_top_x,
+                        #     left_top_y,
+                        #     right_btm_x,
+                        #     right_btm_y,
+                        #     cv_top_x,
+                        #     cv_top_y,
+                        #     cv_btm_x,
+                        #     cv_btm_y,
+                        # )
+
                         croped = save_frame[
                             left_top_y:right_btm_y, left_top_x:right_btm_x
                         ]
@@ -283,7 +302,6 @@ def main(
             cluster_num,
             image_flag,
         )
-
 
         #####
         input_path = f"{save_path}"

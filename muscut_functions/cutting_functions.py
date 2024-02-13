@@ -3,6 +3,7 @@ import numpy
 import cv2
 from tqdm import tqdm
 
+
 def cutting(img, device, yolo_model, mode, output_folder, file_name):
 
     inf_image = cv_functions.black_back(img)
@@ -31,10 +32,22 @@ def cutting(img, device, yolo_model, mode, output_folder, file_name):
 
     save_frame = img
 
-    length = result.boxes.shape[0]
-    for i in range(length):
-        # xy convert to square
-        (
+    # length = result.boxes.shape[0]
+    # for i in range(length):
+    # xy convert to square
+    (
+        left_top_x,
+        left_top_y,
+        right_btm_x,
+        right_btm_y,
+        cv_top_x,
+        cv_top_y,
+        cv_btm_x,
+        cv_btm_y,
+    ) = cv_functions.crop_modified_xy(result[0])
+
+    try:
+        cv_functions.check_coordinates(
             left_top_x,
             left_top_y,
             right_btm_x,
@@ -43,15 +56,22 @@ def cutting(img, device, yolo_model, mode, output_folder, file_name):
             cv_top_y,
             cv_btm_x,
             cv_btm_y,
-        ) = cv_functions.crop_modified_xy(result[i])
+        )
+    except:
+        codinates = f"left_top_x:{left_top_x},left_top_y:{left_top_y},right_btm_x:{right_btm_x},right_btm_y:{right_btm_y},"
+        
+        error_msg = f"{file_name}:({codinates})-Coordinates cannot be negative"
+        raise ValueError(error_msg)
 
-        croped = save_frame[left_top_y:right_btm_y, left_top_x:right_btm_x]
+    croped = save_frame[left_top_y:right_btm_y, left_top_x:right_btm_x]
 
-        croped = cv2.resize(croped, (224, 224))
-        output_path = f"{output_folder}/{file_name}_{i}_with_rembg.png"
-        # print(output_path)
+    croped = cv2.resize(croped, (224, 224))
 
-        return croped, output_path
+    output_path = f"{output_folder}/{file_name}_with_rembg.png"
+
+    # print(output_path)
+
+    return croped, output_path
 
 
 def process_cutting(images, device, yolo_model, mode, output_folder, imgnames):
@@ -59,9 +79,12 @@ def process_cutting(images, device, yolo_model, mode, output_folder, imgnames):
     output_paths = []
     images = tqdm(images)
     for image, file_name in zip(images, imgnames):
-        croped, output_path = cutting(
-            image, device, yolo_model, mode, output_folder, file_name
-        )
-        croped_images.append(croped)
-        output_paths.append(output_path)
+        try:
+            croped, output_path = cutting(
+                image, device, yolo_model, mode, output_folder, file_name
+            )
+            croped_images.append(croped)
+            output_paths.append(output_path)
+        except:
+            pass
     return croped_images, output_paths
