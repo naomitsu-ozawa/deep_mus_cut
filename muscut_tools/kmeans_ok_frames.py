@@ -27,27 +27,45 @@ def build_pca(df):
 
 
 ###########################################################################3
-def process_images(start, end, imgs_list, save_path, kmeans, format_flag, video_name, progress_queue):
+def process_images(
+    start,
+    end,
+    imgs_list,
+    save_path,
+    kmeans,
+    format_flag,
+    video_name,
+    for_kmeans_frame_no,
+    progress_queue,
+):
     for j in range(start, end):
         label = kmeans.labels_[j]
         img = imgs_list[j]
-        file_number = str(j).zfill(6)
+        # file_number = str(frame_no).zfill(6)
+        file_number = for_kmeans_frame_no[j].zfill(6)
         if format_flag == "jpg":
             cv2.imwrite(
-                save_path + "cluster{}/{}".format(label, f"{video_name}-{file_number}.jpg"), img
+                save_path
+                + "cluster{}/{}".format(label, f"{video_name}-{file_number}.jpg"),
+                img,
             )
         else:
             cv2.imwrite(
-                save_path + "cluster{}/{}".format(label, f"{video_name}-{file_number}.png"), img
+                save_path
+                + "cluster{}/{}".format(label, f"{video_name}-{file_number}.png"),
+                img,
             )
     progress_queue.put(1)  # プロセスの処理完了をキューに追加
 
-def make_cluster_dir_parallel(imgs_list, save_path, kmeans, format_flag, video_name):
+
+def make_cluster_dir_parallel(
+    imgs_list, save_path, kmeans, format_flag, video_name, for_kmeans_frame_no
+):
     # 保存先のディレクトリを空にして作成
     shutil.rmtree(save_path)
     os.mkdir(save_path)
     # クラスタごとのディレクトリ作成
-    for i in tqdm(range(kmeans.n_clusters), desc='Creating directories'):
+    for i in tqdm(range(kmeans.n_clusters), desc="Creating directories"):
         cluster_dir = save_path + "cluster{}".format(i)
         if os.path.exists(cluster_dir):
             shutil.rmtree(cluster_dir)
@@ -63,18 +81,28 @@ def make_cluster_dir_parallel(imgs_list, save_path, kmeans, format_flag, video_n
         end = start + imgs_per_process if i < num_processes - 1 else len(imgs_list)
         p = multiprocessing.Process(
             target=process_images,
-            args=(start, end, imgs_list, save_path, kmeans, format_flag, video_name, progress_queue),
+            args=(
+                start,
+                end,
+                imgs_list,
+                save_path,
+                kmeans,
+                format_flag,
+                video_name,
+                for_kmeans_frame_no,
+                progress_queue,
+            ),
         )
         processes.append(p)
         p.start()
 
     # プロセスの処理完了を監視し、進捗を更新する
-    for _ in tqdm(range(num_processes), desc='Processing images'):
+    for _ in tqdm(range(num_processes), desc="Processing images"):
         progress_queue.get()
 
     for p in processes:
         p.join()
-    
+
     print("\033[32mクラスタごとにファイル作成完了\033[0m")
 
 
@@ -82,7 +110,9 @@ def make_cluster_dir_parallel(imgs_list, save_path, kmeans, format_flag, video_n
 
 
 # 結果をクラスタごとにディレクトリに保存
-def make_cluster_dir(imgs_list, save_path, kmeans, format_flag, video_name):
+def make_cluster_dir(
+    imgs_list, save_path, kmeans, format_flag, video_name, for_kmeans_frame_no
+):
     # 保存先のディレクトリを空にして作成
     shutil.rmtree(save_path)
     os.mkdir(save_path)
@@ -92,7 +122,8 @@ def make_cluster_dir(imgs_list, save_path, kmeans, format_flag, video_name):
         if os.path.exists(cluster_dir):
             shutil.rmtree(cluster_dir)
         os.makedirs(cluster_dir)
-    for label, img, j in tqdm(zip(kmeans.labels_, imgs_list, range(len(imgs_list)))):
+
+    for label, img, j in tqdm(zip(kmeans.labels_, imgs_list, for_kmeans_frame_no)):
         # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         file_number = str(j).zfill(6)
         if format_flag == "jpg":
@@ -116,8 +147,6 @@ def create_npy_image_list(for_kmeans_array):
     print("\033[32m配列変換中・・・\033[0m")
     for img_npy in tqdm(for_kmeans_array):
         # 画像データを一枚ずつ読み込む
-        # img_npy = img_npy.resize((112, 112))  # リサイズ64x64
-        # img_npy = np.array(img_npy)
         img_npy = cv2.resize(img_npy, (112, 112))
         img_npy = img_npy.flatten()  # 一次元化
         npy_image_list.append(img_npy / 255)  # 0~1に正規化
@@ -132,6 +161,7 @@ def kmeans_main(
     for_kmeans_fullframe,
     cluster_num,
     format_flag,
+    for_kmeans_frame_no,
 ):
     VIDEO_NAME = video_name
     print(f"\033[32m{VIDEO_NAME}を処理しています。=>k-means\033[0m")
@@ -198,7 +228,9 @@ def kmeans_main(
     # クラスタリング結果からディレクトリ作成
 
     # image_listをフルフレーム画像に差し替える
-    make_cluster_dir_parallel(image_list, SAVE_PATH, kmeans, format_flag, video_name)
+    make_cluster_dir_parallel(
+        image_list, SAVE_PATH, kmeans, format_flag, video_name, for_kmeans_frame_no
+    )
     # make_cluster_dir(image_list, SAVE_PATH, kmeans, format_flag, video_name)
     print("\033[32mクラスタリング完了\033[0m")
     pca_df["label"] = kmeans.labels_

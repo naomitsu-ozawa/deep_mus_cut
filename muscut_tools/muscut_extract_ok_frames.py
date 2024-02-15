@@ -88,6 +88,7 @@ def main(
 
     for_kmeans_array = []
     for_kmeans_fullframe = []
+    for_kmeans_frame_no = []
 
     count = 0
     n = 0
@@ -108,6 +109,7 @@ def main(
             time.sleep(0.000005)
             pbar.update(1)
             n += 1
+            frame_no = n - 1
             # Read a frame from the video
             success, frame = cap.read()
 
@@ -165,17 +167,6 @@ def main(
                             cv_btm_y,
                         ) = cv_functions.crop_modified_xy(result[i])
 
-                        # cv_functions.check_coordinates(
-                        #     left_top_x,
-                        #     left_top_y,
-                        #     right_btm_x,
-                        #     right_btm_y,
-                        #     cv_top_x,
-                        #     cv_top_y,
-                        #     cv_btm_x,
-                        #     cv_btm_y,
-                        # )
-
                         croped = save_frame[
                             left_top_y:right_btm_y, left_top_x:right_btm_x
                         ]
@@ -215,6 +206,8 @@ def main(
                         if cnn_result > cnn_conf:
                             for_kmeans_array.append(croped)
                             for_kmeans_fullframe.append(fullframe)
+                            for_kmeans_frame_no.append(str(frame_no))
+
                             count += 1
                             pip_croped = croped
 
@@ -251,7 +244,6 @@ def main(
                         annotated_frame = results[0].plot(line_width=(3))
                     else:
                         annotated_frame = ori_img
-
                     annotated_frame = cv_functions.display_preview_screen(
                         annotated_frame,
                         cnn_bar,
@@ -301,21 +293,19 @@ def main(
             for_kmeans_fullframe,
             cluster_num,
             image_flag,
+            for_kmeans_frame_no
         )
 
         #####
         input_path = f"{save_path}"
         # rembg
-        # muscut_rembg.main(save_path)
-        muscut_rembg_multi_process.main(input_path)
+        rembg_images, file_names = muscut_rembg_multi_process.main(input_path)
 
         # muscut cutting
-        # muscut_cutting.main(input_path, device, yolo_model, mode)
-        muscut_cutting_multi_process.main(input_path, device, yolo_model, mode)
+        muscut_cutting_multi_process.main(input_path, rembg_images,file_names, device, yolo_model, mode)
 
         try:
             shutil.rmtree(f"{save_path}/selected_imgs")
-            shutil.rmtree(f"{save_path}/rembg_imgs")
         except:
             print(f"Failed to delete. Reason: {e}")
 

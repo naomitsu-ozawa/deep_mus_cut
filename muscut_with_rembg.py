@@ -39,7 +39,7 @@ def main(
         image_flag = "png"
 
     if tool is None:
-        tool = "default"
+        tool = "extract_ok_frames"
 
     if mode is None:
         if os_name == "Darwin":
@@ -100,9 +100,6 @@ def main(
             pint
         )
 
-    elif tool == "kmeans_image_extractor":
-        kmeans_image_extractor.main(movie_path, image_flag, cluster_num)
-
     elif tool == "extract_ok_frames":
         muscut_extract_ok_frames.main(
             movie_path,
@@ -115,66 +112,6 @@ def main(
             cluster_num,
             wc_flag,
             all_extract,
-            cnn_conf,
-            pint
-        )
-
-
-    elif tool == "tf2ml":
-        from muscut_tools import tf2ml
-
-        print("tools:tf2ml")
-        tf2ml.tf2ml(movie_path)
-
-    elif tool == "sexing":
-        muscut_sex_determination.muscut(
-            movie_path,
-            device_flag,
-            image_flag,
-            show_flag,
-            yolo_model,
-            cnn_model,
-            mode,
-            cluster_num,
-            wc_flag,
-        )
-
-    elif tool == "sexing_multi":
-        muscut_sex_determination_multi.muscut(
-            movie_path,
-            device_flag,
-            image_flag,
-            show_flag,
-            yolo_model,
-            cnn_model,
-            mode,
-            cluster_num,
-            wc_flag,
-        )
-
-    elif tool == "sexing_yokogao":
-        if mode == "coreml":
-            try:
-                cnn_model_2 = ct.models.MLModel("muscut_models/ct_cnn_2.mlmodel")
-            except:
-                print("横顔の雌雄判別モデルを[ct_cnn_2.mlmodel]として配置してください。")
-        elif mode == "tf_pt":
-            try:
-                cnn_model_2 = tf.keras.models.load_model("muscut_models/ct_cnn_2/savedmodel")
-            except:
-                print("横顔の雌雄判別モデルを[ct_cnn_2/savedmodel]として配置してください。")
-
-        muscut_sex_determination_yokogao.muscut(
-            movie_path,
-            device_flag,
-            image_flag,
-            show_flag,
-            yolo_model,
-            cnn_model,
-            cnn_model_2,
-            mode,
-            cluster_num,
-            wc_flag,
             cnn_conf,
             pint
         )

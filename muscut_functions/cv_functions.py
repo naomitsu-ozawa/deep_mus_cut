@@ -173,8 +173,6 @@ def read_images_parallel(imgs):
             imgnames.append(img_name)
             pbar.update(1)
 
-
-
     # プールを閉じる
     pool.close()
     pool.join()

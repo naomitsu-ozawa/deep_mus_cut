@@ -26,10 +26,7 @@ os_name = platform.system()
 def main(input_path):
 
     imgae_path = f"{input_path}/selected_imgs"
-    output_folder = f"{input_path}/rembg_imgs"
     imgs_files = glob.glob(f"{imgae_path}/*.png")
-
-    global_functions.create_directory_if_not_exists(output_folder)
 
     imgaes, imgnames = cv_functions.read_images_parallel(imgs_files)
 
@@ -54,13 +51,10 @@ def main(input_path):
         providers=providers,
     )
 
-    rembg_images, output_paths = rembg_functions.process_rembg(
-        imgaes, imgnames, session, output_folder
+    rembg_images, file_names = rembg_functions.process_rembg(
+        imgaes, imgnames, session
     )
 
-    datas = tqdm(zip(rembg_images, output_paths), desc="Saving...")
-    for img_data, path in datas:
-        # 画像を保存する
-        cv2.imwrite(path, img_data)
-
     print("\033[32m背景除去完了\033[0m")
+
+    return rembg_images, file_names

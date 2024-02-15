@@ -4,19 +4,20 @@ from rembg import new_session, remove
 from tqdm import tqdm
 
 
-def remove_bg(image, session, file_name, output_folder):
+def remove_bg(image, session, file_name):
     rembg_img = remove(image, session=session)
-    output_path = f"{output_folder}/{file_name}_rembgout.png"
-    return rembg_img, output_path
+    return rembg_img, file_name
 
 
-def process_rembg(images, imgnames, session, output_folder):
+def process_rembg(images, imgnames, session):
     rembg_images = []
-    output_paths = []
+    file_names = []
     images = tqdm(images)
+
     for image, file_name in zip(images, imgnames):
-        rembg_img, output_path = remove_bg(image, session, file_name, output_folder)
+        rembg_img, file_name = remove_bg(image, session, file_name)
 
         rembg_images.append(rembg_img)
-        output_paths.append(output_path)
-    return rembg_images, output_paths
+        file_names.append(file_name)
+
+    return rembg_images, file_names
