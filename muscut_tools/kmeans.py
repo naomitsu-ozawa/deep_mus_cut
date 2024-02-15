@@ -54,18 +54,6 @@ def make_cluster_dir(
                 img,
             )
 
-        #  画像圧縮
-        #  cv2
-        # cv2.imwrite(
-        #     save_path + "cluster{}/{}".format(label, f"{j}.png"),
-        #     img,
-        #     [cv2.IMWRITE_PNG_COMPRESSION, 8],
-        # )
-        #
-        #  pillow
-        # img = cv2pil.cv2pil(img)
-        # img.save(save_path + "cluster{}/{}".format(label, f"{j}.png"),quality=85)
-
     print("\033[32mクラスタごとにファイル作成完了\033[0m")
 
 
@@ -73,9 +61,11 @@ def create_npy_image_list(for_kmeans_array):
     npy_image_list = []
     print("\033[32m配列変換中・・・\033[0m")
     for img_npy in tqdm(for_kmeans_array):
-        # 画像データを一枚ずつ読み込む
-        # img_npy = img_npy.resize((112, 112))  # リサイズ64x64
-        # img_npy = np.array(img_npy)
+
+        ##################################################
+        #ここにMobilenetかなにかで１次元の特徴量をだすとよいかも？#
+        ##################################################
+
         img_npy = cv2.resize(img_npy, (112, 112))
         img_npy = img_npy.flatten()  # 一次元化
         npy_image_list.append(img_npy / 255)  # 0~1に正規化

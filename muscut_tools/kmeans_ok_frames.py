@@ -147,6 +147,9 @@ def create_npy_image_list(for_kmeans_array):
     print("\033[32m配列変換中・・・\033[0m")
     for img_npy in tqdm(for_kmeans_array):
         # 画像データを一枚ずつ読み込む
+        ##################################################
+        #ここにMobilenetかなにかで１次元の特徴量をだすとよいかも？#
+        ##################################################
         img_npy = cv2.resize(img_npy, (112, 112))
         img_npy = img_npy.flatten()  # 一次元化
         npy_image_list.append(img_npy / 255)  # 0~1に正規化
