@@ -26,7 +26,9 @@ def build_pca(df):
 
 
 # 結果をクラスタごとにディレクトリに保存
-def make_cluster_dir(imgs_list, save_path, kmeans, format_flag, video_name):
+def make_cluster_dir(
+    imgs_list, save_path, kmeans, format_flag, video_name, for_kmeans_frame_no
+):
     # 保存先のディレクトリを空にして作成
     shutil.rmtree(save_path)
     os.mkdir(save_path)
@@ -36,16 +38,20 @@ def make_cluster_dir(imgs_list, save_path, kmeans, format_flag, video_name):
         if os.path.exists(cluster_dir):
             shutil.rmtree(cluster_dir)
         os.makedirs(cluster_dir)
-    for label, img, j in tqdm(zip(kmeans.labels_, imgs_list, range(len(imgs_list)))):
+    for label, img, j in tqdm(zip(kmeans.labels_, imgs_list, for_kmeans_frame_no), desc="Saving..."):
         # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         file_number = str(j).zfill(6)
         if format_flag == "jpg":
             cv2.imwrite(
-                save_path + "cluster{}/{}".format(label, f"{video_name}-{file_number}.jpg"), img
+                save_path
+                + "cluster{}/{}".format(label, f"{video_name}-{file_number}.jpg"),
+                img,
             )
         else:
             cv2.imwrite(
-                save_path + "cluster{}/{}".format(label, f"{video_name}-{file_number}.png"), img
+                save_path
+                + "cluster{}/{}".format(label, f"{video_name}-{file_number}.png"),
+                img,
             )
 
         #  画像圧縮
@@ -77,7 +83,14 @@ def create_npy_image_list(for_kmeans_array):
     return npy_image_list
 
 
-def kmeans_main(save_path, video_name, for_kmeans_array, cluster_num, format_flag):
+def kmeans_main(
+    save_path,
+    video_name,
+    for_kmeans_array,
+    cluster_num,
+    format_flag,
+    for_kmeans_frame_no,
+):
     VIDEO_NAME = video_name
     print(f"\033[32m{VIDEO_NAME}を処理しています。=>k-means\033[0m")
     # 画像データをクラスタリングした結果の保存先
@@ -133,13 +146,17 @@ def kmeans_main(save_path, video_name, for_kmeans_array, cluster_num, format_fla
         kmeans = build_kmeans(train_df, cluster_num)
     except ValueError as e:
         print(e)
-        messe = print("\033[31m\033[1mエラー！\033[0m抽出枚数を少なくして下さい。n_sample数以下に指定して下さい。")
+        messe = print(
+            "\033[31m\033[1mエラー！\033[0m抽出枚数を少なくして下さい。n_sample数以下に指定して下さい。"
+        )
         return messe
 
     print("\033[32mモデル構築完了\033[0m")
     print("\033[32mクラスタリング中・・・\033[0m")
     # クラスタリング結果からディレクトリ作成
-    make_cluster_dir(image_list, SAVE_PATH, kmeans, format_flag, video_name)
+    make_cluster_dir(
+        image_list, SAVE_PATH, kmeans, format_flag, video_name, for_kmeans_frame_no
+    )
     print("\033[32mクラスタリング完了\033[0m")
     pca_df["label"] = kmeans.labels_
     # クラスターフォルダーからランダムに抽出

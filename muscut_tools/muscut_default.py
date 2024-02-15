@@ -78,6 +78,7 @@ def muscut(
         total_frames = cap.get(cv2.CAP_PROP_FRAME_COUNT)
 
     for_kmeans_array = []
+    for_kmeans_frame_no = []
 
     count = 0
     n = 0
@@ -98,6 +99,7 @@ def muscut(
             time.sleep(0.000005)
             pbar.update(1)
             n += 1
+            frame_no = n - 1
             # Read a frame from the video
             success, frame = cap.read()
 
@@ -193,6 +195,7 @@ def muscut(
 
                             if cnn_result > cnn_conf:
                                 for_kmeans_array.append(croped)
+                                for_kmeans_frame_no.append(frame_no)
                                 count += 1
                                 pip_croped = croped
 
@@ -217,6 +220,7 @@ def muscut(
                                 )
                         else:
                             for_kmeans_array.append(croped)
+                            for_kmeans_frame_no.append(frame_no)
                             count += 1
 
                 except (IndexError, cv2.error):
@@ -276,6 +280,11 @@ def muscut(
             pass
 
         kmeans.kmeans_main(
-            save_path, movie_file_name, for_kmeans_array, cluster_num, image_flag
+            save_path,
+            movie_file_name,
+            for_kmeans_array,
+            cluster_num,
+            image_flag,
+            for_kmeans_frame_no,
         )
     print("\033[32mAll Done!\033[0m")
