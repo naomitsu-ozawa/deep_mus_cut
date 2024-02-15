@@ -83,6 +83,10 @@ def main(
         yolo_model = YOLO("muscut_models/yolo.pt")
         cnn_model = tf.keras.models.load_model("muscut_models/cnn/savedmodel")
 
+        # k-means test
+        # kmeans_cnn = tf.keras.applications.MobileNetV3Small(input_shape=(224,224,3),include_top=False, weights='imagenet')
+
+
     if cnn_conf is None:
         cnn_conf = 0.9
         print("cnn_conf: default 0.9")
@@ -108,7 +112,8 @@ def main(
             wc_flag,
             all_extract,
             cnn_conf,
-            pint
+            pint,
+            # kmeans_cnn
         )
 
     elif tool == "kmeans_image_extractor":
@@ -304,6 +309,6 @@ if __name__ == "__main__":
         camera_list,
         all_extract,
         cnn_conf,
-        pint
+        pint,
     )
     print("\033[32m処理が完了しました。\033[0m")

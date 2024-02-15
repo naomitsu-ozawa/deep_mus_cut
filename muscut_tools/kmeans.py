@@ -10,6 +10,8 @@ from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from tqdm import tqdm
 
+# import tensorflow as tf
+
 
 # kmeansのモデル構築
 def build_kmeans(df, cluster_num):
@@ -38,7 +40,9 @@ def make_cluster_dir(
         if os.path.exists(cluster_dir):
             shutil.rmtree(cluster_dir)
         os.makedirs(cluster_dir)
-    for label, img, j in tqdm(zip(kmeans.labels_, imgs_list, for_kmeans_frame_no), desc="Saving..."):
+    for label, img, j in tqdm(
+        zip(kmeans.labels_, imgs_list, for_kmeans_frame_no), desc="Saving..."
+    ):
         # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         file_number = str(j).zfill(6)
         if format_flag == "jpg":
@@ -57,13 +61,22 @@ def make_cluster_dir(
     print("\033[32mクラスタごとにファイル作成完了\033[0m")
 
 
+# def create_npy_image_list(for_kmeans_array, kmeans_cnn):
 def create_npy_image_list(for_kmeans_array):
     npy_image_list = []
     print("\033[32m配列変換中・・・\033[0m")
     for img_npy in tqdm(for_kmeans_array):
 
         ##################################################
-        #ここにMobilenetかなにかで１次元の特徴量をだすとよいかも？#
+        # ここにMobilenetかなにかで１次元の特徴量をだすとよいかも？#
+        # img_npy = cv2.resize(img_npy, (224, 224))
+        # img_npy = cv2.cvtColor(img_npy, cv2.COLOR_BGR2RGB)
+        # img_npy = img_npy[tf.newaxis]
+        # pred = kmeans_cnn(img_npy)
+        # pred = pred.numpy()
+        # pred = pred.flatten()
+        # # print(pred)
+        # npy_image_list.append(pred)
         ##################################################
 
         img_npy = cv2.resize(img_npy, (112, 112))
@@ -80,6 +93,7 @@ def kmeans_main(
     cluster_num,
     format_flag,
     for_kmeans_frame_no,
+    # kmeans_cnn
 ):
     VIDEO_NAME = video_name
     print(f"\033[32m{VIDEO_NAME}を処理しています。=>k-means\033[0m")
@@ -106,7 +120,10 @@ def kmeans_main(
     except FileNotFoundError:
         # 画像読み込み
         print("\033[32m顔データの主成分分析を開始します。\033[0m")
-        npy_image_list = create_npy_image_list(for_kmeans_array)
+        npy_image_list = create_npy_image_list(
+            for_kmeans_array,
+            # kmeans_cnn
+        )
         flag_01 = len(npy_image_list)
         if flag_01 == 0:
             messe = print(
