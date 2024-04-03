@@ -9,15 +9,16 @@ from muscut_tools import (
     muscut_sex_determination,
     muscut_sex_determination_yokogao,
     muscut_sex_determination_multi,
-    muscut_logo
+    muscut_logo,
 )
 
 os.environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "true"
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 os_name = platform.system()
 
-#start logo
+# start logo
 muscut_logo.logo()
+
 
 def main(
     movie_path,
@@ -31,7 +32,7 @@ def main(
     camera_list,
     all_extract,
     cnn_conf,
-    pint
+    pint,
 ):
     print("muscut.py_start")
     from ultralytics import YOLO
@@ -68,7 +69,7 @@ def main(
         import tensorflow as tf
 
         # GPU_flag = tf.test.is_gpu_available()
-        GPU_flag = tf.config.list_physical_devices('GPU')
+        GPU_flag = tf.config.list_physical_devices("GPU")
         if GPU_flag and device_flag is None:
             if os_name == "Darwin":
                 device_flag = "mps"
@@ -85,7 +86,6 @@ def main(
 
         # k-means test
         # kmeans_cnn = tf.keras.applications.MobileNetV3Small(input_shape=(224,224,3),include_top=False, weights='imagenet')
-
 
     if cnn_conf is None:
         cnn_conf = 0.9
@@ -156,12 +156,18 @@ def main(
             try:
                 cnn_model_2 = ct.models.MLModel("muscut_models/ct_cnn_2.mlmodel")
             except:
-                print("横顔の雌雄判別モデルを[ct_cnn_2.mlmodel]として配置してください。")
+                print(
+                    "横顔の雌雄判別モデルを[ct_cnn_2.mlmodel]として配置してください。"
+                )
         elif mode == "tf_pt":
             try:
-                cnn_model_2 = tf.keras.models.load_model("muscut_models/ct_cnn_2/savedmodel")
+                cnn_model_2 = tf.keras.models.load_model(
+                    "muscut_models/ct_cnn_2/savedmodel"
+                )
             except:
-                print("横顔の雌雄判別モデルを[ct_cnn_2/savedmodel]として配置してください。")
+                print(
+                    "横顔の雌雄判別モデルを[ct_cnn_2/savedmodel]として配置してください。"
+                )
 
         muscut_sex_determination_yokogao.muscut(
             movie_path,
@@ -175,11 +181,8 @@ def main(
             cluster_num,
             wc_flag,
             cnn_conf,
-            pint
+            pint,
         )
-
-    if os_name == "Linux":
-        os.system("sh clear_mem_cache.sh")
 
 
 def get_args():
@@ -237,7 +240,9 @@ def get_args():
         help="検知状況を表示します[True or False]",
     )
 
-    parser.add_argument("-c", "--cnn_conf", type=float, help="画像分類モデルの閾値を、少数で設定")
+    parser.add_argument(
+        "-c", "--cnn_conf", type=float, help="画像分類モデルの閾値を、少数で設定"
+    )
 
     # option preview show
     parser.add_argument(
