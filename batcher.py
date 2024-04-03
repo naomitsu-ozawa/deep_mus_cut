@@ -4,6 +4,10 @@ import argparse
 import shutil
 from tqdm import tqdm
 
+import platform
+
+os_name = platform.system()
+
 def main(folder_path, num_items, pint):
     subdirectories = get_subdirectories(folder_path)
     for sub_dir in subdirectories:
