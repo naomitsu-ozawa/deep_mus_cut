@@ -178,6 +178,9 @@ def main(
             pint
         )
 
+    if os_name == "Linux":
+        os.system("sh clear_mem_cache.sh")
+
 
 def get_args():
     parser = argparse.ArgumentParser(

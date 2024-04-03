@@ -27,6 +27,9 @@ def main(folder_path, num_items, pint):
         for del_dir in del_dirs:
             shutil.rmtree(del_dir)
     print("all done")
+    
+    if os_name == "Linux":
+        os.system("sh clear_mem_cache.sh")
 
 
 def move_image_files(image_files, destination_folder):
