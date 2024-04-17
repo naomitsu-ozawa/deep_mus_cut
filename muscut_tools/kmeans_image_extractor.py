@@ -20,18 +20,21 @@ def main(movie_path, format_flag, cluster_num):
     os.makedirs(save_path, exist_ok=True)
 
     for_kmeans_array = []
+    for_kmeans_frame_no = []
 
     cv2movie = cv2.VideoCapture(movie_file)
     nframe = int(cv2movie.get(cv2.CAP_PROP_FRAME_COUNT))
     frames = range(nframe)
 
-    for frame in tqdm(frames):
+    for idx, frame in tqdm(enumerate(frames)):
         ret, frame = cv2movie.read()
         # img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         img = frame
+        img = cv2.resize(img, (1280,720))
         for_kmeans_array.append(img)
+        for_kmeans_frame_no.append(idx)
 
     kmeans.kmeans_main(
-        save_path, movie_file_name, for_kmeans_array, cluster_num, format_flag
+        save_path, movie_file_name, for_kmeans_array, cluster_num, format_flag, for_kmeans_frame_no
     )
     print("\033[32mAll Done!\033[0m")
