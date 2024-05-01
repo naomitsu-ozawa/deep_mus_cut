@@ -58,16 +58,25 @@ def main(
 
         # GPU_flag = tf.test.is_gpu_available()
         GPU_flag = tf.config.list_physical_devices('GPU')
-        if GPU_flag and device_flag is None:
-            if os_name == "Darwin":
-                device_flag = "mps"
-                print("GPU: metal")
+
+        if device_flag is None or device_flag is "":
+            if GPU_flag:
+                if os_name == "Darwin":
+                    device_flag = "mps"
+                    print("GPU: metal")
+                else:
+                    device_flag = "cuda"
+                    print("GPU: CUDA")
             else:
-                device_flag = "cuda"
-                print("GPU: CUDA")
+                device_flag = "cpu"
+                print("CPU")
         else:
-            device_flag = "cpu"
-            print("GPU: not use")
+            if device_flag == "cpu":
+                print("CPU")
+            elif device_flag == "mps":
+                print("GPU: metal")
+            elif device_flag == "cuda":
+                print("GPU: CUDA")
 
         yolo_model = YOLO("muscut_models/yolo.pt")
         cnn_model = tf.keras.models.load_model("muscut_models/cnn/savedmodel")
