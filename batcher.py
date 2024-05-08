@@ -5,6 +5,8 @@ import shutil
 from tqdm import tqdm
 
 import platform
+import shlex
+
 
 os_name = platform.system()
 
@@ -16,6 +18,7 @@ def main(folder_path, num_items, pint):
         video_files = find_videos_in_subdirectories(sub_dir)
         # 動画ファイルの一覧を出力
         for video_file in video_files:
+            video_file = shlex.quote(video_file)
             print(video_file)
 
             exe_python = f"python muscut_with_rembg.py -f {video_file} -t extract_ok_frames -n {num_items} -p {pint}"
