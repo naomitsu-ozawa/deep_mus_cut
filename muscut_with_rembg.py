@@ -59,7 +59,7 @@ def main(
         # GPU_flag = tf.test.is_gpu_available()
         GPU_flag = tf.config.list_physical_devices('GPU')
 
-        if device_flag is None or device_flag is "":
+        if device_flag is None or device_flag == "":
             if GPU_flag:
                 if os_name == "Darwin":
                     device_flag = "mps"
