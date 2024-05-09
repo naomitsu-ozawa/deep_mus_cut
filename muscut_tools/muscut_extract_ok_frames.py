@@ -278,7 +278,7 @@ def main(
     os.makedirs(save_path, exist_ok=True)
 
     if all_extract is True:
-        all_save.main(movie_path, for_kmeans_array, image_flag)
+        all_save.main(movie_path, for_kmeans_fullframe, for_kmeans_frame_no,  image_flag)
     else:
         if cluster_num is None:
             cluster_num = int(input("\033[32m抽出する枚数を入力してください\033[0m >"))
@@ -299,17 +299,17 @@ def main(
             for_kmeans_frame_no
         )
 
-        #####
-        input_path = f"{save_path}"
-        # rembg
-        rembg_images, file_names = muscut_rembg_multi_process.main(input_path)
+    #####
+    input_path = f"{save_path}"
+    # rembg
+    rembg_images, file_names = muscut_rembg_multi_process.main(input_path)
 
-        # muscut cutting
-        muscut_cutting_multi_process.main(input_path, rembg_images,file_names, device, yolo_model, mode)
+    # muscut cutting
+    muscut_cutting_multi_process.main(input_path, rembg_images,file_names, device, yolo_model, mode)
 
-        try:
-            shutil.rmtree(f"{save_path}/selected_imgs")
-        except:
-            print(f"Failed to delete. Reason: {e}")
+    try:
+        shutil.rmtree(f"{save_path}/selected_imgs")
+    except:
+        print(f"Failed to delete. Reason: {e}")
 
     print("\033[32mAll Done!\033[0m")
