@@ -177,28 +177,31 @@ def main(
                         # pint check
                         pint_check = cv_functions.pint_check(pred_croped, pint)
 
-                        if mode == "coreml":
-                            if pint_check:
-                                img_np = np.array(pred_croped).astype(np.float32)
-                                img_np = img_np[np.newaxis, :, :, :]
-                                cnn_result = cnn_model.predict({input_name: img_np})
-                                cnn_result = cnn_result["Identity"][0][1]
-                            else:
-                                cnn_result = 0
+                        if not wc_flag:
+                            if mode == "coreml":
+                                if pint_check:
+                                    img_np = np.array(pred_croped).astype(np.float32)
+                                    img_np = img_np[np.newaxis, :, :, :]
+                                    cnn_result = cnn_model.predict({input_name: img_np})
+                                    cnn_result = cnn_result["Identity"][0][1]
+                                else:
+                                    cnn_result = 0
 
-                        elif mode == "tf_pt":
-                            if pint_check:
-                                data = np.array(pred_croped).astype(np.float32)
-                                data = data[tf.newaxis]
-                                x = tf.keras.applications.mobilenet_v3.preprocess_input(
-                                    data
-                                )
-                                x = tf.constant(x)
-                                cnn_result = infer(x)
-                                cnn_result = cnn_result[outputs].numpy()
-                                cnn_result = cnn_result[0][1]
-                            else:
-                                cnn_result = 0
+                            elif mode == "tf_pt":
+                                if pint_check:
+                                    data = np.array(pred_croped).astype(np.float32)
+                                    data = data[tf.newaxis]
+                                    x = tf.keras.applications.mobilenet_v3.preprocess_input(
+                                        data
+                                    )
+                                    x = tf.constant(x)
+                                    cnn_result = infer(x)
+                                    cnn_result = cnn_result[outputs].numpy()
+                                    cnn_result = cnn_result[0][1]
+                                else:
+                                    cnn_result = 0
+                        else:
+                            cnn_result = 1.0
 
                         cnn_result = round(float(cnn_result), 4)
                         cnn_bar = int(cnn_result * 139 + 101)
