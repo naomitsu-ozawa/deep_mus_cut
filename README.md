@@ -21,17 +21,31 @@ https://github.com/naomitsu-ozawa/deep_mou_cut_2/assets/129124821/702d32ab-1227-
   
 ### 動作フロー
 ```mermaid
-%%{init:{'theme':'forest'}}%%
+%%{init: {'theme': 'forest'}}%%
+
 graph TD
-    A[input] -->|解析したい動画| B(物体検知\nYolov8 Custom model)
-    B -->|検知された部位の画像| C(画像分類\nMobile_net V3 Custom model)
-    C -->|分類された画像| D(クラスタリング\nk-means)
-    D -->|クラスタリングされた画像| E("random.sample([k-means-images],1)")
-    E -->|各クラスタから一枚づつ出力| F[output]
-    A --> |抽出したい枚数を\nクラスタ数として渡す|　D
+   subgraph graph_01["#muscut_with_rembg.py"]
+      G[input] -->|解析したい動画| I(物体検知\nYolov8 Custom model)
+      I -->|顔が検知されたフレーム| J(画像分類\nMobile_net V3 Custom model)
+      J -->|横顔が含まれるフレーム| K(クラスタリング\nk-means)
+      K -->|クラスタリングされたフレーム| L("random.sample([k-means-images],1)")
+      L -->|各クラスタから一枚づつ出力| M[remBG]
+      M -->|背景削除| N[物体検知\nYolov8 Custom model]
+      N -->|顔領域の切り出し| O[output]
+      G --> |抽出したい枚数を\nクラスタ数として渡す|　K
+   end
+   style graph_01 fill:#ffffff
+
+   subgraph graph_02["#muscut.py"]
+      A[input] -->|解析したい動画| B(物体検知\nYolov8 Custom model)
+      B -->|検知された部位の画像| C(画像分類\nMobile_net V3 Custom model)
+      C -->|分類された画像| D(クラスタリング\nk-means)
+      D -->|クラスタリングされた画像| E("random.sample([k-means-images],1)")
+      E -->|各クラスタから一枚づつ出力| F[output]
+      A --> |抽出したい枚数を\nクラスタ数として渡す|　D
+   end
+   style graph_02 fill:#ffffff
 ```
-- 物体検知と画像分類モデルをCoreMlへ変換したモデルをDefaultで動作するようにしています。
-- 物体検知（PyTorch）・画像分類（TensorFlow ）のモデルも同梱しているので、Windows/Linux/macでの動作が可能です。オプションで指定して下さい。
 ---
 
 ## インストール
