@@ -82,8 +82,8 @@ def main(
         cnn_model = tf.keras.models.load_model("muscut_models/cnn/savedmodel")
 
     if cnn_conf is None:
-        cnn_conf = 0.9
-        print("cnn_conf: default 0.9")
+        cnn_conf = 0.75
+        print(f"cnn_conf: default {cnn_conf}")
     else:
         print(f"cnn_conf = {cnn_conf}")
 
