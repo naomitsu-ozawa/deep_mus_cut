@@ -59,7 +59,7 @@ graph TD
 3. Scikit-learnをインストールしてください。  
 ```pip install scikit-learn```  
 4. remBGをインストールします。（背景除去を行う場合）  
-```pip install rembg[gpu] ```
+```pip install rembg[gpu] ```  
    ※GPUが使えなかった場合は、onnxruntime-gpuをチェックしてください。
   
 ### Mac
