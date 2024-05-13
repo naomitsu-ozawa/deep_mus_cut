@@ -56,8 +56,9 @@ graph TD
   
 ### Linux&Windows(WSL2)
 1. Tensorflowのインストール  
-   1. CUDA対応のTensorflowをインストールします。
-   ```pip install tensorflow[and-cuda]```
+   1. Tensorflowは"2.15.x"まで対応しています。（2.16.x~は未対応）
+   2. CUDA対応のTensorflowをインストールします。
+   ```pip install 'tensorflow[and-cuda]==2.15.1'```
 2. PyTorchのインストール
    1. tensorflow2.13以前を使う場合（CUDA11.xを使う場合）
       1. CUDA対応のPyTorchをインストールするために一度アンインストールします。  
@@ -85,17 +86,7 @@ python muscut.py -f $movie
 顔検知中のプレビューを表示させるには、-sオプションをつけて下さい。  
 ```python muscut.py -f $movie -s```  
 
-
-### 顔検出でGPUを使う方法
--m　オプションに"tf_pt"を指定して下さい。
--d　オプションに "cuda"を指定して下さい。 
-（Macの場合は"mps"）  
-```python muscut.py -f ＄movie -m tf_pt -d cuda```  
-  
-CNNモデルの分類ではTensorFlowを使っています。  
-GPUを利用したい場合、お使いのプラットフォームに合わせたTensorFlowを環境にインストールしてください。  
-  
-  
+ 
 ---
 ### オプション
 | option | description |  
@@ -107,11 +98,22 @@ GPUを利用したい場合、お使いのプラットフォームに合わせ�
 | -i,--image_format | 出力画像のフォーマット [jpg,png]<br>-i png：デフォルトです。未指定と同じ動作になります。<br>-i jpg：JPEG形式で保存します。容量を節約したい場合に有効です。 |
 | -s,--show | プレビューモード |
 | -n,--number | 抽出枚数 |
-| -wc,--without_cnn | 画像分類を行わずに解析します。 |
-| -a,--all | 検知された画像を全て保存します。k-meansは行いません。 |
+| -wc,--without_cnn | 画像分類を行わずに解析します。※ |
+| -a,--all | 検知された画像を全て保存します。k-meansは行いません。※ |
+
+  ※-wcと-aオプションの組み合わせで、横顔以外の顔画像を取得できます。  
+  -  -wcのみ　→　横顔以外を含む、検知された全ての画像からK-means処理を通して取得します。
+  -  -aのみ　→　検知された横顔をK-means処理をせずにすべて取得します。
+  -  -wc -a　両方の場合　→　横顔以外を含む、検知されたすべての画像からK-means処理を通して取得します。
+
+      Options
+      | -wc -a | -wc | -a |
+      | --- | --- | --- |
+      | 検知されたすべての顔画像を取得 | 検知されたすべての顔画像から指定枚数を取得 | 検知された横顔のみをすべて取得 |
   
 #### modeについて
-Defaultは”CoreML”で動作するようになっています。 CoreML非対応の環境で動作せる場合は、”tf”を指定して下さい。
+デフォルトは、それぞれのプラットフォームごとでGPUを使うように設定しています。
+MacBook等において明示的にTensorflowとPyTorchを利用したい場合、指定してください。
 | --mode | 詳細 |
 | ---- | ---- |
 | coreml | 物体検出と画像分類にCoreMlモデルを使用します。(default) |
@@ -119,6 +121,7 @@ Defaultは”CoreML”で動作するようになっています。 CoreML非対
 
 #### deviceについて
 モード”tf_pt”時の物体検出で利用するPyTorchデバイスを指定できます。
+デフォルトは、それぞれのプラットフォームごとにGPUを使用するように設定しています。明示的にCPUなどを使いたい場合に指定してください。
 | --device | 詳細 |
 | ---- | ---- |
 | cpu | 物体検知にcpuを使います。(default) |
@@ -128,7 +131,7 @@ Defaultは”CoreML”で動作するようになっています。 CoreML非対
 #### toolについて
 | --tool | 詳細 |
 | ---- | ---- |
-| kmeans_image_extractor | k-meansアルゴリズムを使って動画から指定枚数の画像を抽出します。|
+| kmeans_image_extractor | k-meansアルゴリズムを使って動画から指定枚数の画像を抽出し、顔の切り取りは行いません。|
 | tf2ml| Tensorflow2.xで訓練されたCNNをCoreML形式へ変換します。Mac専用の機能です。|
 | sexing (sexing_multi)| 技術DEMOプログラムです。|
   
