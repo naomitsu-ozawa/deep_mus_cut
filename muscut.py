@@ -71,7 +71,7 @@ def main(
         # GPU_flag = tf.test.is_gpu_available()
         GPU_flag = tf.config.list_physical_devices("GPU")
 
-        if device_flag is None or device_flag is "":
+        if device_flag is None or device_flag == "":
             if GPU_flag:
                 if os_name == "Darwin":
                     device_flag = "mps"
@@ -97,8 +97,8 @@ def main(
         # kmeans_cnn = tf.keras.applications.MobileNetV3Small(input_shape=(224,224,3),include_top=False, weights='imagenet')
 
     if cnn_conf is None:
-        cnn_conf = 0.9
-        print("cnn_conf: default 0.9")
+        cnn_conf = 0.7
+        print(f"cnn_conf: default {cnn_conf}")
     else:
         print(f"cnn_conf = {cnn_conf}")
 
