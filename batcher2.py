@@ -33,20 +33,29 @@ def masked_input(prompt=""):
 def main(folder_path, num_items, pint, su_pass):
 
     # pass check
-    if su_pass:
-        pass_input = masked_input("Please enter sudo password:")
-        check_command = f"echo {pass_input} | sudo -S echo pass_check_ok"
-        check_result = subprocess.run(
-            check_command, shell=True, capture_output=True, text=True
-        )
-        if check_result.returncode == 0:
-            print("sudo check ok")
-            print("Output:", check_result.stdout)
-        else:
-            print("password failed")
-            print("Error:", check_result.stderr)
+    max_attempts = 3
+    attempts = 0
 
-            return print("sudo パスワードが間違っています")
+    if su_pass:
+        while attempts < max_attempts:
+            pass_input = masked_input("Please enter sudo password:")
+            check_command = f"echo {pass_input} | sudo -S echo pass_check_ok"
+            check_result = subprocess.run(
+                check_command, shell=True, capture_output=True, text=True
+            )
+            attempts += 1
+            if check_result.returncode == 0:
+                print("sudo check ok")
+                print("Output:", check_result.stdout)
+                break
+            else:
+                print("password failed")
+                # print("Error:", check_result.stderr)
+                if attempts < max_attempts:
+                    print("sudo パスワードが間違っています。もう一度試してください。")
+                else:
+                    return print("最大試行回数に達しました。終了します。")
+
 
     subdirectories = get_subdirectories(folder_path)
     for sub_dir in subdirectories:
