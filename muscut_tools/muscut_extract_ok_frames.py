@@ -117,7 +117,7 @@ def main(
             cnn_bar = 101
 
             # yolo conf setting
-            yolo_conf = 0.9
+            yolo_conf = 0.5
 
             if success:
                 # test 4K重いのでリサイズする？
