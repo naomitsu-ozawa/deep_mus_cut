@@ -54,7 +54,16 @@ def main(
         cnn_model = ct.models.MLModel("muscut_models/ct_cnn.mlmodel")
 
     elif mode == "tf_pt":
+        
+        import logging
+        import warnings
+        os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
         import tensorflow as tf
+        warnings.simplefilter(action='ignore', category=FutureWarning)
+        warnings.simplefilter(action='ignore', category=Warning)
+        tf.get_logger().setLevel('INFO')
+        tf.autograph.set_verbosity(0)
+        tf.get_logger().setLevel(logging.ERROR)
 
         # GPU_flag = tf.test.is_gpu_available()
         GPU_flag = tf.config.list_physical_devices('GPU')
