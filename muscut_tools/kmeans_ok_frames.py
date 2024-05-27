@@ -12,6 +12,13 @@ from tqdm import tqdm
 import multiprocessing
 
 
+import logging
+import warnings
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+import tensorflow as tf
+
+
 # kmeansのモデル構築
 def build_kmeans(df, cluster_num):
     kmeans = KMeans(n_clusters=cluster_num, n_init="auto")
@@ -142,18 +149,30 @@ def make_cluster_dir(
     print("\033[32mクラスタごとにファイル作成完了\033[0m")
 
 
-def create_npy_image_list(for_kmeans_array):
+def create_npy_image_list(for_kmeans_array, kmeans_cnn):
+# def create_npy_image_list(for_kmeans_array):
     npy_image_list = []
-    print("\033[32m配列変換中・・・\033[0m")
+    # print("\033[32m配列変換中・・・\033[0m")
+    print("\033[32mMobilenetで特徴量抽出中・・・\033[0m")
     for img_npy in tqdm(for_kmeans_array):
         # 画像データを一枚ずつ読み込む
         ##################################################
-        #ここにMobilenetかなにかで１次元の特徴量をだすとよいかも？#
+        # ここにMobilenetかなにかで１次元の特徴量をだすとよいかも？#
+        img_npy = cv2.resize(img_npy, (224, 224))
+        img_npy = cv2.cvtColor(img_npy, cv2.COLOR_BGR2RGB)
+        img_npy = img_npy[tf.newaxis]
+        pred = kmeans_cnn(img_npy)
+        pred = pred.numpy()
+        pred = pred.flatten()
+        # print(pred)
+        npy_image_list.append(pred)
         ##################################################
-        img_npy = cv2.resize(img_npy, (112, 112))
-        img_npy = img_npy.flatten()  # 一次元化
-        npy_image_list.append(img_npy / 255)  # 0~1に正規化
-    print("\033[32m配列変換完了\033[0m")
+        # normal
+        # img_npy = cv2.resize(img_npy, (112, 112))
+        # img_npy = img_npy.flatten()  # 一次元化
+        # npy_image_list.append(img_npy / 255)  # 0~1に正規化
+    # print("\033[32m配列変換完了\033[0m")
+    print("\033[32m抽出完了\033[0m")
     return npy_image_list
 
 
@@ -165,6 +184,7 @@ def kmeans_main(
     cluster_num,
     format_flag,
     for_kmeans_frame_no,
+    kmeans_cnn
 ):
     VIDEO_NAME = video_name
     print(f"\033[32m{VIDEO_NAME}を処理しています。=>k-means\033[0m")
@@ -191,7 +211,10 @@ def kmeans_main(
     except FileNotFoundError:
         # 画像読み込み
         print("\033[32m顔データの主成分分析を開始します。\033[0m")
-        npy_image_list = create_npy_image_list(for_kmeans_array)
+        npy_image_list = create_npy_image_list(
+            for_kmeans_array,
+            kmeans_cnn
+            )
         flag_01 = len(npy_image_list)
         if flag_01 == 0:
             messe = print(
@@ -202,6 +225,7 @@ def kmeans_main(
         df = pd.DataFrame(npy_image_list)
         print(df.shape)
         # 主成分分析の実行
+        print("\033[32m主成分分析を実行中。\033[0m")
         pca = build_pca(df)
         pca_df = pd.DataFrame(
             pca.transform(df), columns=["PC{}".format(x + 1) for x in range(len(df))]
@@ -254,10 +278,10 @@ def kmeans_main(
         selected_imgs = random.sample(img_list, 1)
         for img_file in selected_imgs:
             shutil.copy(img_file, SELECTED_DIR)
-    try:
-        shutil.rmtree(SAVE_PATH)
-        os.remove(CSV_PATH)
-    except Exception as e:
-        print(f"Failed to delete {SAVE_PATH}. Reason: {e}")
-    print("\033[32m一時ファイルを削除しました\033[0m")
+    # try:
+    #     shutil.rmtree(SAVE_PATH)
+    #     os.remove(CSV_PATH)
+    # except Exception as e:
+    #     print(f"Failed to delete {SAVE_PATH}. Reason: {e}")
+    # print("\033[32m一時ファイルを削除しました\033[0m")
     # os.system(f"open {SELECTED_DIR}")

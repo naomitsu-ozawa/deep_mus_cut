@@ -47,6 +47,7 @@ def main(
     all_extract,
     cnn_conf,
     pint,
+    kmeans_cnn
 ):
     match StrRe(movie_path):
         case "webcam*":
@@ -64,6 +65,10 @@ def main(
     if mode == "coreml":
         running_mode = "CoreML"
     elif mode == "tf_pt":
+
+        import logging
+        import warnings
+        os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
         import tensorflow as tf
 
         running_mode = "TensorFlow&PyTorch"
@@ -296,7 +301,8 @@ def main(
             for_kmeans_fullframe,
             cluster_num,
             image_flag,
-            for_kmeans_frame_no
+            for_kmeans_frame_no,
+            kmeans_cnn
         )
 
     #####

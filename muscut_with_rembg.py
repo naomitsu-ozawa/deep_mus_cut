@@ -90,6 +90,10 @@ def main(
         yolo_model = YOLO("muscut_models/yolo.pt")
         cnn_model = tf.keras.models.load_model("muscut_models/cnn/savedmodel")
 
+        # k-means test
+        kmeans_cnn = tf.keras.applications.MobileNetV3Small(input_shape=(224,224,3),include_top=False, weights='imagenet')
+
+
     if cnn_conf is None:
         cnn_conf = 0.7
         print(f"cnn_conf: default {cnn_conf}")
@@ -131,7 +135,8 @@ def main(
             wc_flag,
             all_extract,
             cnn_conf,
-            pint
+            pint,
+            kmeans_cnn
         )
 
 
