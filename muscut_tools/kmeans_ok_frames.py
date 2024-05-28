@@ -11,6 +11,9 @@ from sklearn.decomposition import PCA
 from tqdm import tqdm
 import multiprocessing
 
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.datasets import make_blobs
 
 import logging
 import warnings
@@ -23,7 +26,17 @@ import tensorflow as tf
 def build_kmeans(df, cluster_num):
     kmeans = KMeans(n_clusters=cluster_num, n_init="auto")
     kmeans.fit(df)
+
     return kmeans
+
+
+def test_kmeans(df):
+    test_sse = []
+    for k in range(1,30):
+        kmeans_t = KMeans(n_clusters=k, random_state=0)
+        kmeans_t.fit(df)
+        test_sse.append(kmeans_t.inertia_)
+    return test_sse
 
 
 # 主成分分析のモデル構築
@@ -154,20 +167,34 @@ def create_npy_image_list(for_kmeans_array, kmeans_cnn):
     npy_image_list = []
     # print("\033[32m配列変換中・・・\033[0m")
     print("\033[32mMobilenetで特徴量抽出中・・・\033[0m")
-    for img_npy in tqdm(for_kmeans_array):
+    #########################################################
+    # 画像をバッチで読むバージョン
+    try:
+        img_npys = [cv2.resize(img_npy, (224,224)) for img_npy in for_kmeans_array]
+        img_npys = [cv2.cvtColor(img_npy, cv2.COLOR_BGR2RGB) for img_npy in for_kmeans_array]
+        img_npys = np.stack(img_npys, axis=0)
+        preds = kmeans_cnn.predict(img_npys)
+        npy_image_list = [pred.flatten() for pred in preds]
+        # print(npy_image_list[0])
+    except:
+        print("cnn future extract error")
+    #########################################################
+    # for img_npy in tqdm(for_kmeans_array):
         # 画像データを一枚ずつ読み込む
-        ##################################################
-        # ここにMobilenetかなにかで１次元の特徴量をだすとよいかも？#
-        img_npy = cv2.resize(img_npy, (224, 224))
-        img_npy = cv2.cvtColor(img_npy, cv2.COLOR_BGR2RGB)
-        img_npy = img_npy[tf.newaxis]
-        pred = kmeans_cnn(img_npy)
-        pred = pred.numpy()
-        pred = pred.flatten()
-        # print(pred)
-        npy_image_list.append(pred)
-        ##################################################
-        # normal
+        #
+        # ##################################################
+        # CNNで特徴抽出
+        # img_npy = cv2.resize(img_npy, (224, 224))
+        # img_npy = cv2.cvtColor(img_npy, cv2.COLOR_BGR2RGB)
+        # img_npy = img_npy[tf.newaxis]
+        # pred = kmeans_cnn(img_npy)
+        # pred = pred.numpy()
+        # pred = pred.flatten()
+        # # print(pred)
+        # npy_image_list.append(pred)
+        #
+        # ##################################################
+        # normal　画像をリサイズして１次元化するのみ
         # img_npy = cv2.resize(img_npy, (112, 112))
         # img_npy = img_npy.flatten()  # 一次元化
         # npy_image_list.append(img_npy / 255)  # 0~1に正規化
@@ -239,8 +266,23 @@ def kmeans_main(
     train_df = pca_df.iloc[:, :1800]  # 学習データ
     # クラスタ数を入力
 
+    #######################################################
+    # # エルボー法のグラフ
+    # test_array = test_kmeans(df)
+    # # SSEをプロット
+    # plt.figure(figsize=(8, 5))
+    # plt.plot(range(1, 30), test_array, marker='o')
+    # plt.title('Elbow Method')
+    # plt.xlabel('Number of clusters')
+    # plt.ylabel('SSE')
+    # plt.xticks(range(1, 30))
+    # plt.grid(True)
+    # plt.show()
+    ########################################################
+
     print("\033[32mモデル構築中・・・\033[0m")
     # kmeansモデル構築
+    
     try:
         kmeans = build_kmeans(train_df, cluster_num)
     except ValueError as e:
@@ -282,12 +324,12 @@ def kmeans_main(
     ###########################################################
     # k-meansでクラスタリングされた一時画像を削除
     # k-meansのクラスタリング結果を残す場合は、以下をコメントアウト
-    try:
-        shutil.rmtree(SAVE_PATH)
-        os.remove(CSV_PATH)
-    except Exception as e:
-        print(f"Failed to delete {SAVE_PATH}. Reason: {e}")
-    print("\033[32m一時ファイルを削除しました\033[0m")
+    # try:
+    #     shutil.rmtree(SAVE_PATH)
+    #     os.remove(CSV_PATH)
+    # except Exception as e:
+    #     print(f"Failed to delete {SAVE_PATH}. Reason: {e}")
+    # print("\033[32m一時ファイルを削除しました\033[0m")
     ###########################################################
 
     # os.system(f"open {SELECTED_DIR}")

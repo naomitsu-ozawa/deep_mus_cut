@@ -91,7 +91,12 @@ def main(
         cnn_model = tf.keras.models.load_model("muscut_models/cnn/savedmodel")
 
         # k-means test
-        kmeans_cnn = tf.keras.applications.MobileNetV3Small(input_shape=(224,224,3),include_top=False, weights='imagenet')
+        kmeans_cnn = tf.keras.applications.MobileNetV3Small(
+            input_shape=(224,224,3),
+            include_top=False,
+            weights='imagenet',
+            alpha=1.0
+            )
 
 
     if cnn_conf is None:
