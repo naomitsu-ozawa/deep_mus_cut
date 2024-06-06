@@ -20,7 +20,8 @@ def main(
     camera_list,
     all_extract,
     cnn_conf,
-    pint
+    pint,
+    dev_flag
 ):
     print("muscut.py_start")
     from ultralytics import YOLO
@@ -141,7 +142,8 @@ def main(
             all_extract,
             cnn_conf,
             pint,
-            kmeans_cnn
+            kmeans_cnn,
+            dev_flag
         )
 
 
@@ -242,6 +244,15 @@ def get_args():
         help="all_extract",
     )
 
+    # option dev_flag
+    parser.add_argument(
+        "-dev",
+        "--dev_flag",
+        action='store_true',
+        default=False,
+        help="dev_flag",
+    )
+
     args_list = parser.parse_args()
 
     return args_list
@@ -262,6 +273,7 @@ if __name__ == "__main__":
     camera_list = args.camera_list
     all_extract = args.all
     cnn_conf = args.cnn_conf
+    dev_flag = args.dev_flag
 
     main(
         movie_path,
@@ -275,6 +287,7 @@ if __name__ == "__main__":
         camera_list,
         all_extract,
         cnn_conf,
-        pint
+        pint,
+        dev_flag
     )
     print("\033[32m処理が完了しました。\n\033[0m")

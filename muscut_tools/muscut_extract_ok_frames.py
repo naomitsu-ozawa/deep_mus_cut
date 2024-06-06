@@ -47,7 +47,8 @@ def main(
     all_extract,
     cnn_conf,
     pint,
-    kmeans_cnn
+    kmeans_cnn,
+    dev_flag
 ):
     match StrRe(movie_path):
         case "webcam*":
@@ -302,7 +303,8 @@ def main(
             cluster_num,
             image_flag,
             for_kmeans_frame_no,
-            kmeans_cnn
+            kmeans_cnn,
+            dev_flag
         )
 
     #####
