@@ -23,7 +23,7 @@ def main(
     pint,
     dev_flag
 ):
-    print("muscut.py_start")
+    print("\033[32mmuscut.py_start\033[0m")
     from ultralytics import YOLO
 
     if camera_list is True:

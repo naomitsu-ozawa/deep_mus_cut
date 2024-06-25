@@ -227,7 +227,7 @@ def create_npy_image_list(for_kmeans_array, kmeans_cnn):
             cv2.cvtColor(img_npy, cv2.COLOR_BGR2RGB) for img_npy in for_kmeans_array
         ]
         img_npys = np.stack(img_npys, axis=0)
-        preds = kmeans_cnn.predict(img_npys)
+        preds = kmeans_cnn.predict(img_npys, verbose=0)
         # npy_image_list = [pred.flatten() for pred in preds]
         npy_image_list = [((pred.flatten() - pred.min()) / (pred.max() - pred.min())) for pred in preds]
         # print(npy_image_list[0])
@@ -287,9 +287,11 @@ def kmeans_main(
     npy_image_list = create_npy_image_list(for_kmeans_array, kmeans_cnn)
     npy_image_list_df = pd.DataFrame(npy_image_list)
 
+    print("\033[32mT-SNE start\033[0m")
     tsne_results = build_tsne(npy_image_list_df, n_components=3)
     tsne_df = pd.DataFrame(tsne_results, columns=["TSNE1", "TSNE2", "TSNE3"])
 
+    print("\033[32mK-means start\033[0m")
     kmeans = build_kmeans(tsne_df, cluster_num)
     print("\033[32mK-meansモデル構築完了\033[0m")
 

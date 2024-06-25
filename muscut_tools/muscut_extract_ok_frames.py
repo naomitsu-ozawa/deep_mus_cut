@@ -105,11 +105,12 @@ def main(
         signature_keys = list(cnn_model.signatures.keys())
         infer = cnn_model.signatures[signature_keys[0]]
         outputs = list(infer.structured_outputs.keys())[0]
-        print("trt_preprossece_ok")
+        # print("trt_preprossece_ok")
 
     pip_croped = np.zeros((224, 224, 3))
 
     # Loop through the video frames
+    print(f"\033[32m{movie_file_name}:Processing...\033[0m")
     with tqdm(total=total_frames) as pbar:
         while cap.isOpened():
             time.sleep(0.000005)
@@ -320,4 +321,4 @@ def main(
     except:
         print(f"Failed to delete. Reason: {e}")
 
-    print("\033[32mAll Done!\033[0m")
+    print(f"\033[32m{movie_file_name}: Done!\033[0m")

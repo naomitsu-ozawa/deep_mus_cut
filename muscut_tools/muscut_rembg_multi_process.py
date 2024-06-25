@@ -10,6 +10,8 @@ import random
 from pathlib import Path
 from time import sleep, time
 
+import onnxruntime as ort
+
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
@@ -30,10 +32,19 @@ def main(input_path):
 
     imgaes, imgnames = cv_functions.read_images_parallel(imgs_files)
 
+
+    session_options = ort.SessionOptions()
+
+    cuda_provider_options = {
+        # 'gpu_mem_linit': '2147483648'
+        'gpu_mem_linit': '1610612736'
+        # 'gpu_mem_linit': '1073741824'
+    }
+
     if os_name == "Darwin":
         providers = ["CoreMLExecutionProvider", "CPUExecutionProvider"]
     else:
-        providers = ["CUDAExecutionProvider", "CPUExecutionProvider"]
+        providers = [("CUDAExecutionProvider", "CPUExecutionProvider", cuda_provider_options)]
 
     # rembgで使うマスク抽出モデル
     # u2net default
@@ -45,9 +56,10 @@ def main(input_path):
 
     print("\033[32m背景除去開始\033[0m")
     unet_model_name = "isnet-general-use"
-    print(f"model:{unet_model_name}")
+    print(f"\033[32m start rembg model:{unet_model_name}\033[0m")
     session = new_session(
         unet_model_name,
+        sess_options=session_options,
         providers=providers,
     )
 
