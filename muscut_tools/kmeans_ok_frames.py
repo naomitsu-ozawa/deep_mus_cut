@@ -98,7 +98,12 @@ def update(num, ax, pbar):
 
 # kmeansのモデル構築
 def build_kmeans(df, cluster_num):
-    kmeans = KMeans(n_clusters=cluster_num, n_init="auto")
+    kmeans = KMeans(n_clusters=cluster_num, n_init=80)
+    '''
+    n_initのデフォルトは10
+    50でいい感じになった
+    n_init="auto" => k-means++になる
+    '''
     kmeans.fit(df)
 
     return kmeans
@@ -122,9 +127,14 @@ def build_tsne(df, n_components=2):
     tsne = TSNE(
         n_components=n_components,
         # random_state=0,
-        perplexity=30,
+        perplexity=26,
         init="pca"
         )
+    '''
+    perplexity
+    小さいほど、局所的な構造に商店を当てる
+    大きいほど、大域的な構造に商店を当てる
+    '''
     tsne_results = tsne.fit_transform(df)
     return tsne_results
 

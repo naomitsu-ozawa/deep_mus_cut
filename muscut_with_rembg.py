@@ -8,6 +8,7 @@ os.environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "true"
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 os_name = platform.system()
 
+
 def main(
     movie_path,
     device_flag,
@@ -21,7 +22,7 @@ def main(
     all_extract,
     cnn_conf,
     pint,
-    dev_flag
+    dev_flag,
 ):
     print("\033[32mmuscut.py_start\033[0m")
     from ultralytics import YOLO
@@ -55,19 +56,21 @@ def main(
         cnn_model = ct.models.MLModel("muscut_models/ct_cnn.mlmodel")
 
     elif mode == "tf_pt":
-        
+
         import logging
         import warnings
-        os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+        os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
         import tensorflow as tf
-        warnings.simplefilter(action='ignore', category=FutureWarning)
-        warnings.simplefilter(action='ignore', category=Warning)
-        tf.get_logger().setLevel('INFO')
+
+        warnings.simplefilter(action="ignore", category=FutureWarning)
+        warnings.simplefilter(action="ignore", category=Warning)
+        tf.get_logger().setLevel("INFO")
         tf.autograph.set_verbosity(0)
         tf.get_logger().setLevel(logging.ERROR)
 
         # GPU_flag = tf.test.is_gpu_available()
-        GPU_flag = tf.config.list_physical_devices('GPU')
+        GPU_flag = tf.config.list_physical_devices("GPU")
 
         if device_flag is None or device_flag == "":
             if GPU_flag:
@@ -93,11 +96,8 @@ def main(
 
         # k-means test
         kmeans_cnn = tf.keras.applications.MobileNetV3Small(
-            input_shape=(224,224,3),
-            include_top=False,
-            weights='imagenet',
-            alpha=1.0
-            )
+            input_shape=(224, 224, 3), include_top=False, weights="imagenet", alpha=1.0
+        )
 
 
     if cnn_conf is None:
@@ -125,7 +125,7 @@ def main(
             wc_flag,
             all_extract,
             cnn_conf,
-            pint
+            pint,
         )
 
     elif tool == "extract_ok_frames":
@@ -143,7 +143,7 @@ def main(
             cnn_conf,
             pint,
             kmeans_cnn,
-            dev_flag
+            dev_flag,
         )
 
 
@@ -202,7 +202,9 @@ def get_args():
         help="検知状況を表示します[True or False]",
     )
 
-    parser.add_argument("-c", "--cnn_conf", type=float, help="画像分類モデルの閾値を、少数で設定")
+    parser.add_argument(
+        "-c", "--cnn_conf", type=float, help="画像分類モデルの閾値を、少数で設定"
+    )
 
     # option preview show
     parser.add_argument(
@@ -248,7 +250,7 @@ def get_args():
     parser.add_argument(
         "-dev",
         "--dev_flag",
-        action='store_true',
+        action="store_true",
         default=False,
         help="dev_flag",
     )
@@ -288,6 +290,6 @@ if __name__ == "__main__":
         all_extract,
         cnn_conf,
         pint,
-        dev_flag
+        dev_flag,
     )
     print("\033[32m処理が完了しました。\n\033[0m")
