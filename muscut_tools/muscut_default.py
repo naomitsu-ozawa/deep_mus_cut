@@ -11,6 +11,8 @@ import cv2
 import numpy as np
 from tqdm import tqdm
 
+import pandas as pd
+
 from muscut_tools import kmeans, all_save
 from muscut_functions import cv_functions
 
@@ -96,6 +98,9 @@ def muscut(
 
     # Loop through the video frames
     with tqdm(total=total_frames) as pbar:
+
+        inference_times = []
+
         while cap.isOpened():
             time.sleep(0.000005)
             pbar.update(1)
@@ -110,7 +115,10 @@ def muscut(
             # yolo conf setting
             yolo_conf = 0.5
 
+            # progress time
+
             if success:
+                start_time = time.time()
                 # test 4K重いのでリサイズする？
                 # frame = cv2.resize(frame, (1920, 1080))
 
@@ -252,14 +260,22 @@ def muscut(
                     key = cv2.waitKey(1)
                     if key == 27:
                         break
+
+                # progress time
+                end_time = time.time()
+
             else:
                 # Break the loop if the end of the video is reached
                 break
+            
+            inference_time = end_time - start_time
+            inference_times.append({'Frame': frame_no, 'Inference Time (s)': inference_time})
 
     # Release the video capture object and close the display window
     cap.release()
     cv2.destroyAllWindows()
     cv2.waitKey(1)
+
 
     print("\033[32m顔検出完了\033[0m")
 
@@ -267,6 +283,10 @@ def muscut(
 
     save_path = f"croped_image/{movie_file_name}"
     os.makedirs(save_path, exist_ok=True)
+
+    # frame time
+    df = pd.DataFrame(inference_times)
+    df.to_csv(f"{save_path}/frame_time.csv",index=False)
 
     if all_extract is True:
         all_save.main(movie_path, for_kmeans_array, image_flag)
