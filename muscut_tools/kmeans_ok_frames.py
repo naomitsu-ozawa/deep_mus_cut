@@ -127,13 +127,13 @@ def build_tsne(df, n_components=2):
     tsne = TSNE(
         n_components=n_components,
         # random_state=0,
-        perplexity=26,
+        perplexity=26, #26
         init="pca"
         )
     '''
     perplexity
-    小さいほど、局所的な構造に商店を当てる
-    大きいほど、大域的な構造に商店を当てる
+    小さいほど、局所的な構造に焦点を当てる
+    大きいほど、大域的な構造に焦点を当てる
     '''
     tsne_results = tsne.fit_transform(df)
     return tsne_results

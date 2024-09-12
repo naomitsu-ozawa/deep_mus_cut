@@ -99,7 +99,6 @@ def main(
             input_shape=(224, 224, 3), include_top=False, weights="imagenet", alpha=1.0
         )
 
-
     if cnn_conf is None:
         cnn_conf = 0.7
         print(f"cnn_conf: default {cnn_conf}")
