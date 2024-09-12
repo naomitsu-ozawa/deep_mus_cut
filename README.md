@@ -156,15 +156,8 @@ graph TD
 - 背景付きの画像を保存する場合  
    ```python muscut.py -f $movie```
 
-変数に解析したい動画のパスを入れて指定することもできます。
-
-```
-movie="<movie_file_path>"
-python muscut.py -f $movie
-```
-
-顔検知中のプレビューを表示させるには、-s オプションをつけて下さい。  
-`python muscut.py -f $movie -s`
+- 顔検知中のプレビューを表示させるには、-s オプションをつけて下さい。  
+   `python muscut.py -f $movie -s`
 
 ---
 
