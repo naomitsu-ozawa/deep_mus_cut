@@ -108,53 +108,52 @@ graph TD
 
 ---
 
-
 ## 使い方
 
 - １つの動画ファイルを解析する場合
   - 環境変数"movie"に動画ファイルのパスを格納します。  
-  `movie="/path/to/your/movie.mov"`  
-  `python muscut_with_rembg.py -f $movie -s`  
-    で解析が始まります。
-- 1頭の動物で複数の動画を解析する場合
+    `movie="/path/to/your/movie.mov"`  
+    `python muscut_with_rembg.py -f $movie -s`  
+     で解析が始まります。
+- 1 頭の動物で複数の動画を解析する場合
   - 環境変数"folder"に動画の入ったフォルダーのパスを格納します。
-  `folder="/path/to/your/directory"`  
-  `python batcher_single.py -f folder -ps`  
-    を実行します。
-  - ディレクトリ構造は以下を参考にしてください。  
-      ```
-      動物ごとにフォルダ分けしてください。  
-      指定したフォルダ内の動画を解析します。  
-      ├──  animal01 ←　ここを指定する  
-      │   ├──  C0013.MP4  
-      │   ├──  C0014.MP4  
-      │   └──  C0015.MP4  
-      ├──  animal02
-      │   ├──  C0016.MP4  
-      │   ├──  C0017.MP4  
-      │   └──  C0018.MP4 
-      ・
-      ・
-      ・
-      ```
+    `folder="/path/to/your/directory"`  
+    `python batcher_single.py -f folder -ps`  
+     を実行します。
+  - ディレクトリ構造は以下を参考にしてください。
+    ```
+    動物ごとにフォルダ分けしてください。
+    指定したフォルダ内の動画を解析します。
+    ├──  animal01 ←　ここを指定する
+    │   ├──  C0013.MP4
+    │   ├──  C0014.MP4
+    │   └──  C0015.MP4
+    ├──  animal02
+    │   ├──  C0016.MP4
+    │   ├──  C0017.MP4
+    │   └──  C0018.MP4
+    ・
+    ・
+    ・
+    ```
 - 複数の動物で大量の動画を解析する場合
   - 環境変数"folder"に指定した構造のルートフォルダーのパスを格納します。
-  `folder="/path/to/your/directory"`  
-  `python patcher_para.py -f $folder -ps`  
-   で解析が始まります。
+    `folder="/path/to/your/directory"`  
+    `python patcher_para.py -f $folder -ps`  
+     で解析が始まります。
   - ディレクトリ構造は以下を参考にしてください。
-      ```
-      batcher_single.pyを並列処理しています。
-      batcher_singleで指定したフォルダが格納されているルートフォルダを指定します。
-      ├── 00_male　←ここを指定する
-      │   ├── animal01　←このフォルダごとで並列化
-      │   ├── animal02
-      │   ├── animal03
-      │   ├── animal04
-      │   └── animal05
-      ```
+    ```
+    batcher_single.pyを並列処理しています。
+    batcher_singleで指定したフォルダが格納されているルートフォルダを指定します。
+    ├── 00_male　←ここを指定する
+    │   ├── animal01　←このフォルダごとで並列化
+    │   ├── animal02
+    │   ├── animal03
+    │   ├── animal04
+    │   └── animal05
+    ```
 - 背景付きの画像を保存する場合  
-   ```python muscut.py -f $movie```
+   `python muscut.py -f $movie`
 
 - 顔検知中のプレビューを表示させるには、-s オプションをつけて下さい。  
    `python muscut.py -f $movie -s`
@@ -163,17 +162,16 @@ graph TD
 
 ### オプション
 
-| option            | description                                                                                                                                                                                                                                                                 |
-| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| -f,--file         | 解析したいファイルのパス（必須）[file_path,webcam]<br>-f <file_path>を指定すると動画ファイルの解析を行います。<br>-f webcam0 を指定するとデバイス ID：０のカメラに接続できます。(テスト機能)<br>複数台カメラが接続されている場合は、webcam\*の番号を変更してみて下さい。    |
-| -m,--mode         | モード[coreml,tf_pt]<br>-m coreml：物体検知と画像分類に Core ML を利用します。<br>-m tf_pt：物体検知に PyTorch、画像分類に TensorFlow を利用します。                                                                                                                        |
-| -d,--device       | 物体検知部分で利用するデバイス名 [cpu,cuda,mps]<br>--mode tf の時の PyTroch デバイスを指定できます。                                                                                                                                                                        |
-| -t,--tool         | 使用するツール名 <br>-t default：未指定と同じ動作になります。<br>-t kmeans_image_extractor：動画から k-means アルゴリズムを利用して指定枚数のフレーム画像を抽出します。<br>-t tf2ml:Tensorflow モデルを CoreML モデルへ変換します。<br>-t sexing (sexing_multi):demo 用<br> |
-| -i,--image_format | 出力画像のフォーマット [jpg,png]<br>-i png：デフォルトです。未指定と同じ動作になります。<br>-i jpg：JPEG 形式で保存します。容量を節約したい場合に有効です。                                                                                                                 |
-| -s,--show         | プレビューモード                                                                                                                                                                                                                                                            |
-| -n,--number       | 抽出枚数                                                                                                                                                                                                                                                                    |
-| -wc,--without_cnn | 画像分類を行わずに解析します。※                                                                                                                                                                                                                                             |
-| -a,--all          | 検知された画像を全て保存します。k-means は行いません。※                                                                                                                                                                                                                     |
+| option    | description                                                                                                                                                                                                                                                              |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| -f,--file | 解析したいファイルのパス（必須）[file_path,webcam]<br>-f <file_path>を指定すると動画ファイルの解析を行います。<br>-f webcam0 を指定するとデバイス ID：０のカメラに接続できます。(テスト機能)<br>複数台カメラが接続されている場合は、webcam\*の番号を変更してみて下さい。 |
+| -d,--device | 物体検知部分で利用するデバイス名 [cpu,cuda,mps]<br>--mode tf の時の PyTroch デバイスを指定できます。 |
+| -t,--tool | 使用するツール名 <br>-t default：未指定と同じ動作になります。<br>-t kmeans_image_extractor：動画から k-means アルゴリズムを利用して指定枚数のフレーム画像を抽出します。<br>-t tf2ml:Tensorflow モデルを CoreML モデルへ変換します。<br>-t sexing (sexing_multi):demo 用<br> |
+| -i,--image_format | 出力画像のフォーマット [jpg,png]<br>-i png：デフォルトです。未指定と同じ動作になります。<br>-i jpg：JPEG 形式で保存します。容量を節約したい場合に有効です。 |
+| -s,--show | プレビューモード |
+| -n,--number | 抽出枚数 |
+| -wc,--without_cnn | 画像分類を行わずに解析します。※ |
+| -a,--all | 検知された画像を全て保存します。k-means は行いません。※ |
 
 ※-wc と-a オプションの組み合わせで、横顔以外の顔画像を取得できます。
 
