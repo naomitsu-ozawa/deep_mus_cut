@@ -1,17 +1,31 @@
 import argparse
+
 # import time
 import cProfile
 import functools
 import glob
 import os
+
+
+total_cpu_cores = os.cpu_count()
+threads_per_worker = total_cpu_cores // num_workers
+# 環境変数を設定
+os.environ["OMP_NUM_THREADS"] = str(threads_per_worker)
+os.environ["MKL_NUM_THREADS"] = str(threads_per_worker)
+
 import shutil
 import subprocess
 import threading
 import pstats
 import io
-from concurrent.futures import (ALL_COMPLETED, FIRST_COMPLETED,
-                                ProcessPoolExecutor, ThreadPoolExecutor,
-                                as_completed, wait)
+from concurrent.futures import (
+    ALL_COMPLETED,
+    FIRST_COMPLETED,
+    ProcessPoolExecutor,
+    ThreadPoolExecutor,
+    as_completed,
+    wait,
+)
 from time import sleep
 
 import getch
@@ -32,6 +46,51 @@ batcher_single.pyを並列実行する
 │   └── animal05
 
 """
+
+
+def get_parallel_processing_limit():
+    """
+    プライマリGPUのメモリ情報を基に、並列処理の上限（2400MB単位）を求める関数。
+    システムが使用しているであろう1GBを差し引いて計算します。
+
+    Returns:
+        tuple: (total_memory_MB, free_memory_MB, used_memory_MB, parallel_limit)
+            total_memory_MB (float): GPUの総メモリ（MB単位）
+            free_memory_MB (float): GPUの空きメモリ（MB単位）
+            used_memory_MB (float): GPUの使用中メモリ（MB単位）
+            parallel_limit (int): 並列処理可能なプロセスの最大数（2400MBごと）
+        None: GPUが利用できない場合
+    """
+    if not torch.cuda.is_available():
+        print("利用可能なGPUがありません。")
+        return None
+
+    try:
+        # プライマリGPU（通常はGPU 0）の空きメモリと総メモリを取得
+        free_memory, total_memory = torch.cuda.mem_get_info(torch.device("cuda:0"))
+
+        # 総メモリをMB単位に変換
+        total_memory_MB = total_memory / 1024**2
+        # print(total_memory_MB)
+        # 空きメモリをMB単位に変換
+        free_memory_MB = free_memory / 1024**2
+        # print(free_memory_MB)
+
+        usage_memory_MB = total_memory_MB - free_memory_MB
+        # print(usage_memory_MB)
+
+        # システム使用分として1GB（1024MB）を差し引く
+        usable_memory_MB = free_memory_MB - 1024
+
+        # 使用可能メモリを2400MB単位で割り、小数点以下を切り捨て
+        parallel_limit = max(
+            0, int(usable_memory_MB // 2400)
+        )  # 0未満にならないように制限
+
+        return total_memory_MB, free_memory_MB, usage_memory_MB, parallel_limit
+    except RuntimeError as e:
+        print(f"エラー: {e}")
+        return None
 
 
 # パスワード入力のマスク処理
@@ -107,6 +166,7 @@ def run_batch_predictions(sub_dir, pint, num_items, progress_dict, worker_id, x)
     # console.log(f"Finished {os.path.basename(sub_dir)}")
 
     return x + 1
+
 
 # サブディレクトリを取得する関数を定義
 def get_subdirectories(root_dir):
@@ -218,7 +278,7 @@ def main(folder_path, num_workers, pint, num_items):
     x = 0
 
     with ThreadPoolExecutor(max_workers=num_workers) as executor:
-    # with ProcessPoolExecutor(max_workers=num_workers) as executor:
+        # with ProcessPoolExecutor(max_workers=num_workers) as executor:
         futures = [
             executor.submit(
                 run_batch_predictions,
@@ -338,6 +398,27 @@ if __name__ == "__main__":
     su_pass = args.su_pass
     num_workers = args.num_workers
 
+    check_result = get_parallel_processing_limit()
+    if check_result is not None:
+        total_memory_MB, free_memory_MB, usage_memory_MB, parallel_limit = check_result
+        print(f"GPUの総メモリ: {total_memory_MB:.2f} MB")
+        print(f"GPUの空きメモリ: {free_memory_MB:.2f} MB")
+        print(f"推奨される最大並列処理数: {parallel_limit} workers")
+        if num_workers > parallel_limit:
+            print(
+                f"警告：指定された処理数（{num_workers}）は推奨される最大並列処理数（{parallel_limit}）を超えています。"
+            )
+            print(
+                f"指定された処理数（{num_workers}）を推奨される処理数（{parallel_limit}）へ制限します。"
+            )
+            num_workers = parallel_limit
+        elif num_workers == parallel_limit:
+            print(f"指定された処理数（{num_workers}）は適切に設定されています。")
+        elif num_workers < parallel_limit:
+            print(
+                f"指定された処理数（{num_workers}）は推奨される最大並列処理数（{parallel_limit}）を下回っています。"
+            )
+
     # folder_path = "/"  # ここにルートディレクトリのパスを指定
     # num_workers = 6  # 使用するスレッド数
     # pint = 1000
@@ -363,13 +444,12 @@ if __name__ == "__main__":
 
     # 結果を解析して出力
     s = io.StringIO()
-    ps = pstats.Stats(pr, stream=s).sort_stats('cumulative')
-    ps.print_stats('main')
+    ps = pstats.Stats(pr, stream=s).sort_stats("cumulative")
+    ps.print_stats("main")
     # 必要な行を厳密に抽出して表示
     profile_output = s.getvalue()
-    for line in profile_output.split('\n'):
-        if 'function calls' in line:
+    for line in profile_output.split("\n"):
+        if "function calls" in line:
             print(line)
 
     # print(s.getvalue())
-

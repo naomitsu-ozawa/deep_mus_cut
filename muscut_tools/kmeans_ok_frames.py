@@ -12,6 +12,7 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+
 from sklearn.cluster import KMeans
 from sklearn.datasets import make_blobs
 from sklearn.manifold import TSNE
@@ -98,7 +99,7 @@ def update(num, ax, pbar):
 
 # kmeansのモデル構築
 def build_kmeans(df, cluster_num):
-    kmeans = KMeans(n_clusters=cluster_num, n_init=80)
+    kmeans = KMeans(n_clusters=cluster_num, n_init="auto")
     '''
     n_initのデフォルトは10
     50でいい感じになった
@@ -241,6 +242,7 @@ def create_npy_image_list(for_kmeans_array, kmeans_cnn):
         # npy_image_list = [pred.flatten() for pred in preds]
         npy_image_list = [((pred.flatten() - pred.min()) / (pred.max() - pred.min())) for pred in preds]
         # print(npy_image_list[0])
+
     except:
         print("cnn future extract error")
     #########################################################
@@ -295,6 +297,7 @@ def kmeans_main(
     print(f"\033[32m一時作業フォルダーを作成しました。\033[0m=>{SAVE_PATH}")
 
     npy_image_list = create_npy_image_list(for_kmeans_array, kmeans_cnn)
+
     npy_image_list_df = pd.DataFrame(npy_image_list)
 
     print("\033[32mT-SNE start\033[0m")
@@ -374,6 +377,7 @@ def kmeans_main(
         except Exception as e:
             print(f"Failed to delete {SAVE_PATH}. Reason: {e}")
         print("\033[32m一時ファイルを削除しました\033[0m")
+
 
     # os.system(f"open {SELECTED_DIR}")
 

@@ -5,7 +5,7 @@ import platform
 from muscut_tools import muscut_extract_ok_frames, kmeans_ok_frames
 
 os.environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "true"
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+# os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 os_name = platform.system()
 
 
