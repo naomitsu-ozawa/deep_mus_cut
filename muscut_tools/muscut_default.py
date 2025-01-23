@@ -27,6 +27,32 @@ class StrRe(str):
         return True if re.search(pattern, self.var) is not None else False
 
 
+def save_frames_as_video(frames, output_path, fps=30):
+    # フレームが空でないかチェック
+    if not frames:
+        print("フレームのリストが空です。")
+        return
+    
+    # フレームサイズの取得
+    height, width, channels = frames[0].shape
+
+    # FourCC コード（動画のエンコード方式）の設定例
+    # Windows: 'XVID', Mac/Linux でもうまく動作しない場合: 'mp4v' などを試す
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    
+    # VideoWriter オブジェクトの生成
+    writer = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
+    
+    # フレームの書き込み
+    for frame in frames:
+        # frame がおかしくないか(サイズが違わないか等) 確認してから書き込むと安全です
+        writer.write(frame)
+    
+    # リソースの解放
+    writer.release()
+    print(f"動画を保存しました: {output_path}")
+
+
 def muscut(
     movie_path,
     device,
@@ -100,6 +126,7 @@ def muscut(
     with tqdm(total=total_frames) as pbar:
 
         inference_times = []
+        record_frame = []
 
         while cap.isOpened():
             time.sleep(0.000005)
@@ -116,6 +143,8 @@ def muscut(
             yolo_conf = 0.5
 
             # progress time
+
+            # 録画機能テスト
 
             if success:
                 start_time = time.time()
@@ -256,6 +285,8 @@ def muscut(
                         n,
                     )
 
+                    record_frame.append(annotated_frame)
+
                     cv2.imshow("Inference", annotated_frame)
                     key = cv2.waitKey(1)
                     if key == 27:
@@ -270,6 +301,9 @@ def muscut(
             
             inference_time = end_time - start_time
             inference_times.append({'Frame': frame_no, 'Inference Time (s)': inference_time})
+
+        # 検出を録画したい場合に使う。テスト
+        # save_frames_as_video(record_frame, "output.mov", fps=30)
 
     # Release the video capture object and close the display window
     cap.release()
