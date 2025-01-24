@@ -5,13 +5,13 @@ import cProfile
 import functools
 import glob
 import os
+import torch
 
-
-total_cpu_cores = os.cpu_count()
-threads_per_worker = total_cpu_cores // num_workers
-# 環境変数を設定
-os.environ["OMP_NUM_THREADS"] = str(threads_per_worker)
-os.environ["MKL_NUM_THREADS"] = str(threads_per_worker)
+# total_cpu_cores = os.cpu_count()
+# threads_per_worker = total_cpu_cores // num_workers
+# # 環境変数を設定
+# os.environ["OMP_NUM_THREADS"] = str(threads_per_worker)
+# os.environ["MKL_NUM_THREADS"] = str(threads_per_worker)
 
 import shutil
 import subprocess
