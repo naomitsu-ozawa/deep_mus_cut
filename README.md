@@ -9,6 +9,7 @@
 https://github.com/naomitsu-ozawa/deep_mou_cut_2/assets/129124821/702d32ab-1227-40a7-8f73-65153dc51fd0
 
 ## Description
+
 The app detects the mouse's face in the video and neatly crops it out for you.
 
 ## Supported Animals
@@ -19,7 +20,6 @@ The app detects the mouse's face in the video and neatly crops it out for you.
   - C3H/He
   - Apodemus (Wild Mouse)
 - For unsupported animals, please contact us.
-
 
 ---
 
@@ -68,8 +68,8 @@ graph TD
 
 ## Installation
 
-* Requires Python 3.11 or higher.
-* Please create a virtual environment using tools such as conda.
+- Requires Python 3.11 or higher.
+- Please create a virtual environment using tools such as conda.
 
 ### Linux (Ubuntu), Windows (WSL2)
 
@@ -78,21 +78,25 @@ graph TD
    ```
    git clone https://github.com/naomitsu-ozawa/deep_mus_cut.git
    ```
+
 2. Move into the cloned directory:
 
    ```
    cd deep_mus_cut
    ```
+
 3. Create a virtual environment from the `env_ubuntu.yml` file:
 
    ```
    conda env create -f env_ubuntu.yml -n muscut
    ```
+
 4. Activate the created virtual environment:
 
    ```
    conda activate muscut
    ```
+
 5. Install `remBG` into the environment.
    To avoid dependency conflicts, use the `--no-deps` option:
 
@@ -107,92 +111,137 @@ graph TD
    ```
    git clone https://github.com/naomitsu-ozawa/deep_mus_cut.git
    ```
+
 2. Move into the cloned directory:
 
    ```
    cd deep_mus_cut
    ```
+
 3. Create a virtual environment from the `env_macos.yml` file:
 
    ```
    conda env create -f env_macos.yml -n muscut
    ```
+
 4. Activate the created virtual environment:
 
    ```
    conda activate muscut
    ```
 
-
 ### Manual installation (not recommended)
+
 <details>
    <summary>Click to expand</summary>
 
-1. Clone the repository  
-   `git clone https://github.com/naomitsu-ozawa/deep_mus_cut.git`
-2. Install Ultralytics  
-   `pip install ultralytics`
-3. Install Scikit-learn  
-   `pip install scikit-learn`
-4. Install remBG (for background removal)  
-   `pip install rembg[gpu]`  
-   *Note: If GPU is not available, please check your onnxruntime-gpu setup.*
+1.  Clone the repository  
+    `git clone https://github.com/naomitsu-ozawa/deep_mus_cut.git`
+2.  Install Ultralytics  
+    `pip install ultralytics`
+3.  Install Scikit-learn  
+    `pip install scikit-learn`
+4.  Install remBG (for background removal)  
+    `pip install rembg[gpu]`  
+    _Note: If GPU is not available, please check your onnxruntime-gpu setup._
 
+#### Mac
 
-### Mac
-
-1. If you are using a Mac that supports CoreML, install CoreMLtools:  
-   `pip install coremltools`
-2. If your Mac does not support CoreML, install TensorFlow instead:  
-   `pip install tensorflow`  
-   `pip install tensorflow-metal`
+1.  If you are using a Mac that supports CoreML, install CoreMLtools:  
+    `pip install coremltools`
+2.  If your Mac does not support CoreML, install TensorFlow instead:  
+    `pip install tensorflow`  
+    `pip install tensorflow-metal`
 
 - If you encounter errors related to numpy, update numpy using pip:  
   `pip install -U numpy`
 
+#### Linux & Windows (WSL2)
 
-### Linux & Windows (WSL2)
+1.  TensorFlow Installation
 
-1. TensorFlow Installation  
-   1. Only TensorFlow versions up to "2.15.x" are supported (2.16.x and later are not supported).  
-   2. Install the CUDA-compatible version of TensorFlow:  
-      `pip install 'tensorflow[and-cuda]==2.15.1'`
+    1. Only TensorFlow versions up to "2.15.x" are supported (2.16.x and later are not supported).
+    2. Install the CUDA-compatible version of TensorFlow:  
+       `pip install 'tensorflow[and-cuda]==2.15.1'`
 
-2. PyTorch Installation  
-   1. If you are using TensorFlow 2.13 or earlier (CUDA 11.x):  
-      1. Uninstall the current PyTorch to install a CUDA-compatible version:  
-         `pip uninstall torch torchvision torchaudio`  
-         Then install CUDA-compatible PyTorch from the official source:  
-         `pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118`
-   2. If you are using TensorFlow 2.14 or later (CUDA 12.x):  
-      - No additional steps are needed.
+2.  PyTorch Installation  
+ 1. If you are using TensorFlow 2.13 or earlier (CUDA 11.x):  
+ 1. Uninstall the current PyTorch to install a CUDA-compatible version:  
+ `pip uninstall torch torchvision torchaudio`  
+ Then install CUDA-compatible PyTorch from the official source:  
+ `pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118` 2. If you are using TensorFlow 2.14 or later (CUDA 12.x):  
+ - No additional steps are needed.
 </details>
 
 ### How to Update
 
-- Navigate to the `deep_mus_cut` folder and run the following command:  
-  `git pull`
+To update the repository:
 
+1. Open your terminal.
+2. Change directory to the `deep_mus_cut` folder:
+
+   ```
+   cd deep_mus_cut
+   ```
+
+3. Run the following command to pull the latest changes:
+
+   ```
+   git pull
+   ```
+
+_Note: "Navigate to" is commonly used in documentation to mean "change directory to." It is natural and correct in this context._
 
 ---
 
-## How to Use
+## Usage
 
-- To analyze a single video file:  
-  - Store the video file path in the environment variable `movie`:  
-    `movie="/path/to/your/movie.mov"`  
-    Start analysis with:  
-    `python muscut_with_rembg.py -f $movie -s`
+### Simple Collection of Profile Images
 
-- To analyze multiple videos of a single animal:  
-  - Store the folder path containing the videos in the environment variable `folder`:  
-    `folder="/path/to/your/directory"`  
-    Run the following command:  
-    `python batcher_single.py -f folder -ps`  
-  - Directory structure example:
+- To analyze a single video file (macOS & Ubuntu & Windows):
+
+  - Store the path to the video file in the environment variable `movie`
     ```
-    Please organize videos by animal in separate folders.
-    Videos within the specified folder will be analyzed.
+    movie="/path/to/your/movie.mov"
+    ```
+    Start analysis with:
+    ```
+    python muscut.py -f $movie -s
+    ```
+    _Note: Since this is a simple process, after clustering, one frame is selected randomly from each cluster._
+
+### Collecting Images with Background Removed
+
+- To analyze a single video file (macOS & Ubuntu & Windows):
+
+  - Store the path to the video file in the environment variable `movie`:
+    ```
+    movie="/path/to/your/movie.mov"
+    ```
+    Start analysis with:
+    ```
+    python muscut_with_rembg.py -f $movie -s
+    ```
+
+- To analyze multiple videos of a single animal (Ubuntu or Windows with NVIDIA GPU required):
+
+  - Store the path to the folder containing the videos in the environment variable `folder`:
+
+    ```
+    folder="/path/to/your/directory"
+    ```
+
+    Run:
+
+    ```
+    python batcher_single.py -f folder -ps
+    ```
+
+  - Reference directory structure:
+
+    ```
+    Organize videos by animal in separate folders.
+    The script will analyze videos in the specified folder.
     ├── animal01 ← Specify this folder
     │   ├── C0013.MP4
     │   ├── C0014.MP4
@@ -204,44 +253,55 @@ graph TD
     ...
     ```
 
-- To analyze a large number of videos across multiple animals:  
-  - Store the path to the root folder (with the expected structure) in the `folder` environment variable:  
-    `folder="/path/to/your/directory"`  
-    Start analysis with:  
-    `python patcher_para.py -f $folder -ps`  
-  - Directory structure example:
+- To analyze a large number of videos across multiple animals (Ubuntu or Windows with NVIDIA GPU required):
+
+  - Store the path to the root folder (with the expected structure) in the environment variable `folder`:
+
     ```
-    This runs batcher_single.py in parallel.
-    Specify the root folder that contains folders used for batcher_single.py.
+    folder="/path/to/your/directory"
+    ```
+
+    Start analysis with:
+
+    ```
+    python patcher_para.py -f $folder -ps
+    ```
+
+  - Reference directory structure:
+
+    ```
+    Runs batcher_single.py in parallel.
+    Specify the root folder containing folders used in batcher_single.
     ├── 00_male ← Specify this folder
-    │   ├── animal01 ← Each of these folders will be processed in parallel
+    │   ├── animal01 ← Each of these folders is processed in parallel
     │   ├── animal02
     │   ├── animal03
     │   ├── animal04
     │   └── animal05
     ```
 
-- To save images with the background included:  
-  `python muscut.py -f $movie`
+- To save images with background included:
 
-- To show a preview during face detection, use the `-s` option:  
-  `python muscut.py -f $movie -s`
+  ```
+  python muscut.py -f $movie
+  ```
 
+- To show preview during face detection, add the `-s` option:
+  ```
+  python muscut.py -f $movie -s
+  ```
 
 ---
 
 ### Options
 
-| Option        | Description                                                                                                                                                                                                                                                                                           |
-|---------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| -f, --file    | Path to the file you want to analyze (required) [file_path, webcam]<br>Specify `-f <file_path>` to analyze a video file.<br>Use `-f webcam0` to connect to camera device ID 0 (test feature).<br>If multiple cameras are connected, try changing the number after `webcam`.                             |
-| -d, --device  | Device used for object detection [cpu, cuda, mps]<br>You can specify the PyTorch device used when `--mode tf` is set.                                                                                                                                            |
-| -t, --tool    | Tool selection<br>`-t default`: same behavior as not specifying<br>`-t kmeans_image_extractor`: extracts a specified number of frame images using the k-means algorithm<br>`-t tf2ml`: converts TensorFlow model to CoreML<br>`-t sexing (sexing_multi)`: for demo purposes                         |
-| -i, --image_format | Format for output images [jpg, png]<br>`-i png`: default behavior (same as unspecified)<br>`-i jpg`: saves in JPEG format, useful for reducing file size                                                                                                 |
-| -s, --show    | Preview mode                                                                                                                                                                                                                                                                                          |
-| -n, --number  | Number of images to extract                                                                                                                                                                                                                                                                            |
-| -wc, --without_cnn | Analyzes without image classification ※                                                                                                                                                                                                                                                          |
-| -a, --all     | Saves all detected images without k-means clustering ※                                                                                                                                                                                                                                                |
+| Option             | Description                                                                               |
+| ------------------ | ----------------------------------------------------------------------------------------- |
+| -f, --file         | Path to the file you want to analyze (required) [file_path, webcam]<br>Specify `-f <file_path>` to analyze a video file.<br>Use `-f webcam0` to connect to camera device ID 0 (test feature).<br>If multiple cameras are connected, try changing the number after `webcam`. |
+| -s, --show         | Preview mode                                                                                                                                                                                                                                                                |
+| -n, --number       | Number of images to extract                                                                                                                                                                                                                                                 |
+| -wc, --without_cnn | Analyzes without image classification ※                                                                                                                                                                                                                                     |
+| -a, --all          | Saves all detected images without k-means clustering ※                                                                                                                                                                                                                      |
 
 ※ By combining `-wc` and `-a`, you can retrieve face images including non-side views.
 
@@ -249,45 +309,12 @@ graph TD
 - Only `-a` → retrieves all side view images without k-means.
 - Both `-wc -a` → retrieves all detected images including non-side views, passed through k-means.
 
-| Options   | Behavior                                                                                  |
-|-----------|-------------------------------------------------------------------------------------------|
-| -wc -a    | Retrieves all detected face images                                                        |
-| -wc       | Retrieves a specified number of images from all detected face images                      |
-| -a        | Retrieves all detected side-view face images without k-means                              |
+| Options | Behavior                                                             |
+| ------- | -------------------------------------------------------------------- |
+| -wc -a  | Retrieves all detected face images                                   |
+| -wc     | Retrieves a specified number of images from all detected face images |
+| -a      | Retrieves all detected side-view face images without k-means         |
 
-#### About `mode`
-
-By default, the system is configured to use the GPU for each platform.  
-You can specify this option if you want to explicitly use TensorFlow and PyTorch, such as on MacBook.
-
-| --mode  | Details                                                                 |
-|---------|-------------------------------------------------------------------------|
-| coreml  | Uses CoreML models for object detection and image classification. (default) |
-| tf_pt   | Uses PyTorch and TensorFlow for object detection and image classification. |
-
-#### About `device`
-
-Specifies the PyTorch device for object detection when `--mode tf_pt` is used.  
-By default, the GPU for each platform is used. Specify explicitly to use CPU, etc.
-
-| --device | Details                                                                 |
-|----------|-------------------------------------------------------------------------|
-| cpu      | Uses CPU for object detection. (default)                                |
-| cuda     | Uses CUDA for object detection. (NVIDIA GPU required)                   |
-| mps      | Uses Apple’s Metal Performance Shaders.                                |
-
-#### About `tool`
-
-| --tool                 | Details                                                                                   |
-|------------------------|-------------------------------------------------------------------------------------------|
-| kmeans_image_extractor | Extracts a specified number of frames using the k-means algorithm. Does not crop faces.  |
-| tf2ml                  | Converts CNN models trained with TensorFlow 2.x to CoreML format (Mac only).             |
-| sexing (sexing_multi)  | Technical demo program.                                                                   |
-
-#### About supported output formats
-
-- If not specified, images are saved in PNG format by default.
-- JPEG format can be selected via the `-i jpg` option to reduce file size.
 
 ---
 
