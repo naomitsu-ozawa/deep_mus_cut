@@ -183,7 +183,7 @@ graph TD
       movie="/path/to/your/movie.mov"
 
       # Demo用の動画を使う場合
-      movie="./C57BL6_profile_demo.mp4"
+      movie="./demo/C57BL6_profile_demo.mp4"
       ```
     ```
     python muscut.py -f $movie -s
@@ -198,7 +198,7 @@ graph TD
       movie="/path/to/your/movie.mov"
 
       # Demo用の動画を使う場合
-      movie="./C57BL6_profile_demo.mp4"
+      movie="./demo/C57BL6_profile_demo.mp4"
       ```
     ```
     python muscut_with_rembg.py -f $movie -s

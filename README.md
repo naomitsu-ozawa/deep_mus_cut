@@ -217,7 +217,7 @@ To update the repository:
       movie="/path/to/your/movie.mov"
 
       To use the demo video
-      movie="./C57BL6_profile_demo.mp4"
+      movie="./demo/C57BL6_profile_demo.mp4"
     ```
     Start analysis with:
     ```
@@ -235,7 +235,7 @@ To update the repository:
       movie="/path/to/your/movie.mov"
 
       To use the demo video
-      movie="./C57BL6_profile_demo.mp4"
+      movie="./demo/C57BL6_profile_demo.mp4"
     ```
     Start analysis with:
     ```
