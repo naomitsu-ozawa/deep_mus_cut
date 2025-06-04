@@ -321,3 +321,21 @@ _Note: "Navigate to" is commonly used in documentation to mean "change directory
 ### Support for Other Animals
 
 Please contact us for more information.
+
+## About the License
+
+This project utilizes Ultralytics YOLOv8 (AGPLv3) to perform object detection on images and videos. It also uses RemBG (MIT License) for background removal and OpenCV (MIT License) for image processing.
+
+The entire project is released under the **GNU Affero General Public License v3 (AGPLv3)**.
+
+For more details, please refer to the [`LICENSE`](./LICENSE) file.
+
+## Third-Party Libraries and Their Licenses
+
+This project uses the following external libraries, each of which complies with its respective license:
+
+| Library Name | License | URL |
+|--------------|---------|-----|
+| [Ultralytics YOLOv8](https://github.com/ultralytics/ultralytics) | AGPLv3 | https://github.com/ultralytics/ultralytics |
+| [RemBG](https://github.com/danielgatis/rembg) | MIT | https://github.com/danielgatis/rembg |
+| [OpenCV](https://github.com/opencv/opencv) | MIT | https://github.com/opencv/opencv |
