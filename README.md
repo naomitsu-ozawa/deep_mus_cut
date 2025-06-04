@@ -4,6 +4,11 @@
   <img src="https://github.com/naomitsu-ozawa/deep_mus_cut/assets/129124821/fae5e681-81a6-409b-923f-0e8e8291d247" />
 </p>
 
+![OS](https://img.shields.io/badge/OS-Ubuntu%20%7C%20Windows%20%7C%20macOS-green)
+![Python](https://img.shields.io/badge/Python-3.11%2B-blue)
+![License](https://img.shields.io/badge/License-AGPL%20v3-pink)
+
+
 ## An app that nicely captures and saves images of a mouse's face from a video.
 
 https://github.com/naomitsu-ozawa/deep_mou_cut_2/assets/129124821/702d32ab-1227-40a7-8f73-65153dc51fd0
@@ -65,6 +70,14 @@ graph TD
    </details>
 
 ---
+
+## System Requirements (Operating Environment)
+- Ubuntu & Windows
+  - CPU: Core i7 or higher
+  - GPU: nVidia GPU required
+- macOS
+  - Models with Apple Silicon or later
+
 
 ## Installation
 
