@@ -318,3 +318,27 @@ YOLOv8の学習に用いたデータセットについて、いかにご連絡�
 | [RemBG](https://github.com/danielgatis/rembg) | MIT | https://github.com/danielgatis/rembg |
 | [OpenCV](https://github.com/opencv/opencv) | MIT | https://github.com/opencv/opencv |
 
+---
+
+## 📄関連論文
+
+このコードやプロジェクトを使用する場合は、以下の論文を引用してください：
+
+"AI-Driven System for Large-Scale Automated Collection of Mouse Profile Images"  
+Naomitsu Ozawa, Yusuke Sakai, Yusuke Sakai, Chihiro Koshimoto, Seiji Shiozawa
+
+bioRxiv 2025.03.27.645835; doi: https://doi.org/10.1101/2025.03.27.645835  
+Available at: https://www.biorxiv.org/content/10.1101/2025.03.27.645835v2  
+
+### 📚 BibTeX
+```
+@article{Ozawa2025MouseProfileAI,
+  author  = {Naomitsu, Ozawa and Yusuke, Sakai and Yusuke, Sakai and Chihiro, Koshimoto and Seiji, Shiozawa},
+  title   = {AI-Driven System for Large-Scale Automated Collection of Mouse Profile Images},
+  journal = {bioRxiv},
+  year    = {2025},
+  doi     = {10.1101/2025.03.27.645835},
+  url     = {https://www.biorxiv.org/content/10.1101/2025.03.27.645835v2}
+}
+
+```

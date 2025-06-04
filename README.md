@@ -356,3 +356,27 @@ This project uses the following external libraries, each of which complies with 
 | [Ultralytics YOLOv8](https://github.com/ultralytics/ultralytics) | AGPLv3 | https://github.com/ultralytics/ultralytics |
 | [RemBG](https://github.com/danielgatis/rembg) | MIT | https://github.com/danielgatis/rembg |
 | [OpenCV](https://github.com/opencv/opencv) | MIT | https://github.com/opencv/opencv |
+
+---
+
+## 📄 Related Publication
+If you use this code or find this project helpful, please cite the following preprint:
+
+"AI-Driven System for Large-Scale Automated Collection of Mouse Profile Images"  
+Naomitsu Ozawa, Yusuke Sakai, Yusuke Sakai, Chihiro Koshimoto, Seiji Shiozawa
+
+bioRxiv 2025.03.27.645835; doi: https://doi.org/10.1101/2025.03.27.645835  
+Available at: https://www.biorxiv.org/content/10.1101/2025.03.27.645835v2  
+
+### 📚 BibTeX
+```
+@article{Ozawa2025MouseProfileAI,
+  author  = {Naomitsu, Ozawa and Yusuke, Sakai and Yusuke, Sakai and Chihiro, Koshimoto and Seiji, Shiozawa},
+  title   = {AI-Driven System for Large-Scale Automated Collection of Mouse Profile Images},
+  journal = {bioRxiv},
+  year    = {2025},
+  doi     = {10.1101/2025.03.27.645835},
+  url     = {https://www.biorxiv.org/content/10.1101/2025.03.27.645835v2}
+}
+
+```
