@@ -335,6 +335,12 @@ _Note: "Navigate to" is commonly used in documentation to mean "change directory
 
 Please contact us for more information.
 
+### About Dataset Availability
+If you are interested in the dataset used for training YOLOv8, please feel free to contact us. We will provide access upon request.
+
+[![Email](https://img.shields.io/badge/email-click__mouse__studio%40animal--kurume.jp-blue?logo=gmail)](mailto:click_mouse_studio@animal-kurume.jp)
+
+
 ## About the License
 
 This project utilizes Ultralytics YOLOv8 (AGPLv3) to perform object detection on images and videos. It also uses RemBG (MIT License) for background removal and OpenCV (MIT License) for image processing.

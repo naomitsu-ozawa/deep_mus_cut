@@ -293,6 +293,11 @@ MacBook 等において明示的に Tensorflow と PyTorch を利用したい場
 
 お問い合わせください。
 
+### データセットの公開について
+YOLOv8の学習に用いたデータセットについて、いかにご連絡いただければデータセットの公開をいたします。
+
+[![Email](https://img.shields.io/badge/email-click__mouse__studio%40animal--kurume.jp-blue?logo=gmail)](mailto:click_mouse_studio@animal-kurume.jp)
+
 
 
 ## ライセンスについて
