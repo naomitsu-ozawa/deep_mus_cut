@@ -4,52 +4,59 @@
   <img src="https://github.com/naomitsu-ozawa/deep_mus_cut/assets/129124821/fae5e681-81a6-409b-923f-0e8e8291d247" />
 </p>
 
-## 動画からマウスの顔をいい感じで画像で保存するアプリ
+## An app that nicely captures and saves images of a mouse's face from a video.
 
 https://github.com/naomitsu-ozawa/deep_mou_cut_2/assets/129124821/702d32ab-1227-40a7-8f73-65153dc51fd0
 
-## 説明
+## Description
+The app detects the mouse's face in the video and neatly crops it out for you.
 
-映像内のマウスの顔を検知していい感じに切り取ってくれます。
+## Supported Animals
 
-## 対応動物
-
-- マウス
+- Mouse
   - C57BL/6
   - ICR
-  - アカネズミ
-- 未対応の動物については、お問い合わせください。
+  - C3H/He
+  - Apodemus (Wild Mouse)
+- For unsupported animals, please contact us.
+
 
 ---
 
-### 動作フロー
+### Operation Flow
 
-   <details>
-      <summary>クリックで開く</summary>
+<details>
+   <summary>Click to expand</summary>
 
 ```mermaid
 %%{init: {'theme': 'forest'}}%%
 
 graph TD
    subgraph graph_01["#muscut_with_rembg.py"]
-      G[input] -->|解析したい動画| I(物体検知<br>Yolov8 Custom model)
-      I -->|顔が検知されたフレーム| J(画像分類<br>Mobile_net V3 Custom model)
-      J -->|横顔が含まれるフレーム| K(クラスタリング<br>k-means)
-      K -->|クラスタリングされたフレーム| L("random.sample<br>([k-means-images],1)")
-      L -->|各クラスタから一枚づつ出力| M[remBG]
-      M -->|背景削除| N[物体検知<br>Yolov8 Custom model]
-      N -->|顔領域の切り出し| O[output]
-      G --> |抽出したい枚数をクラスタ数として渡す|　K
+      G["input"] -->|"Video to be analyzed"| I["Object Detection<br>Yolov8 Custom model<br>[Detect mouse head]"]
+      I -->|"Detected frames with mouse head"| P["Focus Check"]
+      P --> J["Image Classification<br>MobileNet V3 Custom model"]
+      J -->|"Classify side-view faces only"| R1["Feature Extraction<br>MobileNetV3"]
+      R1 --> R3["Dimensionality Reduction<br>T-SNE"]
+      R3 -->|"Reduced features"| K["Clustering<br>k-means"]
+      K -->|"Clustered frames"| L["Select image<br>closest to cluster centroid"]
+      L -->|"One image output per cluster"| M["remBG"]
+      M -->|"Background removal"| N["Object Detection<br>Yolov8 Custom model<br>[Detect mouse head]"]
+      N -->|"Cropping face regions"| O["output"]
+      G -->|"Pass the number of images to extract as the number of clusters"| K
    end
    style graph_01 fill:#ffffff
 
    subgraph graph_02["#muscut.py"]
-      A[input] -->|解析したい動画| B(物体検知<br>Yolov8 Custom model)
-      B -->|検知された部位の画像| C(画像分類<br>Mobile_net V3 Custom model)
-      C -->|分類された画像| D(クラスタリング<br>k-means)
-      D -->|クラスタリングされた画像| E("random.sample<br>([k-means-images],1)")
-      E -->|各クラスタから一枚づつ出力| F[output]
-      A --> |抽出したい枚数をクラスタ数として渡す|　D
+      A["input"] -->|"Video to be analyzed"| B["Object Detection<br>Yolov8 Custom model<br>[Detect mouse head]"]
+      B -->|"Detected frames with mouse head"| Q["Focus Check"]
+      Q --> C["Image Classification<br>MobileNet V3 Custom model"]
+      C -->|"Classify side-view faces only"| S1["Feature Extraction<br>MobileNetV3"]
+      S1 --> S3["Dimensionality Reduction<br>T-SNE"]
+      S3 -->|"Reduced features"| D["Clustering<br>k-means"]
+      D -->|"Clustered images"| E["Select image<br>closest to cluster centroid"]
+      E -->|"One image output per cluster"| F["output"]
+      A -->|"Pass the number of images to extract as the number of clusters"| D
    end
    style graph_02 fill:#ffffff
 
@@ -59,164 +66,177 @@ graph TD
 
 ---
 
-## インストール
+## Installation
 
-- python3.10~で動作します。
-- conda 等で仮想環境を作成して下さい。
+- Works with Python 3.11 or later.
+- Please create a virtual environment using tools such as conda.
 
-### Mac、 Linux、 Windows(WSL2)、共通
 
-1. リポジトリをクローンします。  
+### Mac, Linux, Windows (WSL2) - Common Steps
+
+1. Clone the repository  
    `git clone https://github.com/naomitsu-ozawa/deep_mus_cut.git`
-2. Ultralytics をインストールします。  
+2. Install Ultralytics  
    `pip install ultralytics`
-3. Scikit-learn をインストールしてください。  
+3. Install Scikit-learn  
    `pip install scikit-learn`
-4. remBG をインストールします。（背景除去を行う場合）  
-   `pip install rembg[gpu] `  
-    ※GPU が使えなかった場合は、onnxruntime-gpu をチェックしてください。
+4. Install remBG (for background removal)  
+   `pip install rembg[gpu]`  
+   *Note: If GPU is not available, please check your onnxruntime-gpu setup.*
+
 
 ### Mac
 
-1. CoreML に対応した Mac の場合は、CoreMLtools をインストールします。  
+1. If you are using a Mac that supports CoreML, install CoreMLtools:  
    `pip install coremltools`
-2. CoreML 非対応の Mac で利用する場合は、Tensorflow をインストールします。  
+2. If your Mac does not support CoreML, install TensorFlow instead:  
    `pip install tensorflow`  
    `pip install tensorflow-metal`
 
-- numpy でエラーが起こる場合は、pip の方の numpy を更新します。  
+- If you encounter errors related to numpy, update numpy using pip:  
   `pip install -U numpy`
 
-### Linux&Windows(WSL2)
 
-1. Tensorflow のインストール
-   1. Tensorflow は"2.15.x"まで対応しています。（2.16.x~は未対応）
-   2. CUDA 対応の Tensorflow をインストールします。
+### Linux & Windows (WSL2)
+
+1. TensorFlow Installation  
+   1. Only TensorFlow versions up to "2.15.x" are supported (2.16.x and later are not supported).  
+   2. Install the CUDA-compatible version of TensorFlow:  
       `pip install 'tensorflow[and-cuda]==2.15.1'`
-2. PyTorch のインストール
-   1. tensorflow2.13 以前を使う場合（CUDA11.x を使う場合）
-      1. CUDA 対応の PyTorch をインストールするために一度アンインストールします。  
+
+2. PyTorch Installation  
+   1. If you are using TensorFlow 2.13 or earlier (CUDA 11.x):  
+      1. Uninstall the current PyTorch to install a CUDA-compatible version:  
          `pip uninstall torch torchvision torchaudio`  
-         こちらから CUDA 対応の PyTorch をインストールします。  
+         Then install CUDA-compatible PyTorch from the official source:  
          `pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118`
-   2. tensorflow2.14 以降を使う場合（CUDA12.x を使う場合）
-      1. そのままで大丈夫
+   2. If you are using TensorFlow 2.14 or later (CUDA 12.x):  
+      - No additional steps are needed.
 
-### アップデート方法
 
-- deep_mus_cut フォルダに移動後、git pull して下さい。
+### How to Update
+
+- Navigate to the `deep_mus_cut` folder and run the following command:  
+  `git pull`
+
 
 ---
 
-## 使い方
+## How to Use
 
-- １つの動画ファイルを解析する場合
-  - 環境変数"movie"に動画ファイルのパスを格納します。  
+- To analyze a single video file:  
+  - Store the video file path in the environment variable `movie`:  
     `movie="/path/to/your/movie.mov"`  
-    `python muscut_with_rembg.py -f $movie -s`  
-     で解析が始まります。
-- 1 頭の動物で複数の動画を解析する場合
-  - 環境変数"folder"に動画の入ったフォルダーのパスを格納します。
+    Start analysis with:  
+    `python muscut_with_rembg.py -f $movie -s`
+
+- To analyze multiple videos of a single animal:  
+  - Store the folder path containing the videos in the environment variable `folder`:  
     `folder="/path/to/your/directory"`  
+    Run the following command:  
     `python batcher_single.py -f folder -ps`  
-     を実行します。
-  - ディレクトリ構造は以下を参考にしてください。
+  - Directory structure example:
     ```
-    動物ごとにフォルダ分けしてください。
-    指定したフォルダ内の動画を解析します。
-    ├──  animal01 ←　ここを指定する
-    │   ├──  C0013.MP4
-    │   ├──  C0014.MP4
-    │   └──  C0015.MP4
-    ├──  animal02
-    │   ├──  C0016.MP4
-    │   ├──  C0017.MP4
-    │   └──  C0018.MP4
-    ・
-    ・
-    ・
+    Please organize videos by animal in separate folders.
+    Videos within the specified folder will be analyzed.
+    ├── animal01 ← Specify this folder
+    │   ├── C0013.MP4
+    │   ├── C0014.MP4
+    │   └── C0015.MP4
+    ├── animal02
+    │   ├── C0016.MP4
+    │   ├── C0017.MP4
+    │   └── C0018.MP4
+    ...
     ```
-- 複数の動物で大量の動画を解析する場合
-  - 環境変数"folder"に指定した構造のルートフォルダーのパスを格納します。
+
+- To analyze a large number of videos across multiple animals:  
+  - Store the path to the root folder (with the expected structure) in the `folder` environment variable:  
     `folder="/path/to/your/directory"`  
+    Start analysis with:  
     `python patcher_para.py -f $folder -ps`  
-     で解析が始まります。
-  - ディレクトリ構造は以下を参考にしてください。
+  - Directory structure example:
     ```
-    batcher_single.pyを並列処理しています。
-    batcher_singleで指定したフォルダが格納されているルートフォルダを指定します。
-    ├── 00_male　←ここを指定する
-    │   ├── animal01　←このフォルダごとで並列化
-    │   ├── animal02
-    │   ├── animal03
-    │   ├── animal04
-    │   └── animal05
+    This runs batcher_single.py in parallel.
+    Specify the root folder that contains folders used for batcher_single.py.
+    ├── 00_male ← Specify this folder
+    │   ├── animal01 ← Each of these folders will be processed in parallel
+    │   ├── animal02
+    │   ├── animal03
+    │   ├── animal04
+    │   └── animal05
     ```
-- 背景付きの画像を保存する場合  
-   `python muscut.py -f $movie`
 
-- 顔検知中のプレビューを表示させるには、-s オプションをつけて下さい。  
-   `python muscut.py -f $movie -s`
+- To save images with the background included:  
+  `python muscut.py -f $movie`
+
+- To show a preview during face detection, use the `-s` option:  
+  `python muscut.py -f $movie -s`
+
 
 ---
 
-### オプション
+### Options
 
-| option    | description                                                                                                                                                                                                                                                              |
-| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| -f,--file | 解析したいファイルのパス（必須）[file_path,webcam]<br>-f <file_path>を指定すると動画ファイルの解析を行います。<br>-f webcam0 を指定するとデバイス ID：０のカメラに接続できます。(テスト機能)<br>複数台カメラが接続されている場合は、webcam\*の番号を変更してみて下さい。 |
-| -d,--device | 物体検知部分で利用するデバイス名 [cpu,cuda,mps]<br>--mode tf の時の PyTroch デバイスを指定できます。 |
-| -t,--tool | 使用するツール名 <br>-t default：未指定と同じ動作になります。<br>-t kmeans_image_extractor：動画から k-means アルゴリズムを利用して指定枚数のフレーム画像を抽出します。<br>-t tf2ml:Tensorflow モデルを CoreML モデルへ変換します。<br>-t sexing (sexing_multi):demo 用<br> |
-| -i,--image_format | 出力画像のフォーマット [jpg,png]<br>-i png：デフォルトです。未指定と同じ動作になります。<br>-i jpg：JPEG 形式で保存します。容量を節約したい場合に有効です。 |
-| -s,--show | プレビューモード |
-| -n,--number | 抽出枚数 |
-| -wc,--without_cnn | 画像分類を行わずに解析します。※ |
-| -a,--all | 検知された画像を全て保存します。k-means は行いません。※ |
+| Option        | Description                                                                                                                                                                                                                                                                                           |
+|---------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| -f, --file    | Path to the file you want to analyze (required) [file_path, webcam]<br>Specify `-f <file_path>` to analyze a video file.<br>Use `-f webcam0` to connect to camera device ID 0 (test feature).<br>If multiple cameras are connected, try changing the number after `webcam`.                             |
+| -d, --device  | Device used for object detection [cpu, cuda, mps]<br>You can specify the PyTorch device used when `--mode tf` is set.                                                                                                                                            |
+| -t, --tool    | Tool selection<br>`-t default`: same behavior as not specifying<br>`-t kmeans_image_extractor`: extracts a specified number of frame images using the k-means algorithm<br>`-t tf2ml`: converts TensorFlow model to CoreML<br>`-t sexing (sexing_multi)`: for demo purposes                         |
+| -i, --image_format | Format for output images [jpg, png]<br>`-i png`: default behavior (same as unspecified)<br>`-i jpg`: saves in JPEG format, useful for reducing file size                                                                                                 |
+| -s, --show    | Preview mode                                                                                                                                                                                                                                                                                          |
+| -n, --number  | Number of images to extract                                                                                                                                                                                                                                                                            |
+| -wc, --without_cnn | Analyzes without image classification ※                                                                                                                                                                                                                                                          |
+| -a, --all     | Saves all detected images without k-means clustering ※                                                                                                                                                                                                                                                |
 
-※-wc と-a オプションの組み合わせで、横顔以外の顔画像を取得できます。
+※ By combining `-wc` and `-a`, you can retrieve face images including non-side views.
 
-- -wc のみ　 → 　横顔以外を含む、検知された全ての画像から K-means 処理を通して取得します。
-- -a のみ　 → 　検知された横顔を K-means 処理をせずにすべて取得します。
-- -wc -a 　両方の場合　 → 　横顔以外を含む、検知されたすべての画像から K-means 処理を通して取得します。
+- Only `-wc` → retrieves images including non-side views, passed through k-means.
+- Only `-a` → retrieves all side view images without k-means.
+- Both `-wc -a` → retrieves all detected images including non-side views, passed through k-means.
 
-  Options
-  | -wc -a | -wc | -a |
-  | --- | --- | --- |
-  | 検知されたすべての顔画像を取得 | 検知されたすべての顔画像から指定枚数を取得 | 検知された横顔のみをすべて取得 |
+| Options   | Behavior                                                                                  |
+|-----------|-------------------------------------------------------------------------------------------|
+| -wc -a    | Retrieves all detected face images                                                        |
+| -wc       | Retrieves a specified number of images from all detected face images                      |
+| -a        | Retrieves all detected side-view face images without k-means                              |
 
-#### mode について
+#### About `mode`
 
-デフォルトは、それぞれのプラットフォームごとで GPU を使うように設定しています。
-MacBook 等において明示的に Tensorflow と PyTorch を利用したい場合、指定してください。
-| --mode | 詳細 |
-| ---- | ---- |
-| coreml | 物体検出と画像分類に CoreMl モデルを使用します。(default) |
-| tf_pt | 物体検出と画像分類に PyTroch と TensorFlow を使用します。 |
+By default, the system is configured to use the GPU for each platform.  
+You can specify this option if you want to explicitly use TensorFlow and PyTorch, such as on MacBook.
 
-#### device について
+| --mode  | Details                                                                 |
+|---------|-------------------------------------------------------------------------|
+| coreml  | Uses CoreML models for object detection and image classification. (default) |
+| tf_pt   | Uses PyTorch and TensorFlow for object detection and image classification. |
 
-モード”tf_pt”時の物体検出で利用する PyTorch デバイスを指定できます。
-デフォルトは、それぞれのプラットフォームごとに GPU を使用するように設定しています。明示的に CPU などを使いたい場合に指定してください。
-| --device | 詳細 |
-| ---- | ---- |
-| cpu | 物体検知に cpu を使います。(default) |
-| cuda | 物体検知に CUDA を使います。（n Vidia の GPU が必要です。） |
-| mps | Apple の Metal Performance Shaders を使います。 |
+#### About `device`
 
-#### tool について
+Specifies the PyTorch device for object detection when `--mode tf_pt` is used.  
+By default, the GPU for each platform is used. Specify explicitly to use CPU, etc.
 
-| --tool                 | 詳細                                                                                   |
-| ---------------------- | -------------------------------------------------------------------------------------- |
-| kmeans_image_extractor | k-means アルゴリズムを使って動画から指定枚数の画像を抽出し、顔の切り取りは行いません。 |
-| tf2ml                  | Tensorflow2.x で訓練された CNN を CoreML 形式へ変換します。Mac 専用の機能です。        |
-| sexing (sexing_multi)  | 技術 DEMO プログラムです。                                                             |
+| --device | Details                                                                 |
+|----------|-------------------------------------------------------------------------|
+| cpu      | Uses CPU for object detection. (default)                                |
+| cuda     | Uses CUDA for object detection. (NVIDIA GPU required)                   |
+| mps      | Uses Apple’s Metal Performance Shaders.                                |
 
-#### 保存できるフォーマットについて
+#### About `tool`
 
-- オプションを指定しない場合は、png 形式で保存されます。オプションで指定することで jpg 形式で保存可能です。
+| --tool                 | Details                                                                                   |
+|------------------------|-------------------------------------------------------------------------------------------|
+| kmeans_image_extractor | Extracts a specified number of frames using the k-means algorithm. Does not crop faces.  |
+| tf2ml                  | Converts CNN models trained with TensorFlow 2.x to CoreML format (Mac only).             |
+| sexing (sexing_multi)  | Technical demo program.                                                                   |
+
+#### About supported output formats
+
+- If not specified, images are saved in PNG format by default.
+- JPEG format can be selected via the `-i jpg` option to reduce file size.
 
 ---
 
-### その他動物への対応
+### Support for Other Animals
 
-お問い合わせください。
+Please contact us for more information.
