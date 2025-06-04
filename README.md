@@ -68,11 +68,65 @@ graph TD
 
 ## Installation
 
-- Works with Python 3.11 or later.
-- Please create a virtual environment using tools such as conda.
+* Requires Python 3.11 or higher.
+* Please create a virtual environment using tools such as conda.
+
+### Linux (Ubuntu), Windows (WSL2)
+
+1. Clone the repository:
+
+   ```
+   git clone https://github.com/naomitsu-ozawa/deep_mus_cut.git
+   ```
+2. Move into the cloned directory:
+
+   ```
+   cd deep_mus_cut
+   ```
+3. Create a virtual environment from the `env_ubuntu.yml` file:
+
+   ```
+   conda env create -f env_ubuntu.yml -n muscut
+   ```
+4. Activate the created virtual environment:
+
+   ```
+   conda activate muscut
+   ```
+5. Install `remBG` into the environment.
+   To avoid dependency conflicts, use the `--no-deps` option:
+
+   ```
+   pip install rembg==2.0.53 --no-deps
+   ```
+
+## macOS
+
+1. Clone the repository:
+
+   ```
+   git clone https://github.com/naomitsu-ozawa/deep_mus_cut.git
+   ```
+2. Move into the cloned directory:
+
+   ```
+   cd deep_mus_cut
+   ```
+3. Create a virtual environment from the `env_macos.yml` file:
+
+   ```
+   conda env create -f env_macos.yml -n muscut
+   ```
+4. Activate the created virtual environment:
+
+   ```
+   conda activate muscut
+   ```
 
 
-### Mac, Linux, Windows (WSL2) - Common Steps
+### Manual installation (not recommended)
+<details>
+   <summary>Click to expand</summary>
 
 1. Clone the repository  
    `git clone https://github.com/naomitsu-ozawa/deep_mus_cut.git`
@@ -112,7 +166,7 @@ graph TD
          `pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118`
    2. If you are using TensorFlow 2.14 or later (CUDA 12.x):  
       - No additional steps are needed.
-
+</details>
 
 ### How to Update
 
