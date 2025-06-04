@@ -174,23 +174,44 @@ graph TD
 ---
 
 ## 使い方
+
 ### シンプルに横顔を収集
 - １つの動画ファイルを解析する場合（macOS & Ubuntu）
   - 環境変数"movie"に動画ファイルのパスを格納します。  
-    `movie="/path/to/your/movie.mov"`  
-    `python muscut.py -f $movie -s`  
+      ```
+      # あなたの準備した動画の場合
+      movie="/path/to/your/movie.mov"
+
+      # Demo用の動画を使う場合
+      movie="./C57BL6_profile_demo.mp4"
+      ```
+    ```
+    python muscut.py -f $movie -s
+    ```  
      で解析が始まります。
    ※　シンプルな処理を行っているため、クラスタリング後の抽出過程は、各クラスタからランダムに１枚選択しています。
 ### 背景を切り抜いた画像の収集
 - １つの動画ファイルを解析する場合（macOS & Ubuntu）
   - 環境変数"movie"に動画ファイルのパスを格納します。  
-    `movie="/path/to/your/movie.mov"`  
-    `python muscut_with_rembg.py -f $movie -s`  
+      ```
+      # あなたの準備した動画の場合
+      movie="/path/to/your/movie.mov"
+
+      # Demo用の動画を使う場合
+      movie="./C57BL6_profile_demo.mp4"
+      ```
+    ```
+    python muscut_with_rembg.py -f $movie -s
+    ```
      で解析が始まります。
 - 1 頭の動物で複数の動画を解析する場合（Ubuntu or Windows nVidia GPUが必須）
   - 環境変数"folder"に動画の入ったフォルダーのパスを格納します。
-    `folder="/path/to/your/directory"`  
-    `python batcher_single.py -f folder -ps`  
+    ```
+    folder="/path/to/your/directory"
+    ```  
+    ```
+    python batcher_single.py -f folder -ps
+    ```  
      を実行します。
   - ディレクトリ構造は以下を参考にしてください。
     ```
@@ -210,8 +231,12 @@ graph TD
     ```
 - 複数の動物で大量の動画を解析する場合（Ubuntu or Windows nVidia GPUが必須）
   - 環境変数"folder"に指定した構造のルートフォルダーのパスを格納します。
-    `folder="/path/to/your/directory"`  
-    `python patcher_para.py -f $folder -ps`  
+    ```
+    folder="/path/to/your/directory"
+    ```
+    ```
+    python patcher_para.py -f $folder -ps
+    ```  
      で解析が始まります。
   - ディレクトリ構造は以下を参考にしてください。
     ```
@@ -225,10 +250,14 @@ graph TD
     │   └── animal05
     ```
 - 背景付きの画像を保存する場合  
-   `python muscut.py -f $movie`
+   ```
+   python muscut.py -f $movie
+   ```
 
 - 顔検知中のプレビューを表示させるには、-s オプションをつけて下さい。  
-   `python muscut.py -f $movie -s`
+   ```
+   python muscut.py -f $movie -s
+   ```
 
 ---
 

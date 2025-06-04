@@ -213,7 +213,11 @@ To update the repository:
 
   - Store the path to the video file in the environment variable `movie`
     ```
-    movie="/path/to/your/movie.mov"
+      For your own prepared video
+      movie="/path/to/your/movie.mov"
+
+      To use the demo video
+      movie="./C57BL6_profile_demo.mp4"
     ```
     Start analysis with:
     ```
@@ -227,7 +231,11 @@ To update the repository:
 
   - Store the path to the video file in the environment variable `movie`:
     ```
-    movie="/path/to/your/movie.mov"
+      For your own prepared video
+      movie="/path/to/your/movie.mov"
+
+      To use the demo video
+      movie="./C57BL6_profile_demo.mp4"
     ```
     Start analysis with:
     ```
