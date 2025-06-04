@@ -51,9 +51,15 @@ def main(
 
     if mode == "coreml":
         import coremltools as ct
-
+        os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+        import tensorflow as tf
         yolo_model = YOLO("muscut_models/yolo.mlmodel", task="detect")
         cnn_model = ct.models.MLModel("muscut_models/ct_cnn.mlmodel")
+
+        # k-means test
+        kmeans_cnn = tf.keras.applications.MobileNetV3Small(
+            input_shape=(224, 224, 3), include_top=False, weights="imagenet", alpha=1.0
+        )
 
     elif mode == "tf_pt":
 
