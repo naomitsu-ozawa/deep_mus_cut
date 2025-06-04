@@ -310,6 +310,17 @@ To update the repository:
   python muscut.py -f $movie -s
   ```
 
+### Image Output Directory
+- The images will be saved in the following path:
+   ```
+   deep_mus_cut
+      └── croped_image
+         └── <video file name>
+            ├── selected_imgs ← when running muscut.py
+            └── with_rembg ← when running muscut_with_rembg.py
+
+   ```
+
 ---
 
 ### Options

@@ -259,6 +259,16 @@ graph TD
    python muscut.py -f $movie -s
    ```
 
+### 画像の出力先
+- 以下のパスに保存されます。
+   ```
+      deep_mus_cut
+         └── croped_image
+            └── <動画のファイル名>
+               ├── selected_imgs ← muscut.pyを実行した場合
+               └── with_rembg ← muscut_with_rembg.pyを実行した場合
+   ```
+
 ---
 
 ### オプション
