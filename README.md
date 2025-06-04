@@ -203,8 +203,6 @@ To update the repository:
    git pull
    ```
 
-_Note: "Navigate to" is commonly used in documentation to mean "change directory to." It is natural and correct in this context._
-
 ---
 
 ## Usage
