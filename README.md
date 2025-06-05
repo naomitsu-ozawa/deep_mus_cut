@@ -223,7 +223,6 @@ To update the repository:
     ```
     python muscut.py -f $movie -s
     ```
-    _Note: Since this is a simple process, after clustering, one frame is selected randomly from each cluster._
 
 ### Collecting Images with Background Removed
 
