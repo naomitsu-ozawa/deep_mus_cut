@@ -54,8 +54,7 @@ graph TD
 
    subgraph graph_02["#muscut.py"]
       A["input"] -->|"Video to be analyzed"| B["Object Detection<br>Yolov8 Custom model<br>[Detect mouse head]"]
-      B -->|"Detected frames with mouse head"| Q["Focus Check"]
-      Q --> C["Image Classification<br>MobileNet V3 Custom model"]
+      B --> C["Image Classification<br>MobileNet V3 Custom model"]
       C -->|"Classify side-view faces only"| S1["Feature Extraction"]
       S1 --> S3["Dimensionality Reduction<br>PCA"]
       S3 -->|"Reduced features"| D["Clustering<br>k-means"]
