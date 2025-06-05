@@ -103,7 +103,8 @@ def main(
         cnn_model = tf.keras.models.load_model("muscut_models/cnn/savedmodel")
 
         # k-means test
-        # kmeans_cnn = tf.keras.applications.MobileNetV3Small(input_shape=(224,224,3),include_top=False, weights='imagenet')
+        import tensorflow as tf
+        kmeans_cnn = tf.keras.applications.MobileNetV3Small(input_shape=(224,224,3),include_top=False, weights='imagenet')
 
     if cnn_conf is None:
         cnn_conf = 0.7
@@ -131,7 +132,7 @@ def main(
             all_extract,
             cnn_conf,
             pint,
-            # kmeans_cnn
+            kmeans_cnn
         )
 
     elif tool == "kmeans_image_extractor":

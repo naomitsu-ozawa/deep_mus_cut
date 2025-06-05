@@ -66,7 +66,7 @@ def muscut(
     all_extract,
     cnn_conf,
     pint,
-    # kmeans_cnn
+    kmeans_cnn
 ):
     match StrRe(movie_path):
         case "webcam*":
@@ -341,6 +341,9 @@ def muscut(
             cluster_num,
             image_flag,
             for_kmeans_frame_no,
-            # kmeans_cnn
+            kmeans_cnn,
+            dev_flag=False
         )
+
+    
     print("\033[32mAll Done!\033[0m")
