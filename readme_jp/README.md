@@ -56,10 +56,10 @@ graph TD
       A["input"] -->|"Video to be analyzed"| B["Object Detection<br>Yolov8 Custom model<br>[Detect mouse head]"]
       B -->|"Detected frames with mouse head"| Q["Focus Check"]
       Q --> C["Image Classification<br>MobileNet V3 Custom model"]
-      C -->|"Classify side-view faces only"| S1["Feature Extraction<br>MobileNetV3"]
-      S1 --> S3["Dimensionality Reduction<br>T-SNE"]
+      C -->|"Classify side-view faces only"| S1["Feature Extraction"]
+      S1 --> S3["Dimensionality Reduction<br>PCA"]
       S3 -->|"Reduced features"| D["Clustering<br>k-means"]
-      D -->|"Clustered images"| E["Select image<br>closest to cluster centroid"]
+      D -->|"Clustered images"| E["Select one image<br>randomly from each cluster"]
       E -->|"One image output per cluster"| F["output"]
       A -->|"Pass the number of images to extract as the number of clusters"| D
    end
