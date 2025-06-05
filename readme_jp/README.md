@@ -368,7 +368,7 @@ YOLOv8の学習に用いたデータセットについて、いかにご連絡�
 Naomitsu Ozawa, Yusuke Sakai, Yusuke Sakai, Chihiro Koshimoto, Seiji Shiozawa
 
 bioRxiv 2025.03.27.645835; doi: https://doi.org/10.1101/2025.03.27.645835  
-Available at: https://www.biorxiv.org/content/10.1101/2025.03.27.645835v2  
+Available at: https://www.biorxiv.org/content/10.1101/2025.03.27.645835v3  
 
 ### 📚 BibTeX
 ```
