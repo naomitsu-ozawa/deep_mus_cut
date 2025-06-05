@@ -17,7 +17,6 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 os_name = platform.system()
 
 # start logo
-muscut_logo.logo()
 
 
 def main(
@@ -34,6 +33,7 @@ def main(
     cnn_conf,
     pint,
 ):
+    muscut_logo.logo()
     print("muscut.py_start")
     from ultralytics import YOLO
 
@@ -102,9 +102,9 @@ def main(
         yolo_model = YOLO("muscut_models/yolo.pt")
         cnn_model = tf.keras.models.load_model("muscut_models/cnn/savedmodel")
 
-        # k-means test
-        import tensorflow as tf
-        kmeans_cnn = tf.keras.applications.MobileNetV3Small(input_shape=(224,224,3),include_top=False, weights='imagenet')
+    # k-means test
+    import tensorflow as tf
+    kmeans_cnn = tf.keras.applications.MobileNetV3Small(input_shape=(224,224,3),include_top=False, weights='imagenet')
 
     if cnn_conf is None:
         cnn_conf = 0.7

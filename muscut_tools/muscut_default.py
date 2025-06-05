@@ -319,8 +319,8 @@ def muscut(
     os.makedirs(save_path, exist_ok=True)
 
     # frame time
-    df = pd.DataFrame(inference_times)
-    df.to_csv(f"{save_path}/frame_time.csv",index=False)
+    # df = pd.DataFrame(inference_times)
+    # df.to_csv(f"{save_path}/frame_time.csv",index=False)
 
     if all_extract is True:
         all_save.main(movie_path, for_kmeans_array, image_flag)
