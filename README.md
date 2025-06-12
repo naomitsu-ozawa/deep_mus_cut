@@ -39,7 +39,7 @@ The app detects the mouse's face in the video and neatly crops it out for you.
     </div>
     <hr>
     <div align="center">
-      <p style="font-size: 18pt; color: #555;">▼Pipeline implemented in <code>muscut.py</p>
+      <p style="font-size: 18pt; color: #555;">▼Pipeline implemented in <code>muscut.py</code></p>
       <img src="https://github.com/user-attachments/assets/51100b51-93c6-4ca1-8a5c-2fb1b32110d4" style="max-width: 70%; height: auto;" />
     </div>
 
