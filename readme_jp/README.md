@@ -28,21 +28,22 @@ https://github.com/naomitsu-ozawa/deep_mou_cut_2/assets/129124821/702d32ab-1227-
 
 ---
 
-### 動作フロー
+### Operation Flow
 
-<details>
-  <summary>Click to expand</summary>
+  <details>
+    <summary>Click to expand</summary>
 
-  <div align="center">
-    <p style="font-size: 18pt; color: #555;">▼Pipeline implemented in <code>muscut_with_rembg.py</code></p>
-    <img src="https://github.com/user-attachments/assets/67c036d2-5447-46ba-be33-44a688eed670" style="max-width: 70%; height: auto;" />
-  </div>
-  <hr>
-  <div align="center">
-    <p style="font-size: 18pt; color: #555;">▼Pipeline implemented in <code>muscut.py</p>
-    <img src="https://github.com/user-attachments/assets/51100b51-93c6-4ca1-8a5c-2fb1b32110d4" style="max-width: 70%; height: auto;" />
-  </div>
-</details>
+    <div align="center">
+      <p style="font-size: 18pt; color: #555;">▼Pipeline implemented in <code>muscut_with_rembg.py</code></p>
+      <img src="https://github.com/user-attachments/assets/67c036d2-5447-46ba-be33-44a688eed670" style="max-width: 70%; height: auto;" />
+    </div>
+    <hr>
+    <div align="center">
+      <p style="font-size: 18pt; color: #555;">▼Pipeline implemented in <code>muscut.py</p>
+      <img src="https://github.com/user-attachments/assets/51100b51-93c6-4ca1-8a5c-2fb1b32110d4" style="max-width: 70%; height: auto;" />
+    </div>
+
+  </details>
 
 ---
 
