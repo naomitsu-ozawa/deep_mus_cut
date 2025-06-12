@@ -33,6 +33,10 @@ The app detects the mouse's face in the video and neatly crops it out for you.
 <details>
    <summary>Click to expand</summary>
 
+![fig1](https://github.com/user-attachments/assets/67c036d2-5447-46ba-be33-44a688eed670)
+![fig1-3](https://github.com/user-attachments/assets/51100b51-93c6-4ca1-8a5c-2fb1b32110d4)
+
+
 ```mermaid
 ---
 config:
