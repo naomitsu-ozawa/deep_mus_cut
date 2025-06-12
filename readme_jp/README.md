@@ -30,44 +30,19 @@ https://github.com/naomitsu-ozawa/deep_mou_cut_2/assets/129124821/702d32ab-1227-
 
 ### 動作フロー
 
-   <details>
-      <summary>クリックで開く</summary>
+<details>
+  <summary>Click to expand</summary>
 
-```mermaid
-%%{init: {'theme': 'forest'}}%%
-
-graph TD
-   subgraph graph_01["#muscut_with_rembg.py"]
-      G["input"] -->|"Video to be analyzed"| I["Object Detection<br>Yolov8 Custom model<br>[Detect mouse head]"]
-      I -->|"Detected frames with mouse head"| P["Focus Check"]
-      P --> J["Image Classification<br>MobileNet V3 Custom model"]
-      J -->|"Classify side-view faces only"| R1["Feature Extraction<br>MobileNetV3"]
-      R1 --> R3["Dimensionality Reduction<br>T-SNE"]
-      R3 -->|"Reduced features"| K["Clustering<br>k-means"]
-      K -->|"Clustered frames"| L["Select image<br>closest to cluster centroid"]
-      L -->|"One image output per cluster"| M["remBG"]
-      M -->|"Background removal"| N["Object Detection<br>Yolov8 Custom model<br>[Detect mouse head]"]
-      N -->|"Cropping face regions"| O["output"]
-      G -->|"Pass the number of images to extract as the number of clusters"| K
-   end
-   style graph_01 fill:#ffffff
-
-   subgraph graph_02["#muscut.py"]
-      A["input"] -->|"Video to be analyzed"| B["Object Detection<br>Yolov8 Custom model<br>[Detect mouse head]"]
-      B -->|"Detected frames with mouse head"| Q["Focus Check"]
-      Q --> C["Image Classification<br>MobileNet V3 Custom model"]
-      C -->|"Classify side-view faces only"| S1["Feature Extraction<br>MobileNetV3"]
-      S1 --> S3["Dimensionality Reduction<br>T-SNE"]
-      S3 -->|"Reduced features"| D["Clustering<br>k-means"]
-      D -->|"Clustered images"| E["Select image<br>closest to cluster centroid"]
-      E -->|"One image output per cluster"| F["output"]
-      A -->|"Pass the number of images to extract as the number of clusters"| D
-   end
-   style graph_02 fill:#ffffff
-
-```
-
-   </details>
+  <div align="center">
+    <p style="font-size: 18pt; color: #555;">▼Pipeline implemented in <code>muscut_with_rembg.py</code></p>
+    <img src="https://github.com/user-attachments/assets/67c036d2-5447-46ba-be33-44a688eed670" style="max-width: 70%; height: auto;" />
+  </div>
+  <hr>
+  <div align="center">
+    <p style="font-size: 18pt; color: #555;">▼Pipeline implemented in <code>muscut.py</p>
+    <img src="https://github.com/user-attachments/assets/51100b51-93c6-4ca1-8a5c-2fb1b32110d4" style="max-width: 70%; height: auto;" />
+  </div>
+</details>
 
 ---
 

@@ -31,101 +31,19 @@ The app detects the mouse's face in the video and neatly crops it out for you.
 ### Operation Flow
 
 <details>
-   <summary>Click to expand</summary>
+  <summary>Click to expand</summary>
 
-![fig1](https://github.com/user-attachments/assets/67c036d2-5447-46ba-be33-44a688eed670)
-![fig1-3](https://github.com/user-attachments/assets/51100b51-93c6-4ca1-8a5c-2fb1b32110d4)
+  <div align="center">
+    <p style="font-size: 18pt; color: #555;">▼Pipeline implemented in <code>muscut_with_rembg.py</code></p>
+    <img src="https://github.com/user-attachments/assets/67c036d2-5447-46ba-be33-44a688eed670" style="max-width: 70%; height: auto;" />
+  </div>
+  <hr>
+  <div align="center">
+    <p style="font-size: 18pt; color: #555;">▼Pipeline implemented in <code>muscut.py</p>
+    <img src="https://github.com/user-attachments/assets/51100b51-93c6-4ca1-8a5c-2fb1b32110d4" style="max-width: 70%; height: auto;" />
+  </div>
 
-
-```mermaid
----
-config:
-  theme: forest
-  themeVariables:
-    edgeLabelBackground: '#ffffff'
-    clusterBkg: '#e0f7fa'
----
-flowchart TD
- subgraph graph_01["#muscut_with_rembg.py"]
-        I(["Object Detection<br>Yolov8 Custom model<br>[Detect mouse head]"])
-        G(("input"))
-        P["Focus Check"]
-        J(["Image Classification<br>MobileNet V3 Custom model"])
-        R1(["Feature Extraction<br>MobileNetV3"])
-        R3["Dimensionality Reduction<br>T-SNE"]
-        K["Clustering<br>k-means"]
-        L["Select image<br>closest to cluster centroid"]
-        M(["remBG"])
-        N(["Object Detection<br>Yolov8 Custom model<br>[Detect mouse head]"])
-        O(("output"))
-  end
- subgraph graph_02["#muscut.py"]
-        B(["Object Detection<br>Yolov8 Custom model<br>[Detect mouse head]"])
-        A(("input"))
-        Q["Focus Check"]
-        C(["Image Classification<br>MobileNet V3 Custom model"])
-        S1(["Feature Extraction<br>MobileNetV3"])
-        S3["Dimensionality Reduction<br>T-SNE"]
-        D["Clustering<br>k-means"]
-        E["Select image<br>closest to cluster centroid"]
-        F(("output"))
-  end
-    G -- Video to be analyzed --> I
-    I -- Detected frames with mouse head --> P
-    P --> J
-    J -- "Classify side-view faces only" --> R1
-    R1 --> R3
-    R3 -- Reduced features --> K
-    K -- Clustered frames --> L
-    L -- One image output per cluster --> M
-    M -- Background removal --> N
-    N -- Cropping face regions --> O
-    G -- Pass the number of images to extract as the number of clusters --> K
-    A -- Video to be analyzed --> B
-    B -- Detected frames with mouse head --> Q
-    Q --> C
-    C -- "Classify side-view faces only" --> S1
-    S1 --> S3
-    S3 -- Reduced features --> D
-    D -- Clustered images --> E
-    E -- One image output per cluster --> F
-    A -- Pass the number of images to extract as the number of clusters --> D
-    R3@{ shape: rounded}
-    K@{ shape: rounded}
-    S3@{ shape: rounded}
-    D@{ shape: rounded}
-     I:::modernai
-     G:::input
-     P:::simplealgo
-     J:::modernai
-     R1:::modernai
-     R3:::classicai
-     K:::classicai
-     L:::simplealgo
-     M:::modernai
-     N:::modernai
-     O:::output
-     B:::modernai
-     A:::input
-     Q:::simplealgo
-     C:::modernai
-     S1:::modernai
-     S3:::classicai
-     D:::classicai
-     E:::simplealgo
-     F:::output
-    classDef input fill:#f8bbd0, stroke:#c2185b, stroke-width:2px, color:#000000
-    classDef output fill:#E1BEE7, stroke:#c2185b, stroke-width:2px
-    classDef modernai fill:#dcedc8, stroke:#689f38, stroke-width:2px, color:#000000
-    classDef simplealgo fill:#e0f7fa, stroke:#00acc1, stroke-width:2px, color:#000000
-    classDef classicai fill:#fff9c4, stroke:#fbc02d, stroke-width:2px, color:#000000
-    style graph_02 fill:transparent
-    style graph_01 fill:transparent
-
-
-```
-
-   </details>
+</details>
 
 ---
 
