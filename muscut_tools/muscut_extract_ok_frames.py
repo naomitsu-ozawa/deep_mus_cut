@@ -134,14 +134,14 @@ def main(
                 if mode == "coreml":
                     results = yolo_model(
                         frame,
-                        max_det=1,  # max detecxtion num.
+                        # max_det=1,  # max detecxtion num.
                         conf=yolo_conf,  # object confidence threshold for detection
                         verbose=False,
                     )
                 elif mode == "tf_pt":
                     results = yolo_model(
                         frame,
-                        max_det=1,  # max detecxtion num.
+                        # max_det=1,  # max detecxtion num.
                         device=device,
                         conf=yolo_conf,  # object confidence threshold for detection
                         verbose=False,
