@@ -8,6 +8,8 @@ import time
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sns
+from matplotlib import gridspec as mgs
 from tqdm import tqdm
 from ultralytics import YOLO
 from ultralytics.utils import LOGGER
@@ -19,6 +21,7 @@ os.environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "true"
 os_name = platform.system()
 
 import tensorflow as tf
+
 
 class NoWarningFilter(logging.Filter):
     def filter(self, record):
@@ -43,9 +46,104 @@ def focus_value(image):
     return p
 
 
-import math
+def plot_images_above_histogram_with_thresholds(
+    focus_scores,
+    selected_images,
+    selected_scores,
+    thresholds,
+    columns=5,
+    image_size_px=(224, 224),
+    dpi=100,
+    spacing_px=60,
+    hist_height_px=300,
+):
+    rows = math.ceil(len(selected_images) / columns)
+    img_w, img_h = image_size_px
 
-import matplotlib.pyplot as plt
+    grid_w_px = columns * img_w + (columns - 1) * spacing_px
+    grid_h_px = rows * img_h + (rows - 1) * spacing_px
+
+    fig_w_in = grid_w_px / dpi
+    fig_h_in = (grid_h_px + hist_height_px) / dpi
+
+    fig = plt.figure(figsize=(fig_w_in, fig_h_in), dpi=dpi)
+    gs = mgs.GridSpec(2, 1, height_ratios=[grid_h_px, hist_height_px], hspace=0.3)
+
+    # === 画像グリッド ===
+    grid_gs = mgs.GridSpecFromSubplotSpec(
+        rows,
+        columns,
+        subplot_spec=gs[0],
+        wspace=spacing_px / img_w,
+        hspace=spacing_px / img_h,
+    )
+
+    for i, (img, score) in enumerate(zip(selected_images, selected_scores)):
+        row = i // columns
+        col = i % columns
+        ax = fig.add_subplot(grid_gs[row, col])
+        ax.imshow(img.numpy().astype(np.uint8))
+        ax.axis("off")
+        # 読みやすくするために白縁 + 黒字のラベル
+        ax.text(
+            0.5,
+            -0.03,
+            f"{score:.1f}",
+            ha="center",
+            va="top",
+            transform=ax.transAxes,
+            fontsize=11,
+            fontweight="bold",
+            color="white",
+            bbox=dict(facecolor="black", edgecolor="none", boxstyle="round,pad=0.2"),
+        )
+
+    # === ヒストグラム ===
+    ax_hist = fig.add_subplot(gs[1])
+    sns.histplot(focus_scores, bins=100, kde=True, ax=ax_hist, color="skyblue")
+
+    # 色帯表示
+    for i in range(len(thresholds) - 1):
+        ax_hist.axvspan(
+            thresholds[i],
+            thresholds[i + 1],
+            alpha=0.15,
+            color=plt.cm.viridis(i / len(thresholds)),
+        )
+
+    # 赤線とスコアラベルを追加
+    for score in selected_scores:
+        ax_hist.axvline(score, color="red", linestyle="--", alpha=0.8)
+
+        ax_hist.text(
+            score,
+            ax_hist.get_ylim()[1] * 0.75,
+            f"{score:.1f}",
+            rotation=90,
+            ha="center",
+            va="bottom",
+            fontsize=9,
+            fontweight="bold",
+            color="red",
+            bbox=dict(facecolor="white", edgecolor="none", boxstyle="round,pad=0.2", alpha=0.7)  # ← ここで透過
+        )
+
+    y_max = ax_hist.get_ylim()[1]
+    for t in thresholds:
+        ax_hist.axvline(t, color="gray", linestyle=":", linewidth=1)
+
+    ax_hist.set_title("Focus Score Distribution with Thresholds", fontsize=13)
+    ax_hist.set_xlabel("Focus Score (Variance)")
+    ax_hist.set_ylabel("Frequency")
+    ax_hist.grid(True)
+
+    fig.suptitle(
+        f"Focus Score Histogram with {len(selected_images)} Representative Images",
+        fontsize=15,
+        y=0.99,
+    )
+    plt.tight_layout(rect=[0, 0, 1, 0.97])
+    plt.show()
 
 
 def show_images_in_grid(
@@ -87,6 +185,25 @@ def show_images_in_grid(
 
     # タイトルが切れないように、上の余白を広めに
     plt.tight_layout(rect=[0, 0, 1, 1])
+    plt.show()
+
+
+def plot_focus_score_distribution(focus_scores, bins=20, kde=True):
+    """
+    分散値（focus_scores）の分布をヒストグラム＋KDEで可視化する。
+
+    Args:
+        focus_scores (list or np.ndarray): 分散値のリスト
+        bins (int): ヒストグラムのビン数
+        kde (bool): カーネル密度推定を表示するか
+    """
+    plt.figure(figsize=(10, 5))
+    sns.histplot(focus_scores, bins=bins, kde=kde, color="skyblue")
+    plt.xlabel("Focus Score (Variance)")
+    plt.ylabel("Frequency")
+    plt.title("Distribution of Focus Scores")
+    plt.grid(True)
+    plt.tight_layout()
     plt.show()
 
 
@@ -194,14 +311,23 @@ def main(movie, model, cnn_model, num_images=10, b_size=8):
         selected_images.append(closest_img)
         selected_scores.append(closest_score)
 
-    show_images_in_grid(
-        images=selected_images,
-        scores=selected_scores,
-        columns=5,  # 任意に指定（3〜6あたりが見やすい）
-        image_size_px=(224, 224),  # 1画像あたりのサイズを維持（ピクセル単位）
-        title=(
-            f"These {num_images} side-profile images were extracted from a video and ranked by focus score (variance) across {num_images} levels. \n Use them as a visual reference for evaluating sharpness. \nBased on the comparison between images and their displayed focus scores, \nplease set a threshold above the value of noticeably blurry images."
-        ),
+    # show_images_in_grid(
+    #     images=selected_images,
+    #     scores=selected_scores,
+    #     columns=5,  # 任意に指定（3〜6あたりが見やすい）
+    #     image_size_px=(224, 224),  # 1画像あたりのサイズを維持（ピクセル単位）
+    #     title=(
+    #         f"These {num_images} side-profile images were extracted from a video and ranked by focus score (variance) across {num_images} levels. \n Use them as a visual reference for evaluating sharpness. \nBased on the comparison between images and their displayed focus scores, \nplease set a threshold above the value of noticeably blurry images."
+    #     ),
+    # )
+
+    # plot_focus_score_distribution(focus_scores)
+
+    plot_images_above_histogram_with_thresholds(
+        focus_scores=focus_scores,
+        selected_images=selected_images,
+        selected_scores=selected_scores,
+        thresholds=thresholds,
     )
 
 
