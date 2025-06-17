@@ -90,8 +90,8 @@ def show_images_in_grid(
     plt.show()
 
 
-def main(movie, model, cnn_model, num_images=10, b_size=16):
-    print(f"debagging batch size: {b_size}")
+def main(movie, model, cnn_model, num_images=10, b_size=8):
+
     if not os.path.exists(movie):
         print(f"Movie file {movie} does not exist.")
         return
@@ -230,7 +230,7 @@ def get_args():
         "-b",
         "--batch_size",
         type=int,
-        default=16,
+        default=8,
         help="バッチサイズ",
     )
 
