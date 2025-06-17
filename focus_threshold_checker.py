@@ -1,19 +1,23 @@
-import os
-from ultralytics import YOLO
-import numpy as np
-from muscut_functions import cv_functions
-import matplotlib.pyplot as plt
-import cv2
-import tensorflow as tf
 import argparse
-import time
 import logging
-from ultralytics.utils import LOGGER
 import math
+import os
+import platform
+import time
+
+import cv2
+import matplotlib.pyplot as plt
+import numpy as np
+import tensorflow as tf
 from tqdm import tqdm
+from ultralytics import YOLO
+from ultralytics.utils import LOGGER
+
+from muscut_functions import cv_functions
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 os.environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "true"
+os_name = platform.system()
 
 
 class NoWarningFilter(logging.Filter):
@@ -39,17 +43,20 @@ def focus_value(image):
     return p
 
 
-import matplotlib.pyplot as plt
-
-
 import math
+
 import matplotlib.pyplot as plt
+
 
 def show_images_in_grid(
-    images, scores, columns=5,
+    images,
+    scores,
+    columns=5,
     image_size_px=(300, 300),
-    title=None, title_fontsize=14, score_fontsize=12,
-    dpi=100
+    title=None,
+    title_fontsize=14,
+    score_fontsize=12,
+    dpi=100,
 ):
     """
     images: 画像（Tensor）リスト
@@ -81,7 +88,6 @@ def show_images_in_grid(
     # タイトルが切れないように、上の余白を広めに
     plt.tight_layout(rect=[0, 0, 1, 1])
     plt.show()
-
 
 
 def main(movie, model, cnn_model, num_images=10, b_size=16):
@@ -243,7 +249,11 @@ if __name__ == "__main__":
     print(f"Number of images to extract: {num_images}")
 
     print("Loading models...")
-    model = YOLO("muscut_models/yolo.pt")
+    if os_name == "Darwin":
+        model = YOLO("muscut_models/yolo.mlmodel", task="detect")
+    elif os_name == "Linux" or os_name == "Windows":
+        model = YOLO("muscut_models/yolo.pt")
+
     cnn_model = tf.keras.models.load_model("muscut_models/cnn/savedmodel")
     print("Models loaded successfully.")
 
