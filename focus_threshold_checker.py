@@ -8,7 +8,6 @@ import time
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
-import tensorflow as tf
 from tqdm import tqdm
 from ultralytics import YOLO
 from ultralytics.utils import LOGGER
@@ -19,6 +18,7 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 os.environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "true"
 os_name = platform.system()
 
+import tensorflow as tf
 
 class NoWarningFilter(logging.Filter):
     def filter(self, record):
@@ -91,6 +91,7 @@ def show_images_in_grid(
 
 
 def main(movie, model, cnn_model, num_images=10, b_size=16):
+    print(f"debagging batch size: {b_size}")
     if not os.path.exists(movie):
         print(f"Movie file {movie} does not exist.")
         return
@@ -229,7 +230,7 @@ def get_args():
         "-b",
         "--batch_size",
         type=int,
-        default=8,
+        default=16,
         help="バッチサイズ",
     )
 
