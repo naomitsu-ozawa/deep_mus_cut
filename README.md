@@ -301,7 +301,7 @@ To update the repository:
 | Option             | Description                                                                               |
 | ------------------ | ----------------------------------------------------------------------------------------- |
 | -f, --file         | Path to the file you want to analyze (required) [file_path, webcam]<br>Specify `-f <file_path>` to analyze a video file.<br>Use `-f webcam0` to connect to camera device ID 0 (test feature).<br>If multiple cameras are connected, try changing the number after `webcam`. |
-| -p, --pint | Specifies the threshold for focus check<br>Default value: 2600 |
+| -p, --pint | Specifies the threshold for focus check<br>Default value: 2600 <br> [Click here for more information on threshold selection.](readme/focus_threshold_cheker.md)  |
 | -s, --show         | Preview mode                                                                                                                                                                                                                                                                |
 | -n, --number       | Number of images to extract                                                                                                                                                                                                                                                 |
 | -wc, --without_cnn | Analyzes without image classification ※                                                                                                                                                                                                                                     |
