@@ -53,9 +53,10 @@ def plot_images_above_histogram_with_thresholds(
     thresholds,
     columns=5,
     image_size_px=(224, 224),
-    dpi=100,
-    spacing_px=60,
+    dpi=96,
+    spacing_px=5,
     hist_height_px=300,
+    bins=100,
 ):
     rows = math.ceil(len(selected_images) / columns)
     img_w, img_h = image_size_px
@@ -66,8 +67,20 @@ def plot_images_above_histogram_with_thresholds(
     fig_w_in = grid_w_px / dpi
     fig_h_in = (grid_h_px + hist_height_px) / dpi
 
-    fig = plt.figure(figsize=(fig_w_in, fig_h_in), dpi=dpi)
-    gs = mgs.GridSpec(2, 1, height_ratios=[grid_h_px, hist_height_px], hspace=0.3)
+    fig = plt.figure(figsize=(fig_w_in, fig_h_in), dpi=dpi, constrained_layout=True)
+
+    gs = mgs.GridSpec(2, 1, height_ratios=[grid_h_px, hist_height_px], figure=fig)
+
+    # === タイトル ===
+    fig.text(
+        0.5,
+        0.98,
+        f"Focus Score Histogram with {len(selected_images)} Representative Images",
+        ha="center",
+        fontsize=14,
+        fontweight="bold",
+        bbox=dict(facecolor="white", edgecolor="none", boxstyle="round,pad=0.2"),
+    )
 
     # === 画像グリッド ===
     grid_gs = mgs.GridSpecFromSubplotSpec(
@@ -84,10 +97,9 @@ def plot_images_above_histogram_with_thresholds(
         ax = fig.add_subplot(grid_gs[row, col])
         ax.imshow(img.numpy().astype(np.uint8))
         ax.axis("off")
-        # 読みやすくするために白縁 + 黒字のラベル
         ax.text(
             0.5,
-            -0.03,
+            0.15,
             f"{score:.1f}",
             ha="center",
             va="top",
@@ -100,21 +112,60 @@ def plot_images_above_histogram_with_thresholds(
 
     # === ヒストグラム ===
     ax_hist = fig.add_subplot(gs[1])
-    sns.histplot(focus_scores, bins=100, kde=True, ax=ax_hist, color="skyblue")
+    sns.histplot(
+        focus_scores,
+        bins=bins,
+        color="#c04e01",
+        kde=True,
+        ax=ax_hist,
+        alpha=0.4,
+        linewidth=0,
+    )
 
-    # 色帯表示
+    counts_per_bin = []
     for i in range(len(thresholds) - 1):
-        ax_hist.axvspan(
-            thresholds[i],
-            thresholds[i + 1],
-            alpha=0.15,
-            color=plt.cm.viridis(i / len(thresholds)),
+        if i < len(thresholds) - 2:
+            cond = (np.array(focus_scores) >= thresholds[i]) & (
+                np.array(focus_scores) < thresholds[i + 1]
+            )
+        else:
+            cond = (np.array(focus_scores) >= thresholds[i]) & (
+                np.array(focus_scores) <= thresholds[i + 1]
+            )
+        counts_per_bin.append(np.sum(cond))
+
+    # === 赤線区間で背景色をつける ===
+    sorted_scores = sorted(selected_scores)
+    counts = []
+
+    # スコア間の画像枚数を数える
+    for i in range(len(sorted_scores) - 1):
+        t_start = sorted_scores[i]
+        t_end = sorted_scores[i + 1]
+        count = np.sum(
+            (np.array(focus_scores) >= t_start) & (np.array(focus_scores) < t_end)
+        )
+        counts.append(count)
+
+    max_count = max(counts) if counts else 1  # ゼロ除算対策
+
+    # 色の帯を描画（赤線間の領域）
+    for i in range(len(counts)):
+        t_start = sorted_scores[i]
+        t_end = sorted_scores[i + 1]
+        alpha = min(counts[i] / max_count * 0.5, 0.5)
+        ax_hist.axvspan(t_start, t_end, alpha=alpha, color="teal", zorder=0)
+        ax_hist.text(
+            (t_start + t_end) / 2,
+            ax_hist.get_ylim()[1] * 0.92,
+            f"{counts[i]} imgs",
+            ha="center",
+            fontsize=8,
+            color="black",
         )
 
-    # 赤線とスコアラベルを追加
     for score in selected_scores:
         ax_hist.axvline(score, color="red", linestyle="--", alpha=0.8)
-
         ax_hist.text(
             score,
             ax_hist.get_ylim()[1] * 0.75,
@@ -125,85 +176,18 @@ def plot_images_above_histogram_with_thresholds(
             fontsize=9,
             fontweight="bold",
             color="red",
-            bbox=dict(facecolor="white", edgecolor="none", boxstyle="round,pad=0.2", alpha=0.7)  # ← ここで透過
+            bbox=dict(
+                facecolor="white",
+                edgecolor="none",
+                boxstyle="round,pad=0.2",
+                alpha=0.75,
+            ),
         )
-
-    y_max = ax_hist.get_ylim()[1]
-    for t in thresholds:
-        ax_hist.axvline(t, color="gray", linestyle=":", linewidth=1)
 
     ax_hist.set_title("Focus Score Distribution with Thresholds", fontsize=13)
     ax_hist.set_xlabel("Focus Score (Variance)")
     ax_hist.set_ylabel("Frequency")
-    ax_hist.grid(True)
 
-    fig.suptitle(
-        f"Focus Score Histogram with {len(selected_images)} Representative Images",
-        fontsize=15,
-        y=0.99,
-    )
-    plt.tight_layout(rect=[0, 0, 1, 0.97])
-    plt.show()
-
-
-def show_images_in_grid(
-    images,
-    scores,
-    columns=5,
-    image_size_px=(300, 300),
-    title=None,
-    title_fontsize=14,
-    score_fontsize=12,
-    dpi=100,
-):
-    """
-    images: 画像（Tensor）リスト
-    scores: 各画像に対応する数値（例：分散値）
-    columns: 1行に並べる画像数
-    image_size_px: 各画像の表示サイズ（ピクセル） tuple: (width, height)
-    title: 図の上部タイトル（長文可）
-    title_fontsize: タイトルの文字サイズ
-    score_fontsize: 各画像下のスコア表示の文字サイズ
-    dpi: 1インチあたりのピクセル密度（デフォルト100）
-    """
-    rows = math.ceil(len(images) / columns)
-
-    fig_width = columns * image_size_px[0] / dpi
-    fig_height = rows * image_size_px[1] / dpi
-
-    plt.figure(figsize=(fig_width, fig_height), dpi=dpi)
-
-    if title:
-        # y を上げて、タイトルが画像と被らないように
-        plt.suptitle(title, fontsize=title_fontsize, y=1)
-
-    for i, (img, score) in enumerate(zip(images, scores)):
-        plt.subplot(rows, columns, i + 1)
-        plt.imshow(img.numpy().astype(np.uint8))
-        plt.axis("off")
-        plt.title(f"{score:.1f}", fontsize=score_fontsize)
-
-    # タイトルが切れないように、上の余白を広めに
-    plt.tight_layout(rect=[0, 0, 1, 1])
-    plt.show()
-
-
-def plot_focus_score_distribution(focus_scores, bins=20, kde=True):
-    """
-    分散値（focus_scores）の分布をヒストグラム＋KDEで可視化する。
-
-    Args:
-        focus_scores (list or np.ndarray): 分散値のリスト
-        bins (int): ヒストグラムのビン数
-        kde (bool): カーネル密度推定を表示するか
-    """
-    plt.figure(figsize=(10, 5))
-    sns.histplot(focus_scores, bins=bins, kde=kde, color="skyblue")
-    plt.xlabel("Focus Score (Variance)")
-    plt.ylabel("Frequency")
-    plt.title("Distribution of Focus Scores")
-    plt.grid(True)
-    plt.tight_layout()
     plt.show()
 
 
@@ -311,23 +295,12 @@ def main(movie, model, cnn_model, num_images=10, b_size=8):
         selected_images.append(closest_img)
         selected_scores.append(closest_score)
 
-    # show_images_in_grid(
-    #     images=selected_images,
-    #     scores=selected_scores,
-    #     columns=5,  # 任意に指定（3〜6あたりが見やすい）
-    #     image_size_px=(224, 224),  # 1画像あたりのサイズを維持（ピクセル単位）
-    #     title=(
-    #         f"These {num_images} side-profile images were extracted from a video and ranked by focus score (variance) across {num_images} levels. \n Use them as a visual reference for evaluating sharpness. \nBased on the comparison between images and their displayed focus scores, \nplease set a threshold above the value of noticeably blurry images."
-    #     ),
-    # )
-
-    # plot_focus_score_distribution(focus_scores)
-
     plot_images_above_histogram_with_thresholds(
         focus_scores=focus_scores,
         selected_images=selected_images,
         selected_scores=selected_scores,
         thresholds=thresholds,
+        bins=int(len(cnn_results) / 10),
     )
 
 
