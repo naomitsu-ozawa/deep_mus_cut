@@ -81,7 +81,7 @@ def get_parallel_processing_limit():
 
         # 使用可能メモリを2400MB単位で割り、小数点以下を切り捨て
         parallel_limit = max(
-            0, int(usable_memory_MB // 2400)
+            0, int(usable_memory_MB // 1200)
         )  # 0未満にならないように制限
 
         return total_memory_MB, free_memory_MB, usage_memory_MB, parallel_limit
