@@ -79,7 +79,7 @@ def get_parallel_processing_limit():
         # システム使用分として1GB（1024MB）を差し引く
         usable_memory_MB = free_memory_MB - 1024
 
-        # 使用可能メモリを2400MB単位で割り、小数点以下を切り捨て
+        # 使用可能メモリを1200MB単位で割り、小数点以下を切り捨て
         parallel_limit = max(
             0, int(usable_memory_MB // 1200)
         )  # 0未満にならないように制限
@@ -126,7 +126,7 @@ def run_batch_predictions(sub_dir, pint, num_items, progress_dict, worker_id, x)
 
     command = [
         "python",
-        "batcher_single_with_rembg.py",
+        "batcher_single.py",
         "-f",
         sub_dir,
         "-p",

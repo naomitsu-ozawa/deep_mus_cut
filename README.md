@@ -8,7 +8,6 @@
 ![Python](https://img.shields.io/badge/Python-3.11%2B-blue)
 ![License](https://img.shields.io/badge/License-AGPL%20v3-pink)
 
-
 ## An app that nicely captures and saves images of a mouse's face from a video.
 
 https://github.com/naomitsu-ozawa/deep_mou_cut_2/assets/129124821/702d32ab-1227-40a7-8f73-65153dc51fd0
@@ -46,12 +45,12 @@ The app detects the mouse's face in the video and neatly crops it out for you.
 ---
 
 ## System Requirements (Operating Environment)
+
 - Ubuntu & Windows
   - CPU: Core i7 or higher
   - GPU: nVidia GPU required
 - macOS
   - Models with Apple Silicon or later
-
 
 ## Installation
 
@@ -151,13 +150,14 @@ The app detects the mouse's face in the video and neatly crops it out for you.
     2. Install the CUDA-compatible version of TensorFlow:  
        `pip install 'tensorflow[and-cuda]==2.15.1'`
 
-2.  PyTorch Installation  
- 1. If you are using TensorFlow 2.13 or earlier (CUDA 11.x):  
- 1. Uninstall the current PyTorch to install a CUDA-compatible version:  
- `pip uninstall torch torchvision torchaudio`  
- Then install CUDA-compatible PyTorch from the official source:  
- `pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118` 2. If you are using TensorFlow 2.14 or later (CUDA 12.x):  
- - No additional steps are needed.
+2.  PyTorch Installation
+3.  If you are using TensorFlow 2.13 or earlier (CUDA 11.x):
+4.  Uninstall the current PyTorch to install a CUDA-compatible version:  
+    `pip uninstall torch torchvision torchaudio`  
+    Then install CUDA-compatible PyTorch from the official source:  
+    `pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118` 2. If you are using TensorFlow 2.14 or later (CUDA 12.x):
+
+- No additional steps are needed.
 </details>
 
 ### How to Update
@@ -186,6 +186,7 @@ To update the repository:
 - To analyze a single video file (macOS & Ubuntu & Windows):
 
   - Store the path to the video file in the environment variable `movie`
+
     ```
       For your own prepared video
       movie="/path/to/your/movie.mov"
@@ -193,7 +194,9 @@ To update the repository:
       To use the demo video
       movie="./demo/C57BL6_profile_demo.mp4"
     ```
+
     Start analysis with:
+
     ```
     python muscut.py -f $movie -s
     ```
@@ -203,6 +206,7 @@ To update the repository:
 - To analyze a single video file (macOS & Ubuntu & Windows):
 
   - Store the path to the video file in the environment variable `movie`:
+
     ```
       For your own prepared video
       movie="/path/to/your/movie.mov"
@@ -210,7 +214,9 @@ To update the repository:
       To use the demo video
       movie="./demo/C57BL6_profile_demo.mp4"
     ```
+
     Start analysis with:
+
     ```
     python muscut_with_rembg.py -f $movie -s
     ```
@@ -284,24 +290,26 @@ To update the repository:
   ```
 
 ### Image Output Directory
-- The images will be saved in the following path:
-   ```
-   deep_mus_cut
-      └── croped_image
-         └── <video file name>
-            ├── selected_imgs ← when running muscut.py
-            └── with_rembg ← when running muscut_with_rembg.py
 
-   ```
+- The images will be saved in the following path:
+
+  ```
+  deep_mus_cut
+     └── croped_image
+        └── <video file name>
+           ├── selected_imgs ← when running muscut.py
+           └── with_rembg ← when running muscut_with_rembg.py
+
+  ```
 
 ---
 
 ### Options
 
-| Option             | Description                                                                               |
-| ------------------ | ----------------------------------------------------------------------------------------- |
+| Option             | Description                                                                                                                                                                                                                                                                 |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | -f, --file         | Path to the file you want to analyze (required) [file_path, webcam]<br>Specify `-f <file_path>` to analyze a video file.<br>Use `-f webcam0` to connect to camera device ID 0 (test feature).<br>If multiple cameras are connected, try changing the number after `webcam`. |
-| -p, --pint | Specifies the threshold for focus check<br>Default value: 2600 <br> [Click here for more information on threshold selection.](readme/focus_threshold_cheker.md)  |
+| -p, --pint         | Specifies the threshold for focus check<br>Default value: 2600 <br> [Click here for more information on threshold selection.](readme/focus_threshold_cheker.md)                                                                                                             |
 | -s, --show         | Preview mode                                                                                                                                                                                                                                                                |
 | -n, --number       | Number of images to extract                                                                                                                                                                                                                                                 |
 | -wc, --without_cnn | Analyzes without image classification ※                                                                                                                                                                                                                                     |
@@ -319,7 +327,6 @@ To update the repository:
 | -wc     | Retrieves a specified number of images from all detected face images |
 | -a      | Retrieves all detected side-view face images without k-means         |
 
-
 ---
 
 ### Support for Other Animals
@@ -327,10 +334,10 @@ To update the repository:
 Please contact us for more information.
 
 ### About Dataset Availability
+
 If you are interested in the dataset used for training YOLOv8, please feel free to contact us. We will provide access upon request.
 
 [![Email](https://img.shields.io/badge/email-click__mouse__studio%40animal--kurume.jp-blue?logo=gmail)](mailto:click_mouse_studio@animal-kurume.jp)
-
 
 ## About the License
 
@@ -344,24 +351,26 @@ For more details, please refer to the [`LICENSE`](./LICENSE) file.
 
 This project uses the following external libraries, each of which complies with its respective license:
 
-| Library Name | License | URL |
-|--------------|---------|-----|
-| [Ultralytics YOLOv8](https://github.com/ultralytics/ultralytics) | AGPLv3 | https://github.com/ultralytics/ultralytics |
-| [RemBG](https://github.com/danielgatis/rembg) | MIT | https://github.com/danielgatis/rembg |
-| [OpenCV](https://github.com/opencv/opencv) | MIT | https://github.com/opencv/opencv |
+| Library Name                                                     | License | URL                                        |
+| ---------------------------------------------------------------- | ------- | ------------------------------------------ |
+| [Ultralytics YOLOv8](https://github.com/ultralytics/ultralytics) | AGPLv3  | https://github.com/ultralytics/ultralytics |
+| [RemBG](https://github.com/danielgatis/rembg)                    | MIT     | https://github.com/danielgatis/rembg       |
+| [OpenCV](https://github.com/opencv/opencv)                       | MIT     | https://github.com/opencv/opencv           |
 
 ---
 
 ## 📄 Related Publication
+
 If you use this code or find this project helpful, please cite the following preprint:
 
 "AI-Driven System for Large-Scale Automated Collection of Mouse Profile Images"  
 Naomitsu Ozawa, Yusuke Sakai, Yusuke Sakai, Chihiro Koshimoto, Seiji Shiozawa
 
 bioRxiv 2025.03.27.645835; doi: https://doi.org/10.1101/2025.03.27.645835  
-Available at: https://www.biorxiv.org/content/10.1101/2025.03.27.645835v3  
+Available at: https://www.biorxiv.org/content/10.1101/2025.03.27.645835v3
 
 ### 📚 BibTeX
+
 ```
 @article{Ozawa2025MouseProfileAI,
   author  = {Naomitsu, Ozawa and Yusuke, Sakai and Yusuke, Sakai and Chihiro, Koshimoto and Seiji, Shiozawa},
