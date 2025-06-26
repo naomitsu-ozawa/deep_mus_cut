@@ -39,15 +39,11 @@ def main(folder_path, num_items, pint):
         # print(f"debag video_file:{video_file}")
 
         # muscut　実行
-        exe_python = f"python muscut.py -f {video_file} -n {num_items} -p {pint}"
+        exe_python = f"python muscut_with_rembg.py -f {video_file} -t extract_ok_frames -n {num_items} -p {pint}"
         os.system(exe_python)
 
     subdir_name = os.path.basename(folder_path)
-    # 必要なフォルダ名を取得
-    current_folder = os.path.basename(folder_path)
-    parent_folder = os.path.basename(os.path.dirname(folder_path))
-    grandparent_folder = os.path.basename(os.path.dirname(os.path.dirname(folder_path)))
-    destination_dir_name = f"{folder_path}/{grandparent_folder}_{parent_folder}_{current_folder}_croped_imgs/"
+    destination_dir_name = f"{folder_path}/croped_imgs/"
 
     create_directory_if_not_exists(destination_dir_name)
 
@@ -59,7 +55,7 @@ def main(folder_path, num_items, pint):
     move_image_files(image_files, destination_dir_name)
 
     # del_dirs = get_subdirectories("./croped_image")
-    del_dirs = find_folders(video_list, base_directory)
+    del_dirs = find_folders(video_list,base_directory)
     for del_dir in del_dirs:
         shutil.rmtree(del_dir)
 
