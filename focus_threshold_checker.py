@@ -193,6 +193,8 @@ def plot_images_above_histogram_with_thresholds(
 
 def main(movie, model, cnn_model, num_images=10, b_size=8):
 
+    global_start_time = time.time()
+
     if not os.path.exists(movie):
         print(f"Movie file {movie} does not exist.")
         return
@@ -294,6 +296,9 @@ def main(movie, model, cnn_model, num_images=10, b_size=8):
 
         selected_images.append(closest_img)
         selected_scores.append(closest_score)
+
+    global_end_time = time.time()
+    print(f"Total processing time: {global_end_time - global_start_time:.2f} seconds")
 
     plot_images_above_histogram_with_thresholds(
         focus_scores=focus_scores,
