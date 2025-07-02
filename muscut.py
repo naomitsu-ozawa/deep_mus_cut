@@ -66,14 +66,16 @@ def main(
         cnn_model = ct.models.MLModel("muscut_models/ct_cnn.mlmodel")
 
     elif mode == "tf_pt":
-        
+
         import logging
         import warnings
-        os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+        os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
         import tensorflow as tf
-        warnings.simplefilter(action='ignore', category=FutureWarning)
-        warnings.simplefilter(action='ignore', category=Warning)
-        tf.get_logger().setLevel('INFO')
+
+        warnings.simplefilter(action="ignore", category=FutureWarning)
+        warnings.simplefilter(action="ignore", category=Warning)
+        tf.get_logger().setLevel("INFO")
         tf.autograph.set_verbosity(0)
         tf.get_logger().setLevel(logging.ERROR)
 
@@ -104,7 +106,10 @@ def main(
 
     # k-means test
     import tensorflow as tf
-    kmeans_cnn = tf.keras.applications.MobileNetV3Small(input_shape=(224,224,3),include_top=False, weights='imagenet')
+
+    kmeans_cnn = tf.keras.applications.MobileNetV3Small(
+        input_shape=(224, 224, 3), include_top=False, weights="imagenet"
+    )
 
     if cnn_conf is None:
         cnn_conf = 0.7
@@ -132,7 +137,7 @@ def main(
             all_extract,
             cnn_conf,
             pint,
-            kmeans_cnn
+            kmeans_cnn,
         )
 
     elif tool == "kmeans_image_extractor":

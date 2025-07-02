@@ -32,22 +32,22 @@ def save_frames_as_video(frames, output_path, fps=30):
     if not frames:
         print("フレームのリストが空です。")
         return
-    
+
     # フレームサイズの取得
     height, width, channels = frames[0].shape
 
     # FourCC コード（動画のエンコード方式）の設定例
     # Windows: 'XVID', Mac/Linux でもうまく動作しない場合: 'mp4v' などを試す
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-    
+    fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+
     # VideoWriter オブジェクトの生成
     writer = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
-    
+
     # フレームの書き込み
     for frame in frames:
         # frame がおかしくないか(サイズが違わないか等) 確認してから書き込むと安全です
         writer.write(frame)
-    
+
     # リソースの解放
     writer.release()
     print(f"動画を保存しました: {output_path}")
@@ -66,7 +66,7 @@ def muscut(
     all_extract,
     cnn_conf,
     pint,
-    kmeans_cnn
+    kmeans_cnn,
 ):
     match StrRe(movie_path):
         case "webcam*":
@@ -298,9 +298,11 @@ def muscut(
             else:
                 # Break the loop if the end of the video is reached
                 break
-            
+
             inference_time = end_time - start_time
-            inference_times.append({'Frame': frame_no, 'Inference Time (s)': inference_time})
+            inference_times.append(
+                {"Frame": frame_no, "Inference Time (s)": inference_time}
+            )
 
         # 検出を録画したい場合に使う。テスト
         # save_frames_as_video(record_frame, "output.mov", fps=30)
@@ -309,7 +311,6 @@ def muscut(
     cap.release()
     cv2.destroyAllWindows()
     cv2.waitKey(1)
-
 
     print("\033[32m顔検出完了\033[0m")
 
@@ -323,7 +324,7 @@ def muscut(
     # df.to_csv(f"{save_path}/frame_time.csv",index=False)
 
     if all_extract is True:
-        all_save.main(movie_path, for_kmeans_array, image_flag)
+        all_save.main(movie_path, for_kmeans_array, for_kmeans_frame_no, image_flag)
     else:
         if cluster_num is None:
             cluster_num = int(input("\033[32m抽出する枚数を入力してください\033[0m >"))
@@ -342,8 +343,7 @@ def muscut(
             image_flag,
             for_kmeans_frame_no,
             kmeans_cnn,
-            dev_flag=False
+            dev_flag=False,
         )
 
-    
     print("\033[32mAll Done!\033[0m")
