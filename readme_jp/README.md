@@ -8,7 +8,6 @@
 ![Python](https://img.shields.io/badge/Python-3.11%2B-blue)
 ![License](https://img.shields.io/badge/License-AGPL%20v3-pink)
 
-
 ## 動画からマウスの顔をいい感じで画像で保存するアプリ
 
 https://github.com/naomitsu-ozawa/deep_mou_cut_2/assets/129124821/702d32ab-1227-40a7-8f73-65153dc51fd0
@@ -46,11 +45,12 @@ https://github.com/naomitsu-ozawa/deep_mou_cut_2/assets/129124821/702d32ab-1227-
 ---
 
 ## 動作環境
+
 - Ubuntu & Windows
-  - CPU : Core i7　以上
-  - GPU : nVidia GPU　必須
+  - CPU : Core i7 　以上
+  - GPU : nVidia GPU 　必須
 - macOS
-  - AppleSilicon搭載モデル以降
+  - AppleSilicon 搭載モデル以降
 
 ## インストール
 
@@ -58,7 +58,8 @@ https://github.com/naomitsu-ozawa/deep_mou_cut_2/assets/129124821/702d32ab-1227-
 - conda 等で仮想環境を作成して下さい。
 
 ### Linux(Ubuntu)、Windows(WSL2)
-1. リポジトリをクローンします。  
+
+1. リポジトリをクローンします。
    ```
    git clone https://github.com/naomitsu-ozawa/deep_mus_cut.git
    ```
@@ -66,7 +67,7 @@ https://github.com/naomitsu-ozawa/deep_mou_cut_2/assets/129124821/702d32ab-1227-
    ```
    cd deep_mus_cut
    ```
-1. env_ubuntu.ymlファイルから仮想環境を構築します。
+1. env_ubuntu.yml ファイルから仮想環境を構築します。
    ```
    conda env create -f env_ubuntu.yml -n muscut
    ```
@@ -74,13 +75,14 @@ https://github.com/naomitsu-ozawa/deep_mou_cut_2/assets/129124821/702d32ab-1227-
    ```
    conda activate muscut
    ```
-1. 仮想環境にremBGをインストールします。依存関係の競合を避けるため```--no-deps```を付与します。
+1. 仮想環境に remBG をインストールします。依存関係の競合を避けるため`--no-deps`を付与します。
    ```
    pip install rembg==2.0.53 --no-deps
    ```
 
 ## macOS
-1. リポジトリをクローンします。  
+
+1. リポジトリをクローンします。
    ```
    git clone https://github.com/naomitsu-ozawa/deep_mus_cut.git
    ```
@@ -88,7 +90,7 @@ https://github.com/naomitsu-ozawa/deep_mou_cut_2/assets/129124821/702d32ab-1227-
    ```
    cd deep_mus_cut
    ```
-1. env_macos.ymlファイルから仮想環境を構築します。
+1. env_macos.yml ファイルから仮想環境を構築します。
    ```
    conda env create -f env_macos.yml -n muscut
    ```
@@ -97,47 +99,47 @@ https://github.com/naomitsu-ozawa/deep_mou_cut_2/assets/129124821/702d32ab-1227-
    conda activate muscut
    ```
 
-
 ### 個別インストール（非推奨）
+
    <details>
       <summary>クリックで開く</summary>
    ### Mac、 Linux、 Windows(WSL2)、共通
 
-   1. リポジトリをクローンします。  
-      `git clone https://github.com/naomitsu-ozawa/deep_mus_cut.git`
-   2. Ultralytics をインストールします。  
-      `pip install ultralytics`
-   3. Scikit-learn をインストールしてください。  
-      `pip install scikit-learn`
-   4. remBG をインストールします。（背景除去を行う場合）  
-      `pip install rembg[gpu] `  
-      ※GPU が使えなかった場合は、onnxruntime-gpu をチェックしてください。
+1.  リポジトリをクローンします。  
+    `git clone https://github.com/naomitsu-ozawa/deep_mus_cut.git`
+2.  Ultralytics をインストールします。  
+    `pip install ultralytics`
+3.  Scikit-learn をインストールしてください。  
+    `pip install scikit-learn`
+4.  remBG をインストールします。（背景除去を行う場合）  
+    `pip install rembg[gpu] `  
+    ※GPU が使えなかった場合は、onnxruntime-gpu をチェックしてください。
 
-   ### Mac
+### Mac
 
-   1. CoreML に対応した Mac の場合は、CoreMLtools をインストールします。  
-      `pip install coremltools`
-   2. CoreML 非対応の Mac で利用する場合は、Tensorflow をインストールします。  
-      `pip install tensorflow`  
-      `pip install tensorflow-metal`
+1.  CoreML に対応した Mac の場合は、CoreMLtools をインストールします。  
+    `pip install coremltools`
+2.  CoreML 非対応の Mac で利用する場合は、Tensorflow をインストールします。  
+    `pip install tensorflow`  
+    `pip install tensorflow-metal`
 
-   - numpy でエラーが起こる場合は、pip の方の numpy を更新します。  
-   `pip install -U numpy`
+- numpy でエラーが起こる場合は、pip の方の numpy を更新します。  
+  `pip install -U numpy`
 
-   ### Linux&Windows(WSL2)
+### Linux&Windows(WSL2)
 
-   1. Tensorflow のインストール
-      1. Tensorflow は"2.15.x"まで対応しています。（2.16.x~は未対応）
-      2. CUDA 対応の Tensorflow をインストールします。
-         `pip install 'tensorflow[and-cuda]==2.15.1'`
-   2. PyTorch のインストール
-      1. tensorflow2.13 以前を使う場合（CUDA11.x を使う場合）
-         1. CUDA 対応の PyTorch をインストールするために一度アンインストールします。  
-            `pip uninstall torch torchvision torchaudio`  
-            こちらから CUDA 対応の PyTorch をインストールします。  
-            `pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118`
-      2. tensorflow2.14 以降を使う場合（CUDA12.x を使う場合）
-         1. そのままで大丈夫
+1.  Tensorflow のインストール
+    1. Tensorflow は"2.15.x"まで対応しています。（2.16.x~は未対応）
+    2. CUDA 対応の Tensorflow をインストールします。
+       `pip install 'tensorflow[and-cuda]==2.15.1'`
+2.  PyTorch のインストール
+    1. tensorflow2.13 以前を使う場合（CUDA11.x を使う場合）
+       1. CUDA 対応の PyTorch をインストールするために一度アンインストールします。  
+          `pip uninstall torch torchvision torchaudio`  
+          こちらから CUDA 対応の PyTorch をインストールします。  
+          `pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118`
+    2. tensorflow2.14 以降を使う場合（CUDA12.x を使う場合）
+       1. そのままで大丈夫
 
    </details>
 
@@ -150,43 +152,54 @@ https://github.com/naomitsu-ozawa/deep_mou_cut_2/assets/129124821/702d32ab-1227-
 ## 使い方
 
 ### シンプルに横顔を収集
-- １つの動画ファイルを解析する場合（macOS & Ubuntu）
-  - 環境変数"movie"に動画ファイルのパスを格納します。  
-      ```
-      # あなたの準備した動画の場合
-      movie="/path/to/your/movie.mov"
 
-      # Demo用の動画を使う場合
-      movie="./demo/C57BL6_profile_demo.mp4"
-      ```
+- １つの動画ファイルを解析する場合（macOS & Ubuntu）
+
+  - 環境変数"movie"に動画ファイルのパスを格納します。
+
+    ```
+    # あなたの準備した動画の場合
+    movie="/path/to/your/movie.mov"
+
+    # Demo用の動画を使う場合
+    movie="./demo/C57BL6_profile_demo.mp4"
+    ```
+
     ```
     python muscut.py -f $movie -s
-    ```  
-     で解析が始まります。
+    ```
+
+    で解析が始まります。
 
 ### 背景を切り抜いた画像の収集
-- １つの動画ファイルを解析する場合（macOS & Ubuntu）
-  - 環境変数"movie"に動画ファイルのパスを格納します。  
-      ```
-      # あなたの準備した動画の場合
-      movie="/path/to/your/movie.mov"
 
-      # Demo用の動画を使う場合
-      movie="./demo/C57BL6_profile_demo.mp4"
-      ```
+- １つの動画ファイルを解析する場合（macOS & Ubuntu）
+
+  - 環境変数"movie"に動画ファイルのパスを格納します。
+
+    ```
+    # あなたの準備した動画の場合
+    movie="/path/to/your/movie.mov"
+
+    # Demo用の動画を使う場合
+    movie="./demo/C57BL6_profile_demo.mp4"
+    ```
+
     ```
     python muscut_with_rembg.py -f $movie -s
     ```
-     で解析が始まります。
-- 1 頭の動物で複数の動画を解析する場合（Ubuntu or Windows nVidia GPUが必須）
+
+    で解析が始まります。
+
+- 1 頭の動物で複数の動画を解析する場合（Ubuntu or Windows nVidia GPU が必須）
   - 環境変数"folder"に動画の入ったフォルダーのパスを格納します。
     ```
     folder="/path/to/your/directory"
-    ```  
+    ```
     ```
     python batcher_single.py -f folder -ps
-    ```  
-     を実行します。
+    ```
+    を実行します。
   - ディレクトリ構造は以下を参考にしてください。
     ```
     動物ごとにフォルダ分けしてください。
@@ -203,15 +216,15 @@ https://github.com/naomitsu-ozawa/deep_mou_cut_2/assets/129124821/702d32ab-1227-
     ・
     ・
     ```
-- 複数の動物で大量の動画を解析する場合（Ubuntu or Windows nVidia GPUが必須）
+- 複数の動物で大量の動画を解析する場合（Ubuntu or Windows nVidia GPU が必須）
   - 環境変数"folder"に指定した構造のルートフォルダーのパスを格納します。
     ```
     folder="/path/to/your/directory"
     ```
     ```
     python patcher_para.py -f $folder -ps
-    ```  
-     で解析が始まります。
+    ```
+    で解析が始まります。
   - ディレクトリ構造は以下を参考にしてください。
     ```
     batcher_single.pyを並列処理しています。
@@ -223,41 +236,43 @@ https://github.com/naomitsu-ozawa/deep_mou_cut_2/assets/129124821/702d32ab-1227-
     │   ├── animal04
     │   └── animal05
     ```
-- 背景付きの画像を保存する場合  
-   ```
-   python muscut.py -f $movie
-   ```
+- 背景付きの画像を保存する場合
 
-- 顔検知中のプレビューを表示させるには、-s オプションをつけて下さい。  
-   ```
-   python muscut.py -f $movie -s
-   ```
+  ```
+  python muscut.py -f $movie
+  ```
+
+- 顔検知中のプレビューを表示させるには、-s オプションをつけて下さい。
+  ```
+  python muscut.py -f $movie -s
+  ```
 
 ### 画像の出力先
+
 - 以下のパスに保存されます。
-   ```
-      deep_mus_cut
-         └── croped_image
-            └── <動画のファイル名>
-               ├── selected_imgs ← muscut.pyを実行した場合
-               └── with_rembg ← muscut_with_rembg.pyを実行した場合
-   ```
+  ```
+     deep_mus_cut
+        └── croped_image
+           └── <動画のファイル名>
+              ├── selected_imgs ← muscut.pyを実行した場合
+              └── with_rembg ← muscut_with_rembg.pyを実行した場合
+  ```
 
 ---
 
 ### オプション
 
-| option    | description                                                                                                                                                                                                                                                              |
-| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| -f,--file | 解析したいファイルのパス（必須）[file_path,webcam]<br>-f <file_path>を指定すると動画ファイルの解析を行います。<br>-f webcam0 を指定するとデバイス ID：０のカメラに接続できます。(テスト機能)<br>複数台カメラが接続されている場合は、webcam\*の番号を変更してみて下さい。 |
-| -p, --pint | フォーカスチェックの閾値の指定<br>デフォルト値：2600<br>閾値については[こちら](ピントの閾値について.md)  |
-| -d,--device | 物体検知部分で利用するデバイス名 [cpu,cuda,mps]<br>--mode tf の時の PyTroch デバイスを指定できます。 |
-| -t,--tool | 使用するツール名 <br>-t default：未指定と同じ動作になります。<br>-t kmeans_image_extractor：動画から k-means アルゴリズムを利用して指定枚数のフレーム画像を抽出します。<br>-t tf2ml:Tensorflow モデルを CoreML モデルへ変換します。<br>-t sexing (sexing_multi):demo 用<br> |
-| -i,--image_format | 出力画像のフォーマット [jpg,png]<br>-i png：デフォルトです。未指定と同じ動作になります。<br>-i jpg：JPEG 形式で保存します。容量を節約したい場合に有効です。 |
-| -s,--show | プレビューモード |
-| -n,--number | 抽出枚数 |
-| -wc,--without_cnn | 画像分類を行わずに解析します。※ |
-| -a,--all | 検知された画像を全て保存します。k-means は行いません。※ |
+| option            | description                                                                                                                                                                                                                                                                 |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| -f,--file         | 解析したいファイルのパス（必須）[file_path,webcam]<br>-f <file_path>を指定すると動画ファイルの解析を行います。<br>-f webcam0 を指定するとデバイス ID：０のカメラに接続できます。(テスト機能)<br>複数台カメラが接続されている場合は、webcam\*の番号を変更してみて下さい。    |
+| -p, --pint        | フォーカスチェックの閾値の指定<br>デフォルト値：2600<br>閾値については[こちら](ピントの閾値について.md)                                                                                                                                                                     |
+| -d,--device       | 物体検知部分で利用するデバイス名 [cpu,cuda,mps]<br>--mode tf の時の PyTroch デバイスを指定できます。                                                                                                                                                                        |
+| -t,--tool         | 使用するツール名 <br>-t default：未指定と同じ動作になります。<br>-t kmeans_image_extractor：動画から k-means アルゴリズムを利用して指定枚数のフレーム画像を抽出します。<br>-t tf2ml:Tensorflow モデルを CoreML モデルへ変換します。<br>-t sexing (sexing_multi):demo 用<br> |
+| -i,--image_format | 出力画像のフォーマット [jpg,png]<br>-i png：デフォルトです。未指定と同じ動作になります。<br>-i jpg：JPEG 形式で保存します。容量を節約したい場合に有効です。                                                                                                                 |
+| -s,--show         | プレビューモード                                                                                                                                                                                                                                                            |
+| -n,--number       | 抽出枚数                                                                                                                                                                                                                                                                    |
+| -wc,--without_cnn | 画像分類を行わずに解析します。※                                                                                                                                                                                                                                             |
+| -a,--all          | 検知された画像を全て保存します。k-means は行いません。※                                                                                                                                                                                                                     |
 
 ※-wc と-a オプションの組み合わせで、横顔以外の顔画像を取得できます。
 
@@ -308,11 +323,11 @@ MacBook 等において明示的に Tensorflow と PyTorch を利用したい場
 お問い合わせください。
 
 ### データセットの公開について
-YOLOv8の学習に用いたデータセットについて、いかにご連絡いただければデータセットの公開をいたします。
 
-[![Email](https://img.shields.io/badge/email-click__mouse__studio%40animal--kurume.jp-blue?logo=gmail)](mailto:click_mouse_studio@animal-kurume.jp)
+YOLOv8 の学習に使用したデータセットに加え、横顔判定 AI および 雌雄判定 AI の学習データセットも Google Drive に一括で保管しています。
+以下のリンクから直接アクセスしてご利用ください。
 
-
+[![Google Drive](https://img.shields.io/badge/Google%20Drive-Dataset-blue?logo=google-drive)](https://drive.google.com/drive/folders/1ml23h_laIYa0aAGx5i8tLRfHGyTRxWlE?usp=sharing)
 
 ## ライセンスについて
 
@@ -326,15 +341,15 @@ YOLOv8の学習に用いたデータセットについて、いかにご連絡�
 
 このプロジェクトは以下の外部ライブラリを使用しており、それぞれのライセンスに従っています。
 
-| ライブラリ名 | ライセンス | URL |
-|--------------|------------|-----|
-| [Ultralytics YOLOv8](https://github.com/ultralytics/ultralytics) | AGPLv3 | https://github.com/ultralytics/ultralytics |
-| [RemBG](https://github.com/danielgatis/rembg) | MIT | https://github.com/danielgatis/rembg |
-| [OpenCV](https://github.com/opencv/opencv) | MIT | https://github.com/opencv/opencv |
+| ライブラリ名                                                     | ライセンス | URL                                        |
+| ---------------------------------------------------------------- | ---------- | ------------------------------------------ |
+| [Ultralytics YOLOv8](https://github.com/ultralytics/ultralytics) | AGPLv3     | https://github.com/ultralytics/ultralytics |
+| [RemBG](https://github.com/danielgatis/rembg)                    | MIT        | https://github.com/danielgatis/rembg       |
+| [OpenCV](https://github.com/opencv/opencv)                       | MIT        | https://github.com/opencv/opencv           |
 
 ---
 
-## 📄関連論文
+## 📄 関連論文
 
 このコードやプロジェクトを使用する場合は、以下の論文を引用してください：
 
@@ -342,9 +357,10 @@ YOLOv8の学習に用いたデータセットについて、いかにご連絡�
 Naomitsu Ozawa, Yusuke Sakai, Yusuke Sakai, Chihiro Koshimoto, Seiji Shiozawa
 
 bioRxiv 2025.03.27.645835; doi: https://doi.org/10.1101/2025.03.27.645835  
-Available at: https://www.biorxiv.org/content/10.1101/2025.03.27.645835v3  
+Available at: https://www.biorxiv.org/content/10.1101/2025.03.27.645835v3
 
 ### 📚 BibTeX
+
 ```
 @article{Ozawa2025MouseProfileAI,
   author  = {Naomitsu, Ozawa and Yusuke, Sakai and Yusuke, Sakai and Chihiro, Koshimoto and Seiji, Shiozawa},

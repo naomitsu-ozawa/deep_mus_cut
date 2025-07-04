@@ -335,9 +335,10 @@ Please contact us for more information.
 
 ### About Dataset Availability
 
-If you are interested in the dataset used for training YOLOv8, please feel free to contact us. We will provide access upon request.
+In addition to the dataset used to train YOLOv8, the datasets for training the Profile Detection AI and Sex Classification AI are also stored together on Google Drive.
+You can access them directly via the link below:
 
-[![Email](https://img.shields.io/badge/email-click__mouse__studio%40animal--kurume.jp-blue?logo=gmail)](mailto:click_mouse_studio@animal-kurume.jp)
+[![Google Drive](https://img.shields.io/badge/Google%20Drive-Dataset-blue?logo=google-drive)](https://drive.google.com/drive/folders/1ml23h_laIYa0aAGx5i8tLRfHGyTRxWlE?usp=sharing)
 
 ## About the License
 
